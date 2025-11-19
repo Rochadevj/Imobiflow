@@ -47,6 +47,22 @@ const Navbar = () => {
               </Link>
             </Button>
 
+            <Button
+              variant="ghost"
+              className="text-primary-foreground hover:text-accent hover:bg-primary/90"
+              asChild
+            >
+              <Link to="/sobre">Sobre</Link>
+            </Button>
+
+            <Button
+              variant="ghost"
+              className="text-primary-foreground hover:text-accent hover:bg-primary/90"
+              asChild
+            >
+              <Link to="/anunciar">Anunciar</Link>
+            </Button>
+
             {user ? (
               <>
                 <Button
