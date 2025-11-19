@@ -29,37 +29,25 @@ const Navbar = () => {
   return (
     <nav className="bg-primary text-primary-foreground shadow-lg">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center gap-2 font-bold text-xl hover:opacity-80 transition-opacity">
-            <Building2 className="h-8 w-8 text-accent" />
-            <span>Imóveis Premium</span>
+        <div className="flex items-center justify-between h-20">
+          <Link to="/" className="flex items-center gap-3 font-bold text-xl hover:opacity-80 transition-opacity">
+            <img src="/logo-aa.svg" alt="Alexandre Andrade" className="h-10 w-auto" />
+            <span className="sr-only">Alexandre Andrade Imobiliária</span>
           </Link>
 
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              className="text-primary-foreground hover:text-accent hover:bg-primary/90"
-              asChild
-            >
-              <Link to="/">
-                <Home className="mr-2 h-4 w-4" />
-                Início
-              </Link>
+            <Button variant="ghost" className="text-primary-foreground hover:text-accent hover:bg-primary/90" asChild>
+              <Link to="/">Comprar</Link>
+            </Button>
+            <Button variant="ghost" className="text-primary-foreground hover:text-accent hover:bg-primary/90" asChild>
+              <Link to="/">Alugar</Link>
             </Button>
 
-            <Button
-              variant="ghost"
-              className="text-primary-foreground hover:text-accent hover:bg-primary/90"
-              asChild
-            >
+            <Button variant="ghost" className="text-primary-foreground hover:text-accent hover:bg-primary/90" asChild>
               <Link to="/sobre">Sobre</Link>
             </Button>
 
-            <Button
-              variant="ghost"
-              className="text-primary-foreground hover:text-accent hover:bg-primary/90"
-              asChild
-            >
+            <Button className="bg-accent text-primary hover:bg-accent/95 px-6 py-2 rounded-full" asChild>
               <Link to="/anunciar">Anunciar</Link>
             </Button>
 

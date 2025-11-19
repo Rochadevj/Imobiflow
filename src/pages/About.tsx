@@ -8,12 +8,29 @@ const About = () => {
       <Navbar />
       
       <main className="flex-1">
-        <section className="bg-gradient-to-br from-[hsl(var(--hero-gradient-start))] to-[hsl(var(--hero-gradient-end))] text-white py-20">
-          <div className="container mx-auto px-4">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Sobre</h1>
-            <p className="text-lg md:text-xl text-white/90">
-              Conheça nosso trabalho e compromisso
-            </p>
+        {/* Hero Sobre padronizado com Home */}
+        <section className="relative bg-primary/95 text-white pt-12 pb-16 overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute right-0 top-0 w-[420px] h-[420px] bg-accent/10 rounded-bl-[180px]" />
+          </div>
+          <div className="container mx-auto px-4 relative">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold leading-tight mb-4 max-w-xl">Sobre</h1>
+                <p className="text-base md:text-lg text-white/80 max-w-md">
+                  Conheça nosso trabalho e compromisso
+                </p>
+              </div>
+              <div className="relative">
+                <div className="rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
+                  <img
+                    src="https://images.unsplash.com/photo-1486304873000-235643847519?q=80&w=800&auto=format&fit=crop"
+                    alt="Fachada de imóvel"
+                    className="w-full h-[280px] object-cover"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 

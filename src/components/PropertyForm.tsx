@@ -85,8 +85,12 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
         }])
         .select()
         .single();
-
-      if (propertyError) throw propertyError;
+      if (propertyError) {
+        // Log full error for debugging in console and surface message to user
+        console.error("Erro ao inserir propriedade:", propertyError);
+        toast.error(propertyError.message || "Erro ao cadastrar imóvel");
+        throw propertyError;
+      }
 
       if (images.length > 0) {
         for (let i = 0; i < images.length; i++) {
@@ -127,9 +131,15 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
       });
       setImages([]);
       onSuccess();
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);
+      } else if (typeof error === "object" && error !== null && "message" in error && typeof (error as { message: unknown }).message === "string") {
+        // Mensagem já pode ter sido exibida, evitar duplicar
+        const message = (error as { message: string }).message;
+        if (!/Erro ao cadastrar imóvel/.test(message)) {
+          toast.error(message);
+        }
       } else {
         toast.error("Erro ao cadastrar imóvel");
       }

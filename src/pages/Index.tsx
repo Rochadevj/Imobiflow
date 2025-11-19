@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
+import { Link } from "react-router-dom";
 import PropertyCard from "@/components/PropertyCard";
 import Footer from "@/components/Footer";
 import { Input } from "@/components/ui/input";
@@ -100,40 +101,91 @@ const Index = () => {
            matchesBathrooms && matchesParkingSpaces;
   });
 
+  const [heroTab, setHeroTab] = useState<'comprar' | 'alugar'>('comprar');
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
-      
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-[hsl(var(--hero-gradient-start))] to-[hsl(var(--hero-gradient-end))] text-white py-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Encontre o imóvel perfeito para você
-            </h1>
-            <p className="text-lg md:text-xl mb-8 text-white/90">
-              Compre e alugue com quem entende do mercado imobiliário
-            </p>
-            
-            {/* Search Bar */}
-            <div className="flex gap-2 max-w-2xl">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input
-                  type="text"
-                  placeholder="Buscar por localização, cidade ou tipo..."
-                  className="pl-10 h-12 bg-white text-foreground"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+      {/* Hero Section novo layout (sem sobreposição problemática) */}
+      <section className="relative bg-primary/95 text-white pt-16 pb-48 overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute right-0 top-0 w-[420px] h-[420px] bg-accent/10 rounded-bl-[180px]" />
+        </div>
+        <div className="container mx-auto px-4 relative">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-6 max-w-xl">
+                Compre e alugue
+                <br />
+                <span className="text-accent">com quem entende</span>
+              </h1>
+              <p className="text-lg md:text-xl text-white/80 max-w-md mb-8">
+                Experiência local e transparência para você encontrar ou anunciar seu imóvel em Canoas e região.
+              </p>
+            </div>
+            <div className="relative">
+              <div className="rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
+                <img
+                  src="https://images.unsplash.com/photo-1502005097973-6a7082348e28?q=80&w=800&auto=format&fit=crop"
+                  alt="Edifício residencial"
+                  className="w-full h-[340px] object-cover"
                 />
               </div>
-              <Button className="h-12 bg-accent text-primary hover:bg-accent/90 px-8">
-                Buscar
-              </Button>
             </div>
           </div>
         </div>
       </section>
+      {/* Barra de busca posicionada abaixo do hero com leve overlap controlado */}
+      <div className="relative z-20 -mt-32 mb-12">
+        <div className="container mx-auto px-4">
+          <div className="bg-white text-foreground rounded-xl shadow-xl border border-border overflow-hidden max-w-5xl mx-auto">
+            <div className="flex justify-center gap-12 border-b border-border px-8 pt-6">
+              <button
+                type="button"
+                onClick={() => setHeroTab('comprar')}
+                className={`pb-4 text-sm font-medium relative ${heroTab==='comprar'?'text-accent':'text-muted-foreground hover:text-foreground'}`}
+              >
+                Comprar
+                {heroTab==='comprar' && <span className="absolute left-0 right-0 -bottom-[1px] h-[3px] bg-accent rounded-t" />}
+              </button>
+              <button
+                type="button"
+                onClick={() => setHeroTab('alugar')}
+                className={`pb-4 text-sm font-medium relative ${heroTab==='alugar'?'text-accent':'text-muted-foreground hover:text-foreground'}`}
+              >
+                Alugar
+                {heroTab==='alugar' && <span className="absolute left-0 right-0 -bottom-[1px] h-[3px] bg-accent rounded-t" />}
+              </button>
+            </div>
+            <div className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder={`Pesquisar para ${heroTab === 'comprar' ? 'comprar' : 'alugar'}...`}
+                    className="pl-10 h-12 bg-white"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <Button className="bg-accent text-primary hover:bg-accent/90 px-6 h-12" onClick={() => {/* opcional: trigger fetch/filter */}}>
+                  Buscar
+                </Button>
+              </div>
+              <div className="flex justify-end mt-3">
+                <button
+                  type="button"
+                  onClick={() => setShowFilters(true)}
+                  className="text-sm text-muted-foreground hover:text-accent transition-colors"
+                >
+                  Pesquisa avançada
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
 
       {/* Properties Section */}
       <section className="container mx-auto px-4 py-16 flex-1">
@@ -166,12 +218,12 @@ const Index = () => {
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="propertyType">Tipo de imóvel</Label>
-                  <Select value={propertyType} onValueChange={setPropertyType}>
+                  <Select value={propertyType || "all"} onValueChange={(v) => setPropertyType(v === "all" ? "" : v)}>
                     <SelectTrigger id="propertyType">
                       <SelectValue placeholder="Todos" />
                     </SelectTrigger>
                     <SelectContent className="bg-popover z-50">
-                      <SelectItem value="">Todos</SelectItem>
+                      <SelectItem value="all">Todos</SelectItem>
                       <SelectItem value="Casa">Casa</SelectItem>
                       <SelectItem value="Apartamento">Apartamento</SelectItem>
                       <SelectItem value="Terreno">Terreno</SelectItem>
@@ -228,12 +280,12 @@ const Index = () => {
 
                 <div>
                   <Label htmlFor="bedrooms">Quartos</Label>
-                  <Select value={bedrooms} onValueChange={setBedrooms}>
+                  <Select value={bedrooms || "any"} onValueChange={(v) => setBedrooms(v === "any" ? "" : v)}>
                     <SelectTrigger id="bedrooms">
                       <SelectValue placeholder="Qualquer" />
                     </SelectTrigger>
                     <SelectContent className="bg-popover z-50">
-                      <SelectItem value="">Qualquer</SelectItem>
+                      <SelectItem value="any">Qualquer</SelectItem>
                       <SelectItem value="1">1+</SelectItem>
                       <SelectItem value="2">2+</SelectItem>
                       <SelectItem value="3">3+</SelectItem>
@@ -244,12 +296,12 @@ const Index = () => {
 
                 <div>
                   <Label htmlFor="bathrooms">Banheiros</Label>
-                  <Select value={bathrooms} onValueChange={setBathrooms}>
+                  <Select value={bathrooms || "any"} onValueChange={(v) => setBathrooms(v === "any" ? "" : v)}>
                     <SelectTrigger id="bathrooms">
                       <SelectValue placeholder="Qualquer" />
                     </SelectTrigger>
                     <SelectContent className="bg-popover z-50">
-                      <SelectItem value="">Qualquer</SelectItem>
+                      <SelectItem value="any">Qualquer</SelectItem>
                       <SelectItem value="1">1+</SelectItem>
                       <SelectItem value="2">2+</SelectItem>
                       <SelectItem value="3">3+</SelectItem>
@@ -259,12 +311,12 @@ const Index = () => {
 
                 <div>
                   <Label htmlFor="parkingSpaces">Vagas na garagem</Label>
-                  <Select value={parkingSpaces} onValueChange={setParkingSpaces}>
+                  <Select value={parkingSpaces || "any"} onValueChange={(v) => setParkingSpaces(v === "any" ? "" : v)}>
                     <SelectTrigger id="parkingSpaces">
                       <SelectValue placeholder="Qualquer" />
                     </SelectTrigger>
                     <SelectContent className="bg-popover z-50">
-                      <SelectItem value="">Qualquer</SelectItem>
+                      <SelectItem value="any">Qualquer</SelectItem>
                       <SelectItem value="1">1+</SelectItem>
                       <SelectItem value="2">2+</SelectItem>
                       <SelectItem value="3">3+</SelectItem>
@@ -297,22 +349,22 @@ const Index = () => {
                 {filteredProperties.map((property) => {
                   const primaryImage = property.property_images.find((img) => img.is_primary);
                   const imageUrl = primaryImage?.image_url || property.property_images[0]?.image_url;
-
                   return (
-                    <PropertyCard
-                      key={property.id}
-                      title={property.title}
-                      propertyType={property.property_type}
-                      location={property.location}
-                      city={property.city}
-                      price={property.price}
-                      area={property.area}
-                      bedrooms={property.bedrooms}
-                      bathrooms={property.bathrooms}
-                      parkingSpaces={property.parking_spaces}
-                      imageUrl={imageUrl}
-                      featured={property.featured}
-                    />
+                    <Link key={property.id} to={`/property/${property.id}`} className="no-underline">
+                      <PropertyCard
+                        title={property.title}
+                        propertyType={property.property_type}
+                        location={property.location}
+                        city={property.city}
+                        price={property.price}
+                        area={property.area}
+                        bedrooms={property.bedrooms}
+                        bathrooms={property.bathrooms}
+                        parkingSpaces={property.parking_spaces}
+                        imageUrl={imageUrl}
+                        featured={property.featured}
+                      />
+                    </Link>
                   );
                 })}
               </div>

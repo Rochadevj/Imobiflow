@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Building2, Facebook, Youtube, Instagram } from "lucide-react";
+import { Facebook, Youtube, Instagram } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -7,13 +7,10 @@ const Footer = () => {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           <div>
-            <Link to="/" className="flex items-center gap-2 font-bold text-xl mb-4">
-              <Building2 className="h-8 w-8 text-accent" />
-              <span>Imóveis Premium</span>
+            <Link to="/" className="flex items-center gap-3 font-bold text-xl mb-4">
+              <img src="/logo-aa.svg" alt="Alexandre Andrade" className="h-10 w-auto" />
             </Link>
-            <p className="text-primary-foreground/80 text-sm">
-              Canoas / Rio Grande do Sul
-            </p>
+            <p className="text-primary-foreground/80 text-sm">Canoas / Rio Grande do Sul</p>
           </div>
 
           <div>
@@ -60,7 +57,7 @@ const Footer = () => {
 
         <div className="border-t border-primary-foreground/20 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-primary-foreground/60 text-sm">
-            Imóveis Premium | {new Date().getFullYear()} © Todos os direitos reservados
+            Alexandre Andrade Imobiliária | {new Date().getFullYear()} © Todos os direitos reservados
           </p>
           <Link to="#" className="text-primary-foreground/60 hover:text-accent text-sm transition-colors">
             Políticas de privacidade
