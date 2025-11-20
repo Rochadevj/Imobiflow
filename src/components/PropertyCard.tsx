@@ -1,8 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Bed, Bath, Car, Ruler } from "lucide-react";
+import { Heart } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface PropertyCardProps {
+  id?: string;
   title: string;
   propertyType: string;
   location: string;
@@ -17,6 +20,7 @@ interface PropertyCardProps {
 }
 
 const PropertyCard = ({
+  id,
   title,
   propertyType,
   location,
@@ -29,6 +33,31 @@ const PropertyCard = ({
   imageUrl,
   featured,
 }: PropertyCardProps) => {
+  const [isFavorited, setIsFavorited] = useState(false);
+
+  useEffect(() => {
+    if (!id) return;
+    try {
+      const favs = JSON.parse(localStorage.getItem('favorites') || '[]') as string[];
+      setIsFavorited(favs.includes(id));
+    } catch {
+      setIsFavorited(false);
+    }
+  }, [id]);
+
+  const toggleFavorite = (e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    if (!id) return;
+    const favs = JSON.parse(localStorage.getItem('favorites') || '[]') as string[];
+    const exists = favs.includes(id);
+    const updated = exists ? favs.filter(f => f !== id) : [...favs, id];
+    localStorage.setItem('favorites', JSON.stringify(updated));
+    setIsFavorited(!exists);
+    window.dispatchEvent(new Event('favoritesChanged'));
+  };
   return (
     <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 group">
       <div className="relative h-64 overflow-hidden">
@@ -43,14 +72,22 @@ const PropertyCard = ({
             <span className="text-muted-foreground">Sem imagem</span>
           </div>
         )}
+        <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground z-10">
+          {propertyType}
+        </Badge>
         {featured && (
-          <Badge className="absolute top-4 right-4 bg-accent text-primary">
+          <Badge className="absolute bottom-4 left-4 bg-accent text-primary z-10">
             Destaque
           </Badge>
         )}
-        <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">
-          {propertyType}
-        </Badge>
+        {/* Favorite button */}
+        <button
+          onClick={toggleFavorite}
+          aria-label="Favoritar"
+          className="absolute top-3 right-3 z-20 bg-white/90 backdrop-blur rounded-full p-2 hover:scale-110 hover:bg-white transition-all shadow-md"
+        >
+          <Heart className={`w-5 h-5 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+        </button>
       </div>
 
       <CardContent className="p-6">

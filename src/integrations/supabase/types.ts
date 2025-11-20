@@ -29,9 +29,11 @@ export type Database = {
           price: number
           property_type: string
           status: string | null
+            state: string | null
           title: string
           updated_at: string | null
           user_id: string | null
+            zipcode: string | null
         }
         Insert: {
           area?: number | null
@@ -47,9 +49,11 @@ export type Database = {
           price: number
           property_type: string
           status?: string | null
+            state?: string | null
           title: string
           updated_at?: string | null
           user_id?: string | null
+            zipcode?: string | null
         }
         Update: {
           area?: number | null
@@ -65,9 +69,11 @@ export type Database = {
           price?: number
           property_type?: string
           status?: string | null
+            state?: string | null
           title?: string
           updated_at?: string | null
           user_id?: string | null
+            zipcode?: string | null
         }
         Relationships: []
       }

@@ -26,6 +26,7 @@ interface PropertyFormProps {
 const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<File[]>([]);
+  const [videos, setVideos] = useState<File[]>([]);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -33,6 +34,8 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
     price: "",
     location: "",
     city: "",
+      state: "",
+      zipcode: "",
     area: "",
     bedrooms: "",
     bathrooms: "",
@@ -46,8 +49,19 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
     }
   };
 
+  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newVideos = Array.from(e.target.files);
+      setVideos(prev => [...prev, ...newVideos]);
+    }
+  };
+
   const removeImage = (index: number) => {
     setImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeVideo = (index: number) => {
+    setVideos(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -77,6 +91,8 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
           price: validatedData.price,
           location: validatedData.location,
           city: validatedData.city,
+            state: formData.state || null,
+            zipcode: formData.zipcode || null,
           area: formData.area ? parseFloat(formData.area) : null,
           bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : null,
           bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : null,
@@ -92,11 +108,12 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
         throw propertyError;
       }
 
+      // upload images
       if (images.length > 0) {
         for (let i = 0; i < images.length; i++) {
           const file = images[i];
           const fileExt = file.name.split('.').pop();
-          const fileName = `${property.id}/${Date.now()}-${i}.${fileExt}`;
+          const fileName = `${property.id}/${Date.now()}-img-${i}.${fileExt}`;
 
           const { error: uploadError } = await supabase.storage
             .from("property-images")
@@ -116,6 +133,31 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
         }
       }
 
+      // upload videos (will be stored in same table; detail view will detect video by extension)
+      if (videos.length > 0) {
+        for (let i = 0; i < videos.length; i++) {
+          const file = videos[i];
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${property.id}/${Date.now()}-vid-${i}.${fileExt}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from("property-images")
+            .upload(fileName, file);
+
+          if (uploadError) throw uploadError;
+
+          const { data: { publicUrl } } = supabase.storage
+            .from("property-images")
+            .getPublicUrl(fileName);
+
+          await supabase.from("property_images").insert({
+            property_id: property.id,
+            image_url: publicUrl,
+            is_primary: false,
+          });
+        }
+      }
+
       toast.success("Imóvel cadastrado com sucesso!");
       setFormData({
         title: "",
@@ -124,6 +166,8 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
         price: "",
         location: "",
         city: "",
+          state: "",
+          zipcode: "",
         area: "",
         bedrooms: "",
         bathrooms: "",
@@ -232,6 +276,27 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
               />
             </div>
 
+              <div className="space-y-2">
+                <Label htmlFor="state">Estado</Label>
+                <Input
+                  id="state"
+                  value={formData.state}
+                  onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                  placeholder="Ex: SP"
+                  maxLength={2}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="zipcode">CEP</Label>
+                <Input
+                  id="zipcode"
+                  value={formData.zipcode}
+                  onChange={(e) => setFormData({ ...formData, zipcode: e.target.value })}
+                  placeholder="Ex: 01310-100"
+                />
+              </div>
+
             <div className="space-y-2">
               <Label htmlFor="bedrooms">Quartos</Label>
               <Input
@@ -312,6 +377,50 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
                     <button
                       type="button"
                       onClick={() => removeImage(index)}
+                      className="absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label>Vídeo</Label>
+            <div className="border-2 border-dashed border-border rounded-lg p-4">
+              <Input
+                type="file"
+                accept="video/*"
+                multiple
+                onChange={handleVideoChange}
+                className="hidden"
+                id="video-upload"
+              />
+              <Label
+                htmlFor="video-upload"
+                className="flex flex-col items-center justify-center cursor-pointer"
+              >
+                <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                <span className="text-sm text-muted-foreground">
+                  Clique para adicionar vídeos (mp4, webm)
+                </span>
+              </Label>
+            </div>
+
+            {videos.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                {videos.map((video, index) => (
+                  <div key={index} className="relative group">
+                    <video
+                      src={URL.createObjectURL(video)}
+                      className="w-full h-32 object-cover rounded-lg"
+                      controls
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeVideo(index)}
                       className="absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       <X className="h-4 w-4" />

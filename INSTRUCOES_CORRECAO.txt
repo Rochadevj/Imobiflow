@@ -1,0 +1,40 @@
+// INSTRUÇÕES PARA CORRIGIR O ERRO:
+// 
+// Como o banco de dados Supabase foi criado pelo Lovable e não tem as colunas
+// state e zipcode, você tem 2 opções:
+//
+// OPÇÃO 1 - REMOVER OS CAMPOS (RÁPIDO):
+// Remova estas linhas do PropertyEditForm.tsx:
+//
+// Linha ~93:  estado: property.state || "",
+// Linha ~94:  cep: property.zipcode || "",
+// Linha ~206: state: formData.estado || null,
+// Linha ~207: zipcode: formData.cep || null,
+//
+// E remova do PropertyForm.tsx:
+// Linha ~34:  state: "",
+// Linha ~35:  zipcode: "",
+// Linha ~94:  state: formData.state || null,
+// Linha ~95:  zipcode: formData.zipcode || null,
+// Linha ~163: state: "",
+// Linha ~164: zipcode: "",
+// E os inputs de State e CEP das linhas ~273-290
+//
+//
+// OPÇÃO 2 - ADICIONAR AS COLUNAS NO BANCO (COMPLETO):
+// 
+// 1. Acesse o Lovable Dashboard:
+//    https://lovable.dev/projects/2cbd0663-852f-425e-8c08-860b71fb6b90
+//
+// 2. Clique em "Database" ou "Supabase" no menu
+//
+// 3. Isso deve te levar ao Supabase ou mostrar as credenciais
+//
+// 4. No Supabase, vá em SQL Editor e execute:
+//
+ALTER TABLE public.properties
+ADD COLUMN IF NOT EXISTS state TEXT,
+ADD COLUMN IF NOT EXISTS zipcode TEXT;
+//
+// 5. Pronto! Os campos funcionarão normalmente
+//

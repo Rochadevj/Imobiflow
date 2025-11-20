@@ -57,7 +57,7 @@ const Footer = () => {
 
         <div className="border-t border-primary-foreground/20 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-primary-foreground/60 text-sm">
-            Alexandre Andrade Imobiliária | {new Date().getFullYear()} © Todos os direitos reservados
+            Alexandre Andrade Corretor de Imóveis | {new Date().getFullYear()} © Todos os direitos reservados
           </p>
           <Link to="#" className="text-primary-foreground/60 hover:text-accent text-sm transition-colors">
             Políticas de privacidade

@@ -172,15 +172,7 @@ const Index = () => {
                   Buscar
                 </Button>
               </div>
-              <div className="flex justify-end mt-3">
-                <button
-                  type="button"
-                  onClick={() => setShowFilters(true)}
-                  className="text-sm text-muted-foreground hover:text-accent transition-colors"
-                >
-                  Pesquisa avançada
-                </button>
-              </div>
+     
             </div>
           </div>
         </div>
@@ -352,6 +344,7 @@ const Index = () => {
                   return (
                     <Link key={property.id} to={`/property/${property.id}`} className="no-underline">
                       <PropertyCard
+                        id={property.id}
                         title={property.title}
                         propertyType={property.property_type}
                         location={property.location}

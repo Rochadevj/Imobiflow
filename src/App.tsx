@@ -9,6 +9,7 @@ import Admin from "./pages/Admin";
 import About from "./pages/About";
 import PropertySubmit from "./pages/PropertySubmit";
 import PropertyDetail from "./pages/PropertyDetail";
+import Favorites from "./pages/Favorites";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/admin" element={<Admin />} />
           <Route path="/sobre" element={<About />} />
           <Route path="/anunciar" element={<PropertySubmit />} />
+          <Route path="/favorites" element={<Favorites />} />
           <Route path="/property/:id" element={<PropertyDetail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

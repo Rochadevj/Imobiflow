@@ -108,8 +108,34 @@ const PropertyDetail = () => {
     load();
   }, [id]);
 
+  // initialize favorite state from localStorage
+  useEffect(() => {
+    const update = () => {
+      try {
+        const favs = JSON.parse(localStorage.getItem('favorites') || '[]') as string[];
+        setIsFavorited(id ? favs.includes(id) : false);
+      } catch {
+        setIsFavorited(false);
+      }
+    };
+    update();
+    window.addEventListener('favoritesChanged', update);
+    window.addEventListener('storage', update);
+    return () => {
+      window.removeEventListener('favoritesChanged', update);
+      window.removeEventListener('storage', update);
+    };
+  }, [id]);
+
   const toggleFavorite = () => {
-    setIsFavorited(!isFavorited);
+    // persist favorite in localStorage per user
+    const key = 'favorites';
+    const favs = JSON.parse(localStorage.getItem(key) || '[]') as string[];
+    const exists = id ? favs.includes(id) : false;
+    const updated = exists ? favs.filter(f => f !== id) : [...favs, id as string];
+    localStorage.setItem(key, JSON.stringify(updated));
+    setIsFavorited(!exists);
+    window.dispatchEvent(new Event('favoritesChanged'));
   };
 
   if (loading) {
@@ -257,10 +283,10 @@ const PropertyDetail = () => {
             {/* Coluna Sidebar - 1/3 */}
             <div className="lg:col-span-1">
               <RealtorCard
-                name="Ricardo Mendes"
-                creci="CRECI - 123456-SP"
-                photo="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop"
-                phone="5511999998888"
+                name="Alexandre Andrade"
+                creci="78852 RS"
+                photo="/static/ad09874e-9610-42cd-bab5-046ffa0d7b7a.png"
+                phone="51993898811"
                 propertyTitle={property.title}
               />
             </div>

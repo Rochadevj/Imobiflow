@@ -8,6 +8,7 @@ import { User } from "@supabase/supabase-js";
 const Navbar = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
+  const [favoritesCount, setFavoritesCount] = useState(0);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -19,6 +20,24 @@ const Navbar = () => {
     });
 
     return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const updateFavCount = () => {
+      try {
+        const favs = JSON.parse(localStorage.getItem('favorites') || '[]') as string[];
+        setFavoritesCount(favs.length);
+      } catch {
+        setFavoritesCount(0);
+      }
+    };
+    updateFavCount();
+    window.addEventListener('favoritesChanged', updateFavCount);
+    window.addEventListener('storage', updateFavCount);
+    return () => {
+      window.removeEventListener('favoritesChanged', updateFavCount);
+      window.removeEventListener('storage', updateFavCount);
+    };
   }, []);
 
   const handleLogout = async () => {
@@ -80,6 +99,9 @@ const Navbar = () => {
                 <Link to="/auth">Entrar</Link>
               </Button>
             )}
+            <Button variant="ghost" className="text-primary-foreground hover:text-accent hover:bg-primary/90" asChild>
+              <Link to="/favorites">Favoritos ({favoritesCount})</Link>
+            </Button>
           </div>
         </div>
       </div>

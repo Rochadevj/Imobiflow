@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, MapPin } from "lucide-react";
+import { Trash2, MapPin, Edit } from "lucide-react";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -30,9 +30,10 @@ interface Property {
 
 interface PropertyListProps {
   userId?: string;
+  onEdit?: (propertyId: string) => void;
 }
 
-const PropertyList = ({ userId }: PropertyListProps) => {
+const PropertyList = ({ userId, onEdit }: PropertyListProps) => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -142,13 +143,20 @@ const PropertyList = ({ userId }: PropertyListProps) => {
                 R$ {property.price.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
               </div>
 
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive" className="w-full">
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Excluir
+              <div className="flex gap-2">
+                {onEdit && (
+                  <Button variant="outline" className="flex-1" onClick={() => onEdit(property.id)}>
+                    <Edit className="mr-2 h-4 w-4" />
+                    Editar
                   </Button>
-                </AlertDialogTrigger>
+                )}
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" className="flex-1">
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Excluir
+                    </Button>
+                  </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
                     <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
@@ -163,7 +171,8 @@ const PropertyList = ({ userId }: PropertyListProps) => {
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
-              </AlertDialog>
+                </AlertDialog>
+              </div>
             </CardContent>
           </Card>
         );
