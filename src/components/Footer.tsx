@@ -16,16 +16,16 @@ const Footer = () => {
           <div>
             <h3 className="font-bold mb-4">Menu</h3>
             <nav className="flex flex-col gap-2">
-              <Link to="/" className="text-primary-foreground/80 hover:text-accent transition-colors">
+              <Link to="/" className="text-primary-foreground/80 hover:text-accent transition-all duration-200 hover:translate-x-2">
                 Início
               </Link>
-              <Link to="/sobre" className="text-primary-foreground/80 hover:text-accent transition-colors">
+              <Link to="/sobre" className="text-primary-foreground/80 hover:text-accent transition-all duration-200 hover:translate-x-2">
                 Sobre
               </Link>
-              <Link to="/anunciar" className="text-primary-foreground/80 hover:text-accent transition-colors">
+              <Link to="/anunciar" className="text-primary-foreground/80 hover:text-accent transition-all duration-200 hover:translate-x-2">
                 Anunciar
               </Link>
-              <Link to="/auth" className="text-primary-foreground/80 hover:text-accent transition-colors">
+              <Link to="/auth" className="text-primary-foreground/80 hover:text-accent transition-all duration-200 hover:translate-x-2">
                 Entrar
               </Link>
             </nav>
@@ -42,13 +42,10 @@ const Footer = () => {
           <div>
             <h3 className="font-bold mb-4">Redes Sociais</h3>
             <div className="flex gap-4">
-              <a href="#" className="text-primary-foreground/80 hover:text-accent transition-colors">
+              <a href="#" className="text-primary-foreground/80 hover:text-accent transition-all duration-300 hover:scale-125 hover:-translate-y-1">
                 <Facebook className="h-6 w-6" />
               </a>
-              <a href="#" className="text-primary-foreground/80 hover:text-accent transition-colors">
-                <Youtube className="h-6 w-6" />
-              </a>
-              <a href="#" className="text-primary-foreground/80 hover:text-accent transition-colors">
+              <a href="#" className="text-primary-foreground/80 hover:text-accent transition-all duration-300 hover:scale-125 hover:-translate-y-1">
                 <Instagram className="h-6 w-6" />
               </a>
             </div>
@@ -59,8 +56,8 @@ const Footer = () => {
           <p className="text-primary-foreground/60 text-sm">
             Alexandre Andrade Corretor de Imóveis | {new Date().getFullYear()} © Todos os direitos reservados
           </p>
-          <Link to="#" className="text-primary-foreground/60 hover:text-accent text-sm transition-colors">
-            Políticas de privacidade
+          <Link to="/politica-privacidade" className="text-primary-foreground/60 hover:text-accent text-sm transition-colors">
+            Política de Privacidade
           </Link>
         </div>
       </div>

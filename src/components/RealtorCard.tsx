@@ -46,7 +46,7 @@ export default function RealtorCard({
           className="w-20 h-20 rounded-full object-cover border-4 border-[#083c51]"
         />
         <div>
-          <p className="text-sm text-gray-600">Corretor(a)</p>
+          <p className="text-sm text-gray-600">Corretor</p>
           <h3 className="text-lg font-bold text-[#083c51]">{name}</h3>
           <p className="text-sm text-gray-600">{creci}</p>
         </div>
@@ -66,7 +66,7 @@ export default function RealtorCard({
             <Input
               id="nome"
               type="text"
-              placeholder="João"
+              placeholder="Nome"
               value={formData.nome}
               onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
               required
@@ -80,7 +80,7 @@ export default function RealtorCard({
             <Input
               id="email"
               type="email"
-              placeholder="example@email.com"
+              placeholder="exemplo@gmail.com"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
@@ -94,14 +94,14 @@ export default function RealtorCard({
             <Input
               id="telefone"
               type="tel"
-              placeholder="(31) 99999-9999"
+              placeholder="(51) 99999-9999"
               value={formData.telefone}
               onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
               required
             />
           </div>
 
-          <Button type="submit" className="w-full bg-[#083c51] hover:bg-[#0a4a64]">
+          <Button type="submit" className="w-full bg-[#083c51] hover:bg-[#0a4a64] hover:scale-105 transition-all duration-200 hover:shadow-lg">
             Enviar
           </Button>
         </form>
@@ -112,7 +112,7 @@ export default function RealtorCard({
         <p className="text-sm text-gray-600 mb-3">ou</p>
         <Button
           asChild
-          className="w-full bg-green-600 hover:bg-green-700 gap-2"
+          className="w-full bg-green-600 hover:bg-green-700 gap-2 hover:scale-105 transition-all duration-300 hover:shadow-lg"
         >
           <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
             <Phone className="w-4 h-4" />

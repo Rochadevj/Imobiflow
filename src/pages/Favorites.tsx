@@ -5,14 +5,34 @@ import { supabase } from "@/integrations/supabase/client";
 import PropertyCard from "@/components/PropertyCard";
 import { Link } from "react-router-dom";
 
+interface PropertyImage {
+  image_url: string;
+  is_primary?: boolean;
+}
+
+interface Property {
+  id: string;
+  title: string;
+  property_type: string;
+  price: number;
+  location: string;
+  city: string;
+  area: number;
+  bedrooms: number;
+  bathrooms: number;
+  parking_spaces: number;
+  featured?: boolean;
+  property_images?: PropertyImage[];
+}
+
 const Favorites = () => {
   const [favorites, setFavorites] = useState<string[]>([]);
-  const [properties, setProperties] = useState<any[]>([]);
+  const [properties, setProperties] = useState<Property[]>([]);
 
   useEffect(() => {
     const loadFavs = () => {
       try {
-        const favs = JSON.parse(localStorage.getItem('favorites') || '[]') as string[];
+        const favs = JSON.parse(localStorage.getItem("favorites") || "[]") as string[];
         setFavorites(favs);
       } catch {
         setFavorites([]);
@@ -20,28 +40,34 @@ const Favorites = () => {
     };
 
     loadFavs();
-    window.addEventListener('favoritesChanged', loadFavs);
-    return () => window.removeEventListener('favoritesChanged', loadFavs);
+    window.addEventListener("favoritesChanged", loadFavs);
+    return () => window.removeEventListener("favoritesChanged", loadFavs);
   }, []);
 
   useEffect(() => {
-    const fetch = async () => {
-      if (!favorites || favorites.length === 0) {
+    const fetchData = async () => {
+      if (favorites.length === 0) {
         setProperties([]);
         return;
       }
+
       const { data, error } = await supabase
-        .from('properties')
-        .select(`id, title, property_type, price, location, city, area, bedrooms, bathrooms, parking_spaces, featured, property_images(image_url, is_primary)`)
-        .in('id', favorites);
+        .from("properties")
+        .select(`
+          id, title, property_type, price, location, city, area,
+          bedrooms, bathrooms, parking_spaces, featured,
+          property_images(image_url, is_primary)
+        `)
+        .in("id", favorites);
 
       if (error) {
-        console.error('Erro ao buscar favoritos', error);
+        console.error("Erro ao buscar favoritos", error);
       } else {
-        setProperties(data || []);
+        setProperties((data as Property[]) || []);
       }
     };
-    fetch();
+
+    fetchData();
   }, [favorites]);
 
   return (
@@ -49,12 +75,16 @@ const Favorites = () => {
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-12">
         <h1 className="text-2xl font-bold mb-6">Favoritos</h1>
+
         {properties.length === 0 ? (
           <div className="text-muted-foreground">Você não tem favoritos ainda.</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {properties.map((p) => {
-              const primary = p.property_images?.find((i:any) => i.is_primary) || p.property_images?.[0];
+              const primary =
+                p.property_images?.find((img: PropertyImage) => img.is_primary) ||
+                p.property_images?.[0];
+
               return (
                 <Link key={p.id} to={`/property/${p.id}`} className="no-underline">
                   <PropertyCard

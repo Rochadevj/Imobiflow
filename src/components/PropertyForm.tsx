@@ -41,6 +41,8 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
     bathrooms: "",
     parkingSpaces: "",
   });
+  const [features, setFeatures] = useState<string[]>([]);
+  const [newFeature, setNewFeature] = useState("");
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -97,6 +99,7 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
           bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : null,
           bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : null,
           parking_spaces: formData.parkingSpaces ? parseInt(formData.parkingSpaces) : null,
+          features: features.length > 0 ? features : null,
           user_id: user.id,
         }])
         .select()
@@ -174,6 +177,9 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
         parkingSpaces: "",
       });
       setImages([]);
+      setVideos([]);
+      setFeatures([]);
+      setNewFeature("");
       onSuccess();
     } catch (error: unknown) {
       if (error instanceof z.ZodError) {
@@ -341,6 +347,57 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
               rows={4}
               required
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Diferenciais do Imóvel</Label>
+            <div className="flex gap-2">
+              <Input
+                value={newFeature}
+                onChange={(e) => setNewFeature(e.target.value)}
+                placeholder="Ex: Área de serviço, Churrasqueira, Piscina..."
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (newFeature.trim()) {
+                      setFeatures([...features, newFeature.trim()]);
+                      setNewFeature("");
+                    }
+                  }
+                }}
+              />
+              <Button
+                type="button"
+                onClick={() => {
+                  if (newFeature.trim()) {
+                    setFeatures([...features, newFeature.trim()]);
+                    setNewFeature("");
+                  }
+                }}
+                variant="outline"
+              >
+                Adicionar
+              </Button>
+            </div>
+            {features.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-3">
+                {features.map((feature, index) => (
+                  <div
+                    key={index}
+                    className="bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-sm flex items-center gap-2"
+                  >
+                    {feature}
+                    <button
+                      type="button"
+                      onClick={() => setFeatures(features.filter((_, i) => i !== index))}
+                      className="text-gray-500 hover:text-red-500"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">

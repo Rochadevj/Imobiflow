@@ -23,6 +23,7 @@ export type Database = {
           created_at: string | null
           description: string
           featured: boolean | null
+          features: string[] | null
           id: string
           location: string
           parking_spaces: number | null
@@ -43,6 +44,7 @@ export type Database = {
           created_at?: string | null
           description: string
           featured?: boolean | null
+          features?: string[] | null
           id?: string
           location: string
           parking_spaces?: number | null
@@ -63,6 +65,7 @@ export type Database = {
           created_at?: string | null
           description?: string
           featured?: boolean | null
+          features?: string[] | null
           id?: string
           location?: string
           parking_spaces?: number | null

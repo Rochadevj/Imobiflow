@@ -52,6 +52,8 @@ export default function PropertyEditForm({
   const [newVideos, setNewVideos] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [videoPreviews, setVideoPreviews] = useState<string[]>([]);
+  const [features, setFeatures] = useState<string[]>([]);
+  const [newFeature, setNewFeature] = useState("");
 
   useEffect(() => {
     fetchPropertyData();
@@ -95,6 +97,11 @@ export default function PropertyEditForm({
           destaque: property.featured || false,
           status: statusMap[property.status || "available"] || "disponivel",
         });
+        
+        // Load features if they exist
+        if (property.features && Array.isArray(property.features)) {
+          setFeatures(property.features);
+        }
       }
 
       // Fetch property images
@@ -213,6 +220,7 @@ export default function PropertyEditForm({
             zipcode: formData.cep || null,
           featured: formData.destaque,
           status: statusMap[formData.status] || formData.status,
+          features: features.length > 0 ? features : null,
         })
         .eq("id", propertyId);
 
@@ -492,6 +500,61 @@ export default function PropertyEditForm({
               />
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Diferenciais do Imóvel</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex gap-2">
+            <Input
+              value={newFeature}
+              onChange={(e) => setNewFeature(e.target.value)}
+              placeholder="Ex: Área de serviço, Churrasqueira, Piscina..."
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  if (newFeature.trim()) {
+                    setFeatures([...features, newFeature.trim()]);
+                    setNewFeature("");
+                  }
+                }
+              }}
+            />
+            <Button
+              type="button"
+              onClick={() => {
+                if (newFeature.trim()) {
+                  setFeatures([...features, newFeature.trim()]);
+                  setNewFeature("");
+                }
+              }}
+              variant="outline"
+            >
+              Adicionar
+            </Button>
+          </div>
+          {features.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {features.map((feature, index) => (
+                <div
+                  key={index}
+                  className="bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-sm flex items-center gap-2"
+                >
+                  {feature}
+                  <button
+                    type="button"
+                    onClick={() => setFeatures(features.filter((_, i) => i !== index))}
+                    className="text-gray-500 hover:text-red-500"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
 

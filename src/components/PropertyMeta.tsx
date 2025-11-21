@@ -46,7 +46,7 @@ export default function PropertyMeta({
         return (
           <div
             key={idx}
-            className={`flex flex-col gap-2 ${item.highlight ? "col-span-2 md:col-span-1" : ""}`}
+            className={`flex flex-col gap-2 hover:scale-110 transition-transform duration-200 ${item.highlight ? "col-span-2 md:col-span-1" : ""}`}
           >
             <div className="flex items-center gap-2 text-gray-600">
               <Icon className="w-5 h-5 text-[#083c51]" />

@@ -10,6 +10,7 @@ import About from "./pages/About";
 import PropertySubmit from "./pages/PropertySubmit";
 import PropertyDetail from "./pages/PropertyDetail";
 import Favorites from "./pages/Favorites";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/anunciar" element={<PropertySubmit />} />
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/property/:id" element={<PropertyDetail />} />
+          <Route path="/politica-privacidade" element={<PrivacyPolicy />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
