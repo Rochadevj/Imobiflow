@@ -114,7 +114,7 @@ const PropertyList = ({ userId, onEdit }: PropertyListProps) => {
                 </div>
               )}
               <Badge className="absolute top-2 left-2 bg-primary text-primary-foreground">
-                {property.property_type}
+                {property.property_type.charAt(0).toUpperCase() + property.property_type.slice(1)}
               </Badge>
               <Badge
                 className={`absolute top-2 right-2 ${

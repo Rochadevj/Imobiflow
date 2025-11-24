@@ -17,6 +17,7 @@ export type Database = {
       properties: {
         Row: {
           area: number | null
+          area_privativa: number | null
           bathrooms: number | null
           bedrooms: number | null
           city: string
@@ -32,12 +33,14 @@ export type Database = {
           status: string | null
             state: string | null
           title: string
+          transaction_type: string | null
           updated_at: string | null
           user_id: string | null
             zipcode: string | null
         }
         Insert: {
           area?: number | null
+          area_privativa?: number | null
           bathrooms?: number | null
           bedrooms?: number | null
           city: string
@@ -53,12 +56,14 @@ export type Database = {
           status?: string | null
             state?: string | null
           title: string
+          transaction_type?: string | null
           updated_at?: string | null
           user_id?: string | null
             zipcode?: string | null
         }
         Update: {
           area?: number | null
+          area_privativa?: number | null
           bathrooms?: number | null
           bedrooms?: number | null
           city?: string
@@ -74,6 +79,7 @@ export type Database = {
           status?: string | null
             state?: string | null
           title?: string
+          transaction_type?: string | null
           updated_at?: string | null
           user_id?: string | null
             zipcode?: string | null

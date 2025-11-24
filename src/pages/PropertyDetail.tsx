@@ -68,6 +68,7 @@ const PropertyDetail = () => {
             location,
             city,
             area,
+            area_privativa,
             bedrooms,
             bathrooms,
             parking_spaces,
