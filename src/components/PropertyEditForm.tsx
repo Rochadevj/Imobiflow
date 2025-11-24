@@ -85,10 +85,10 @@ export default function PropertyEditForm({
         
         // Use dot-decimal plain format for number inputs
         const formattedPrice = property.price !== null && property.price !== undefined
-          ? Number(property.price).toFixed(2)
+          ? String(property.price)
           : "";
         const formattedArea = property.area !== null && property.area !== undefined
-          ? Number(property.area).toFixed(2)
+          ? String(property.area)
           : "";
         
         setFormData({
@@ -98,7 +98,7 @@ export default function PropertyEditForm({
           tipo: property.transaction_type || "venda",
           preco: formattedPrice,
           area: formattedArea,
-          areaPrivativa: property.area_privativa !== null && property.area_privativa !== undefined ? Number(property.area_privativa).toFixed(2) : "",
+          areaPrivativa: property.area_privativa !== null && property.area_privativa !== undefined ? String(property.area_privativa) : "",
           quartos: property.bedrooms?.toString() || "",
           banheiros: property.bathrooms?.toString() || "",
           vagas: property.parking_spaces?.toString() || "",
@@ -217,8 +217,8 @@ export default function PropertyEditForm({
       // Update property details
       // Convert Brazilian format (123.456,78) to number
       const priceValue = parseFloat(formData.preco.replace(/\./g, '').replace(',', '.'));
-      const areaValue = formData.area ? parseFloat(formData.area.replace(/\./g, '').replace(',', '.')) : null;
-      const areaPrivativaValue = formData.areaPrivativa ? parseFloat(formData.areaPrivativa.replace(/\./g, '').replace(',', '.')) : null;
+      const areaValue = formData.area ? parseFloat(formData.area) : null;
+      const areaPrivativaValue = formData.areaPrivativa ? parseFloat(formData.areaPrivativa) : null;
       
       const { error: updateError } = await supabase
         .from("properties")

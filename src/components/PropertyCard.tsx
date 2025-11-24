@@ -153,7 +153,7 @@ const PropertyCard = ({
         </div>
 
         <div className="text-2xl font-bold text-accent">
-          R$ {price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+          R$ {price.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
         </div>
       </CardContent>
     </Card>

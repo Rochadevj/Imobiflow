@@ -140,7 +140,7 @@ const PropertyList = ({ userId, onEdit }: PropertyListProps) => {
                 <span>{property.location} | {property.city}</span>
               </div>
               <div className="text-xl font-bold text-accent mb-4">
-                R$ {property.price.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                R$ {property.price.toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
               </div>
 
               <div className="flex gap-2">

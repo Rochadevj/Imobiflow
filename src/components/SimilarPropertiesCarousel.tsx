@@ -36,7 +36,8 @@ export default function SimilarPropertiesCarousel({ properties }: SimilarPropert
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
-      minimumFractionDigits: 2,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(value);
   };
 
