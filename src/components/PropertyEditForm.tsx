@@ -31,9 +31,11 @@ export default function PropertyEditForm({
   const [formData, setFormData] = useState({
     titulo: "",
     descricao: "",
+    tipoImovel: "",
     tipo: "venda",
     preco: "",
     area: "",
+    areaPrivativa: "",
     quartos: "",
     banheiros: "",
     vagas: "",
@@ -81,12 +83,22 @@ export default function PropertyEditForm({
           "rented": "alugado",
         };
         
+        // Use dot-decimal plain format for number inputs
+        const formattedPrice = property.price !== null && property.price !== undefined
+          ? String(property.price)
+          : "";
+        const formattedArea = property.area !== null && property.area !== undefined
+          ? String(property.area)
+          : "";
+        
         setFormData({
           titulo: property.title || "",
           descricao: property.description || "",
-          tipo: property.property_type || "venda",
-          preco: property.price?.toString() || "",
-          area: property.area?.toString() || "",
+          tipoImovel: property.property_type || "",
+          tipo: property.transaction_type || "venda",
+          preco: formattedPrice,
+          area: formattedArea,
+          areaPrivativa: property.area_privativa !== null && property.area_privativa !== undefined ? String(property.area_privativa) : "",
           quartos: property.bedrooms?.toString() || "",
           banheiros: property.bathrooms?.toString() || "",
           vagas: property.parking_spaces?.toString() || "",
@@ -203,14 +215,21 @@ export default function PropertyEditForm({
       };
       
       // Update property details
+      // Convert Brazilian format (123.456,78) to number
+      const priceValue = parseFloat(formData.preco.replace(/\./g, '').replace(',', '.'));
+      const areaValue = formData.area ? parseFloat(formData.area) : null;
+      const areaPrivativaValue = formData.areaPrivativa ? parseFloat(formData.areaPrivativa) : null;
+      
       const { error: updateError } = await supabase
         .from("properties")
         .update({
           title: formData.titulo,
           description: formData.descricao,
-          property_type: formData.tipo,
-          price: parseFloat(formData.preco),
-          area: parseFloat(formData.area),
+          property_type: formData.tipoImovel,
+          transaction_type: formData.tipo,
+          price: priceValue,
+          area: areaValue,
+          area_privativa: areaPrivativaValue,
           bedrooms: parseInt(formData.quartos),
           bathrooms: parseInt(formData.banheiros),
           parking_spaces: parseInt(formData.vagas),
@@ -332,7 +351,29 @@ export default function PropertyEditForm({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="tipo">Tipo</Label>
+              <Label htmlFor="tipoImovel">Tipo de Imóvel</Label>
+              <Select
+                value={formData.tipoImovel}
+                onValueChange={(value) => handleSelectChange("tipoImovel", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o tipo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="apartamento">Apartamento</SelectItem>
+                  <SelectItem value="casa">Casa</SelectItem>
+                  <SelectItem value="casa_condominio">Casa em Condomínio</SelectItem>
+                  <SelectItem value="cobertura">Cobertura</SelectItem>
+                  <SelectItem value="sala_comercial">Sala Comercial</SelectItem>
+                  <SelectItem value="sobrado">Sobrado</SelectItem>
+                  <SelectItem value="sobrado_condominio">Sobrado em Condomínio</SelectItem>
+                  <SelectItem value="terreno">Terreno</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="tipo">Categoria</Label>
               <Select
                 value={formData.tipo}
                 onValueChange={(value) => handleSelectChange("tipo", value)}
@@ -346,7 +387,9 @@ export default function PropertyEditForm({
                 </SelectContent>
               </Select>
             </div>
+          </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="status">Status</Label>
               <Select
@@ -387,6 +430,18 @@ export default function PropertyEditForm({
                 value={formData.area}
                 onChange={handleInputChange}
                 required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="areaPrivativa">Área Privativa (m²)</Label>
+              <Input
+                id="areaPrivativa"
+                name="areaPrivativa"
+                type="number"
+                step="0.01"
+                value={formData.areaPrivativa}
+                onChange={handleInputChange}
               />
             </div>
           </div>

@@ -8,10 +8,12 @@ interface PropertyCardProps {
   id?: string;
   title: string;
   propertyType: string;
+  transactionType?: string;
   location: string;
   city: string;
   price: number;
   area?: number;
+  areaPrivativa?: number;
   bedrooms?: number;
   bathrooms?: number;
   parkingSpaces?: number;
@@ -23,10 +25,12 @@ const PropertyCard = ({
   id,
   title,
   propertyType,
+  transactionType,
   location,
   city,
   price,
   area,
+  areaPrivativa,
   bedrooms,
   bathrooms,
   parkingSpaces,
@@ -34,6 +38,24 @@ const PropertyCard = ({
   featured,
 }: PropertyCardProps) => {
   const [isFavorited, setIsFavorited] = useState(false);
+
+  const capitalizeFirstLetter = (str: string) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
+  const getPropertyTypeLabel = (type: string) => {
+    const types: Record<string, string> = {
+      'apartamento': 'Apartamento',
+      'casa': 'Casa',
+      'casa_condominio': 'Casa em Condomínio',
+      'cobertura': 'Cobertura',
+      'sala_comercial': 'Sala Comercial',
+      'sobrado': 'Sobrado',
+      'sobrado_condominio': 'Sobrado em Condomínio',
+      'terreno': 'Terreno',
+    };
+    return types[type] || capitalizeFirstLetter(type);
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -73,8 +95,13 @@ const PropertyCard = ({
           </div>
         )}
         <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground z-10">
-          {propertyType}
+          {getPropertyTypeLabel(propertyType)}
         </Badge>
+        {transactionType && (
+          <Badge className="absolute top-4 right-14 bg-slate-900 text-white z-10">
+            {transactionType === 'venda' ? 'Venda' : 'Aluguel'}
+          </Badge>
+        )}
         {featured && (
           <Badge className="absolute bottom-4 left-4 bg-accent text-primary z-10">
             Destaque
@@ -99,10 +126,10 @@ const PropertyCard = ({
         </div>
 
         <div className="flex flex-wrap gap-4 mb-4 text-sm text-muted-foreground">
-          {area && (
+          {(areaPrivativa || area) && (
             <div className="flex items-center">
               <Ruler className="h-4 w-4 mr-1" />
-              <span>{area}m²</span>
+              <span>{(areaPrivativa || area)}m²</span>
             </div>
           )}
           {bedrooms && (
@@ -126,7 +153,7 @@ const PropertyCard = ({
         </div>
 
         <div className="text-2xl font-bold text-accent">
-          R$ {price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+          R$ {price.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
         </div>
       </CardContent>
     </Card>

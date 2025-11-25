@@ -31,12 +31,14 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
     title: "",
     description: "",
     propertyType: "",
+    transactionType: "venda",
     price: "",
     location: "",
     city: "",
       state: "",
       zipcode: "",
     area: "",
+    areaPrivativa: "",
     bedrooms: "",
     bathrooms: "",
     parkingSpaces: "",
@@ -70,11 +72,14 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
     e.preventDefault();
     
     try {
+      // Convert Brazilian format (123.456,78) to number
+      const priceValue = parseFloat(formData.price.replace(/\./g, '').replace(',', '.'));
+      
       const validatedData = propertySchema.parse({
         title: formData.title,
         description: formData.description,
         propertyType: formData.propertyType,
-        price: parseFloat(formData.price),
+        price: priceValue,
         location: formData.location,
         city: formData.city,
       });
@@ -90,12 +95,14 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
           title: validatedData.title,
           description: validatedData.description,
           property_type: validatedData.propertyType,
+          transaction_type: formData.transactionType,
           price: validatedData.price,
           location: validatedData.location,
           city: validatedData.city,
             state: formData.state || null,
             zipcode: formData.zipcode || null,
           area: formData.area ? parseFloat(formData.area) : null,
+          area_privativa: formData.areaPrivativa ? parseFloat(formData.areaPrivativa) : null,
           bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : null,
           bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : null,
           parking_spaces: formData.parkingSpaces ? parseInt(formData.parkingSpaces) : null,
@@ -166,12 +173,14 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
         title: "",
         description: "",
         propertyType: "",
+        transactionType: "venda",
         price: "",
         location: "",
         city: "",
           state: "",
           zipcode: "",
         area: "",
+        areaPrivativa: "",
         bedrooms: "",
         bathrooms: "",
         parkingSpaces: "",
@@ -227,10 +236,30 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Casa">Casa</SelectItem>
-                  <SelectItem value="Apartamento">Apartamento</SelectItem>
-                  <SelectItem value="Terreno">Terreno</SelectItem>
-                  <SelectItem value="Comercial">Comercial</SelectItem>
+                  <SelectItem value="apartamento">Apartamento</SelectItem>
+                  <SelectItem value="casa">Casa</SelectItem>
+                  <SelectItem value="casa_condominio">Casa em Condomínio</SelectItem>
+                  <SelectItem value="cobertura">Cobertura</SelectItem>
+                  <SelectItem value="sala_comercial">Sala Comercial</SelectItem>
+                  <SelectItem value="sobrado">Sobrado</SelectItem>
+                  <SelectItem value="sobrado_condominio">Sobrado em Condomínio</SelectItem>
+                  <SelectItem value="terreno">Terreno</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="transactionType">Categoria *</Label>
+              <Select
+                value={formData.transactionType}
+                onValueChange={(value) => setFormData({ ...formData, transactionType: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="venda">Venda</SelectItem>
+                  <SelectItem value="aluguel">Aluguel</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -257,6 +286,18 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
                 value={formData.area}
                 onChange={(e) => setFormData({ ...formData, area: e.target.value })}
                 placeholder="120"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="areaPrivativa">Área Privativa (m²)</Label>
+              <Input
+                id="areaPrivativa"
+                type="number"
+                step="0.01"
+                value={formData.areaPrivativa}
+                onChange={(e) => setFormData({ ...formData, areaPrivativa: e.target.value })}
+                placeholder="110"
               />
             </div>
 

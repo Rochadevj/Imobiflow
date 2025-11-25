@@ -16,6 +16,7 @@ interface Property {
   id: string;
   title: string;
   property_type: string;
+  transaction_type?: string;
   price: number;
   location: string;
   city: string;
@@ -36,6 +37,7 @@ const Index = () => {
   
   // Filtros avançados
   const [propertyType, setPropertyType] = useState("");
+  const [transactionType, setTransactionType] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [minArea, setMinArea] = useState("");
@@ -57,6 +59,7 @@ const Index = () => {
           id,
           title,
           property_type,
+          transaction_type,
           price,
           location,
           city,
@@ -89,6 +92,7 @@ const Index = () => {
 
     // Filtros avançados
     const matchesType = !propertyType || property.property_type === propertyType;
+    const matchesTransactionType = !transactionType || property.transaction_type === transactionType;
     const matchesMinPrice = !minPrice || property.price >= Number(minPrice);
     const matchesMaxPrice = !maxPrice || property.price <= Number(maxPrice);
     const matchesMinArea = !minArea || (property.area && property.area >= Number(minArea));
@@ -98,7 +102,7 @@ const Index = () => {
     const matchesBathrooms = !bathrooms || property.bathrooms === Number(bathrooms);
     const matchesParkingSpaces = !parkingSpaces || property.parking_spaces === Number(parkingSpaces);
 
-    return matchesSearch && matchesType && matchesMinPrice && matchesMaxPrice && 
+    return matchesSearch && matchesType && matchesTransactionType && matchesMinPrice && matchesMaxPrice && 
            matchesMinArea && matchesMaxArea && matchesNeighborhood && matchesBedrooms && 
            matchesBathrooms && matchesParkingSpaces;
   });
@@ -352,6 +356,7 @@ const Index = () => {
                   size="sm"
                   onClick={() => {
                     setPropertyType("");
+                    setTransactionType("");
                     setMinPrice("");
                     setMaxPrice("");
                     setMinArea("");
@@ -376,10 +381,28 @@ const Index = () => {
                     </SelectTrigger>
                     <SelectContent className="bg-popover z-50">
                       <SelectItem value="all">Todos</SelectItem>
-                      <SelectItem value="Casa">Casa</SelectItem>
-                      <SelectItem value="Apartamento">Apartamento</SelectItem>
-                      <SelectItem value="Terreno">Terreno</SelectItem>
-                      <SelectItem value="Comercial">Comercial</SelectItem>
+                      <SelectItem value="apartamento">Apartamento</SelectItem>
+                      <SelectItem value="casa">Casa</SelectItem>
+                      <SelectItem value="casa_condominio">Casa em Condomínio</SelectItem>
+                      <SelectItem value="cobertura">Cobertura</SelectItem>
+                      <SelectItem value="sala_comercial">Sala Comercial</SelectItem>
+                      <SelectItem value="sobrado">Sobrado</SelectItem>
+                      <SelectItem value="sobrado_condominio">Sobrado em Condomínio</SelectItem>
+                      <SelectItem value="terreno">Terreno</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="transactionType">Categoria</Label>
+                  <Select value={transactionType || "all"} onValueChange={(v) => setTransactionType(v === "all" ? "" : v)}>
+                    <SelectTrigger id="transactionType">
+                      <SelectValue placeholder="Todos" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-popover z-50">
+                      <SelectItem value="all">Todos</SelectItem>
+                      <SelectItem value="venda">Venda</SelectItem>
+                      <SelectItem value="aluguel">Aluguel</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -507,6 +530,7 @@ const Index = () => {
                         id={property.id}
                         title={property.title}
                         propertyType={property.property_type}
+                        transactionType={property.transaction_type}
                         location={property.location}
                         city={property.city}
                         price={property.price}

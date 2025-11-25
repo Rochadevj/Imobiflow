@@ -14,6 +14,7 @@ interface Property {
   id: string;
   title: string;
   property_type: string;
+  transaction_type?: string;
   price: number;
   location: string;
   city: string;
@@ -54,7 +55,7 @@ const Favorites = () => {
       const { data, error } = await supabase
         .from("properties")
         .select(`
-          id, title, property_type, price, location, city, area,
+          id, title, property_type, transaction_type, price, location, city, area,
           bedrooms, bathrooms, parking_spaces, featured,
           property_images(image_url, is_primary)
         `)
@@ -91,6 +92,7 @@ const Favorites = () => {
                     id={p.id}
                     title={p.title}
                     propertyType={p.property_type}
+                    transactionType={p.transaction_type}
                     location={p.location}
                     city={p.city}
                     price={p.price}

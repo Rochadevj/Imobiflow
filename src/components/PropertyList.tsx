@@ -114,7 +114,7 @@ const PropertyList = ({ userId, onEdit }: PropertyListProps) => {
                 </div>
               )}
               <Badge className="absolute top-2 left-2 bg-primary text-primary-foreground">
-                {property.property_type}
+                {property.property_type.charAt(0).toUpperCase() + property.property_type.slice(1)}
               </Badge>
               <Badge
                 className={`absolute top-2 right-2 ${
@@ -140,7 +140,7 @@ const PropertyList = ({ userId, onEdit }: PropertyListProps) => {
                 <span>{property.location} | {property.city}</span>
               </div>
               <div className="text-xl font-bold text-accent mb-4">
-                R$ {property.price.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                R$ {property.price.toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
               </div>
 
               <div className="flex gap-2">
