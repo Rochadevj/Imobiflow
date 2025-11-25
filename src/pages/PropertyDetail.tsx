@@ -52,6 +52,11 @@ const PropertyDetail = () => {
   const [isFavorited, setIsFavorited] = useState(false);
 
   useEffect(() => {
+    // Scroll para o topo quando a página carrega
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [id]);
+
+  useEffect(() => {
     if (!id) return;
 
     const load = async () => {
