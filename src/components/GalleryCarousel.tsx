@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Image, Video, Map, Scan } from "lucide-react";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent } from "./ui/dialog";
@@ -21,7 +21,33 @@ export default function GalleryCarousel({ images }: GalleryCarouselProps) {
   // Display content based on mode
   const displayContent = viewMode === "video" ? videos : photos;
   
-  const visibleImages = 3;
+  // Responsive visible images: 1 no mobile, 2 no tablet, 3 no desktop
+  const getVisibleImages = () => {
+    if (typeof window !== 'undefined') {
+      if (window.innerWidth < 768) return 1; // mobile
+      if (window.innerWidth < 1024) return 2; // tablet
+      return 3; // desktop
+    }
+    return 3;
+  };
+
+  const [visibleImages, setVisibleImages] = useState(getVisibleImages());
+
+  // Update visible images on resize
+  useEffect(() => {
+    const handleResize = () => {
+      const newVisible = getVisibleImages();
+      setVisibleImages(newVisible);
+      // Reset index if needed
+      setCurrentIndex((prev) => {
+        const maxIdx = Math.max(0, displayContent.length - newVisible);
+        return Math.min(prev, maxIdx);
+      });
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [displayContent.length]);
+
   const maxIndex = Math.max(0, displayContent.length - visibleImages);
 
   const goToPrevious = () => {
@@ -99,7 +125,7 @@ export default function GalleryCarousel({ images }: GalleryCarouselProps) {
 
       {displayContent.length > 0 && (viewMode === "photos" || viewMode === "video") && (
         <div className="relative">
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
             {displayedItems.map((item, idx) => (
               <div
                 key={currentIndex + idx}
