@@ -14,6 +14,35 @@ export type Database = {
   }
   public: {
     Tables: {
+      favorites: {
+        Row: {
+          created_at: string | null
+          id: string
+          property_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          property_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          property_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorites_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       properties: {
         Row: {
           area: number | null
@@ -21,6 +50,7 @@ export type Database = {
           bathrooms: number | null
           bedrooms: number | null
           city: string
+          codigo: string | null
           created_at: string | null
           description: string
           featured: boolean | null
@@ -30,13 +60,14 @@ export type Database = {
           parking_spaces: number | null
           price: number
           property_type: string
+          state: string | null
           status: string | null
-            state: string | null
           title: string
           transaction_type: string | null
           updated_at: string | null
           user_id: string | null
-            zipcode: string | null
+          video_url: string | null
+          zipcode: string | null
         }
         Insert: {
           area?: number | null
@@ -44,6 +75,7 @@ export type Database = {
           bathrooms?: number | null
           bedrooms?: number | null
           city: string
+          codigo?: string | null
           created_at?: string | null
           description: string
           featured?: boolean | null
@@ -53,13 +85,14 @@ export type Database = {
           parking_spaces?: number | null
           price: number
           property_type: string
+          state?: string | null
           status?: string | null
-            state?: string | null
           title: string
           transaction_type?: string | null
           updated_at?: string | null
           user_id?: string | null
-            zipcode?: string | null
+          video_url?: string | null
+          zipcode?: string | null
         }
         Update: {
           area?: number | null
@@ -67,6 +100,7 @@ export type Database = {
           bathrooms?: number | null
           bedrooms?: number | null
           city?: string
+          codigo?: string | null
           created_at?: string | null
           description?: string
           featured?: boolean | null
@@ -76,13 +110,14 @@ export type Database = {
           parking_spaces?: number | null
           price?: number
           property_type?: string
+          state?: string | null
           status?: string | null
-            state?: string | null
           title?: string
           transaction_type?: string | null
           updated_at?: string | null
           user_id?: string | null
-            zipcode?: string | null
+          video_url?: string | null
+          zipcode?: string | null
         }
         Relationships: []
       }
@@ -123,7 +158,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_property_code: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never
