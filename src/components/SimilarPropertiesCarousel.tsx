@@ -54,7 +54,7 @@ export default function SimilarPropertiesCarousel({ properties }: SimilarPropert
           {visibleProperties.map((property) => (
             <Link
               key={property.id}
-              to={`/property/${property.id}`}
+              to={`/property/${property.codigo || property.id}`}
               className="group border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
             >
               {/* Image */}

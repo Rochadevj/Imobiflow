@@ -14,6 +14,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, Drawer
 
 interface Property {
   id: string;
+  codigo?: string;
   title: string;
   property_type: string;
   transaction_type?: string;
@@ -46,6 +47,7 @@ const Index = () => {
   const [bedrooms, setBedrooms] = useState("");
   const [bathrooms, setBathrooms] = useState("");
   const [parkingSpaces, setParkingSpaces] = useState("");
+  const [heroTab, setHeroTab] = useState<'comprar' | 'alugar' | 'todos'>('todos');
 
   useEffect(() => {
     fetchProperties();
@@ -57,6 +59,7 @@ const Index = () => {
         .from("properties")
         .select(`
           id,
+          codigo,
           title,
           property_type,
           transaction_type,
@@ -107,7 +110,6 @@ const Index = () => {
            matchesBathrooms && matchesParkingSpaces;
   });
 
-  const [heroTab, setHeroTab] = useState<'comprar' | 'alugar'>('comprar');
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
@@ -147,7 +149,10 @@ const Index = () => {
             <div className="flex justify-center gap-6 md:gap-12 border-b border-border px-4 md:px-8 pt-4 md:pt-6">
               <button
                 type="button"
-                onClick={() => setHeroTab('comprar')}
+                onClick={() => {
+                  setHeroTab('comprar');
+                  setTransactionType('venda');
+                }}
                 className={`pb-3 md:pb-4 text-sm font-medium relative ${heroTab==='comprar'?'text-accent':'text-muted-foreground hover:text-foreground'}`}
               >
                 Comprar
@@ -155,11 +160,25 @@ const Index = () => {
               </button>
               <button
                 type="button"
-                onClick={() => setHeroTab('alugar')}
+                onClick={() => {
+                  setHeroTab('alugar');
+                  setTransactionType('aluguel');
+                }}
                 className={`pb-3 md:pb-4 text-sm font-medium relative ${heroTab==='alugar'?'text-accent':'text-muted-foreground hover:text-foreground'}`}
               >
                 Alugar
                 {heroTab==='alugar' && <span className="absolute left-0 right-0 -bottom-[1px] h-[3px] bg-accent rounded-t" />}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setHeroTab('todos');
+                  setTransactionType('');
+                }}
+                className={`pb-3 md:pb-4 text-sm font-medium relative ${heroTab==='todos'?'text-accent':'text-muted-foreground hover:text-foreground'}`}
+              >
+                Ver Todos
+                {heroTab==='todos' && <span className="absolute left-0 right-0 -bottom-[1px] h-[3px] bg-accent rounded-t" />}
               </button>
             </div>
             <div className="p-4 md:p-6">
@@ -395,7 +414,14 @@ const Index = () => {
 
                 <div>
                   <Label htmlFor="transactionType">Categoria</Label>
-                  <Select value={transactionType || "all"} onValueChange={(v) => setTransactionType(v === "all" ? "" : v)}>
+                  <Select value={transactionType || "all"} onValueChange={(v) => {
+                    const newValue = v === "all" ? "" : v;
+                    setTransactionType(newValue);
+                    // Sincronizar com heroTab
+                    if (newValue === "venda") setHeroTab('comprar');
+                    else if (newValue === "aluguel") setHeroTab('alugar');
+                    else setHeroTab('todos');
+                  }}>
                     <SelectTrigger id="transactionType">
                       <SelectValue placeholder="Todos" />
                     </SelectTrigger>
@@ -525,7 +551,7 @@ const Index = () => {
                   const primaryImage = property.property_images.find((img) => img.is_primary);
                   const imageUrl = primaryImage?.image_url || property.property_images[0]?.image_url;
                   return (
-                    <Link key={property.id} to={`/property/${property.id}`} className="no-underline">
+                    <Link key={property.id} to={`/property/${property.codigo || property.id}`} className="no-underline">
                       <PropertyCard
                         id={property.id}
                         title={property.title}

@@ -5,9 +5,13 @@ import { Dialog, DialogContent } from "./ui/dialog";
 
 interface GalleryCarouselProps {
   images: string[];
+  location?: string;
+  city?: string;
+  state?: string;
+  zipcode?: string;
 }
 
-export default function GalleryCarousel({ images }: GalleryCarouselProps) {
+export default function GalleryCarousel({ images, location, city, state, zipcode }: GalleryCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"photos" | "video" | "map" | "tour">("photos");
@@ -181,8 +185,27 @@ export default function GalleryCarousel({ images }: GalleryCarouselProps) {
       )}
 
       {viewMode === "map" && (
-        <div className="text-center py-12 text-muted-foreground border-2 border-dashed rounded-lg">
-          Mapa em breve
+        <div>
+          {location ? (
+            <div className="rounded-xl overflow-hidden border border-gray-200 h-[350px] bg-gray-100">
+              <iframe
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                loading="lazy"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
+                src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(
+                  [location, city, state || 'RS', 'Brasil'].filter(Boolean).join(', ')
+                )}`}
+                title="Localização do imóvel"
+              />
+            </div>
+          ) : (
+            <div className="rounded-xl border-2 border-dashed border-gray-300 h-[350px] bg-gray-50 flex items-center justify-center">
+              <p className="text-gray-500">Endereço não disponível para exibição no mapa</p>
+            </div>
+          )}
         </div>
       )}
 

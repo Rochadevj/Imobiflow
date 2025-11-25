@@ -37,8 +37,23 @@ const PropertyList = ({ userId, onEdit }: PropertyListProps) => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const getPropertyTypeLabel = (type: string) => {
+    const types: Record<string, string> = {
+      'apartamento': 'Apartamento',
+      'casa': 'Casa',
+      'casa_condominio': 'Casa em Condomínio',
+      'cobertura': 'Cobertura',
+      'sala_comercial': 'Sala Comercial',
+      'sobrado': 'Sobrado',
+      'sobrado_condominio': 'Sobrado em Condomínio',
+      'terreno': 'Terreno',
+    };
+    return types[type] || type.charAt(0).toUpperCase() + type.slice(1);
+  };
+
   useEffect(() => {
     fetchProperties();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const fetchProperties = async () => {
@@ -114,7 +129,7 @@ const PropertyList = ({ userId, onEdit }: PropertyListProps) => {
                 </div>
               )}
               <Badge className="absolute top-2 left-2 bg-primary text-primary-foreground">
-                {property.property_type.charAt(0).toUpperCase() + property.property_type.slice(1)}
+                {getPropertyTypeLabel(property.property_type)}
               </Badge>
               <Badge
                 className={`absolute top-2 right-2 ${

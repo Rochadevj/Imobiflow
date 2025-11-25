@@ -19,6 +19,7 @@ import {
 
 interface Property {
   id: string;
+  codigo?: string;
   title: string;
   description: string;
   price: number;
@@ -37,7 +38,6 @@ interface Property {
   zipcode: string;
   images: string[];
   features: string[];
-  codigo?: string;
   iptu?: number;
   condominio?: number;
   location?: string;
@@ -62,16 +62,21 @@ const PropertyDetail = () => {
     const load = async () => {
       setLoading(true);
       try {
-        const { data, error } = await supabase
+        // Tentar buscar por código primeiro, depois por ID (para compatibilidade)
+        let query = supabase
           .from("properties")
           .select(`
             id,
+            codigo,
             title,
             description,
             property_type,
+            transaction_type,
             price,
             location,
             city,
+            state,
+            zipcode,
             area,
             area_privativa,
             bedrooms,
@@ -80,9 +85,16 @@ const PropertyDetail = () => {
             featured,
             features,
             property_images(image_url, is_primary)
-          `)
-          .eq("id", id)
-          .maybeSingle();
+          `);
+        
+        // Se o ID parece um código (formato IMV-XXXX), buscar por codigo
+        if (id?.startsWith('IMV-')) {
+          query = query.eq("codigo", id);
+        } else {
+          query = query.eq("id", id);
+        }
+        
+        const { data, error } = await query.maybeSingle();
 
         if (error) throw error;
         
@@ -171,6 +183,14 @@ const PropertyDetail = () => {
       ? propertyImages.map((img) => img.image_url)
       : ["/placeholder.jpg", "/placeholder.jpg", "/placeholder.jpg"];
 
+  // Construir endereço completo para o mapa
+  const fullAddress = [
+    property.location,
+    property.city,
+    property.state || 'RS',
+    'Brasil'
+  ].filter(Boolean).join(', ');
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
@@ -182,12 +202,18 @@ const PropertyDetail = () => {
         {/* Coluna Principal - 2/3 */}
         <div className="lg:col-span-2 space-y-6">
           {/* Galeria de Imagens */}
-          <GalleryCarousel images={imageUrls} />
+          <GalleryCarousel 
+            images={imageUrls} 
+            location={property.location}
+            city={property.city}
+            state={property.state}
+            zipcode={property.zipcode}
+          />
 
           {/* Tipo e Favorito */}
           <div className="flex items-center justify-between">
             <Badge className="bg-[#083c51] hover:bg-[#0a4a64] text-white px-4 py-1">
-          {property.property_type}
+          {property.property_type.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
             </Badge>
             <Button
           variant="ghost"
@@ -219,7 +245,7 @@ const PropertyDetail = () => {
             suites={property.suites}
             banheiros={property.bathrooms}
             vagas={property.parking_spaces}
-            codigo={property.codigo || property.id}
+            codigo={property.codigo || property.id.slice(0, 8)}
             preco={property.price}
           />
 

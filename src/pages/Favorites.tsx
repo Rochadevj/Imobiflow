@@ -12,6 +12,7 @@ interface PropertyImage {
 
 interface Property {
   id: string;
+  codigo?: string;
   title: string;
   property_type: string;
   transaction_type?: string;
@@ -55,7 +56,7 @@ const Favorites = () => {
       const { data, error } = await supabase
         .from("properties")
         .select(`
-          id, title, property_type, transaction_type, price, location, city, area,
+          id, codigo, title, property_type, transaction_type, price, location, city, area,
           bedrooms, bathrooms, parking_spaces, featured,
           property_images(image_url, is_primary)
         `)
@@ -64,7 +65,7 @@ const Favorites = () => {
       if (error) {
         console.error("Erro ao buscar favoritos", error);
       } else {
-        setProperties((data as Property[]) || []);
+        setProperties(data || []);
       }
     };
 
@@ -87,7 +88,7 @@ const Favorites = () => {
                 p.property_images?.[0];
 
               return (
-                <Link key={p.id} to={`/property/${p.id}`} className="no-underline">
+                <Link key={p.id} to={`/property/${p.codigo || p.id}`} className="no-underline">
                   <PropertyCard
                     id={p.id}
                     title={p.title}
