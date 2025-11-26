@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import PropertyCard from "@/components/PropertyCard";
 import Footer from "@/components/Footer";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
+import HeroCarousel from "@/components/HeroCarousel";
 
 interface Property {
   id: string;
@@ -29,8 +30,21 @@ interface Property {
   property_images: { image_url: string; is_primary: boolean }[];
 }
 
+interface HeroProperty {
+  id: string;
+  title: string;
+  location: string;
+  city: string;
+  price: number;
+  property_type: string;
+  transaction_type: string;
+  image_url: string;
+}
+
 const Index = () => {
+  const [searchParams] = useSearchParams();
   const [properties, setProperties] = useState<Property[]>([]);
+  const [featuredProperties, setFeaturedProperties] = useState<HeroProperty[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
@@ -49,8 +63,24 @@ const Index = () => {
   const [parkingSpaces, setParkingSpaces] = useState("");
   const [heroTab, setHeroTab] = useState<'comprar' | 'alugar' | 'todos'>('todos');
 
+  // Ler parâmetros da URL quando a página carrega
+  useEffect(() => {
+    const type = searchParams.get('type');
+    if (type === 'comprar') {
+      setHeroTab('comprar');
+      setTransactionType('venda');
+    } else if (type === 'alugar') {
+      setHeroTab('alugar');
+      setTransactionType('aluguel');
+    } else {
+      setHeroTab('todos');
+      setTransactionType('');
+    }
+  }, [searchParams]);
+
   useEffect(() => {
     fetchProperties();
+    fetchFeaturedProperties();
   }, []);
 
   const fetchProperties = async () => {
@@ -86,6 +116,87 @@ const Index = () => {
     }
   };
 
+  const fetchFeaturedProperties = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("properties")
+        .select(`
+          id,
+          title,
+          property_type,
+          transaction_type,
+          price,
+          location,
+          city,
+          property_images!inner(image_url, is_primary)
+        `)
+        .eq("status", "available")
+        .eq("featured", true)
+        .not("property_images", "is", null)
+        .limit(8)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      
+      // Transform data to match HeroCarousel interface
+      const transformedData: HeroProperty[] = data?.map(property => {
+        const primaryImage = property.property_images.find(img => img.is_primary);
+        return {
+          id: property.id,
+          title: property.title,
+          location: property.location,
+          city: property.city,
+          price: property.price,
+          property_type: property.property_type,
+          transaction_type: property.transaction_type,
+          image_url: primaryImage?.image_url || property.property_images[0]?.image_url || ''
+        };
+      }).filter(property => property.image_url) || [];
+      
+      // Se não houver imóveis em destaque, buscar imóveis normais com imagens
+      if (transformedData.length === 0) {
+        const { data: regularData, error: regularError } = await supabase
+          .from("properties")
+          .select(`
+            id,
+            title,
+            property_type,
+            transaction_type,
+            price,
+            location,
+            city,
+            property_images!inner(image_url, is_primary)
+          `)
+          .eq("status", "available")
+          .not("property_images", "is", null)
+          .limit(6)
+          .order("created_at", { ascending: false });
+
+        if (!regularError && regularData) {
+          const regularTransformed: HeroProperty[] = regularData.map(property => {
+            const primaryImage = property.property_images.find(img => img.is_primary);
+            return {
+              id: property.id,
+              title: property.title,
+              location: property.location,
+              city: property.city,
+              price: property.price,
+              property_type: property.property_type,
+              transaction_type: property.transaction_type,
+              image_url: primaryImage?.image_url || property.property_images[0]?.image_url || ''
+            };
+          }).filter(property => property.image_url);
+          
+          setFeaturedProperties(regularTransformed);
+        }
+      } else {
+        setFeaturedProperties(transformedData);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar imóveis em destaque:", error);
+    }
+  };
+
   const filteredProperties = properties.filter((property) => {
     // Filtro de busca por texto
     const matchesSearch = 
@@ -101,7 +212,7 @@ const Index = () => {
     const matchesMinArea = !minArea || (property.area && property.area >= Number(minArea));
     const matchesMaxArea = !maxArea || (property.area && property.area <= Number(maxArea));
     const matchesNeighborhood = !neighborhood || property.location.toLowerCase().includes(neighborhood.toLowerCase());
-    const matchesBedrooms = !bedrooms || property.bedrooms === Number(bedrooms);
+    const matchesBedrooms = !bedrooms || (bedrooms === "4" ? property.bedrooms >= 4 : property.bedrooms === Number(bedrooms));
     const matchesBathrooms = !bathrooms || property.bathrooms === Number(bathrooms);
     const matchesParkingSpaces = !parkingSpaces || property.parking_spaces === Number(parkingSpaces);
 
@@ -131,13 +242,7 @@ const Index = () => {
               </p>
             </div>
             <div className="relative">
-              <div className="rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
-                <img
-                  src="https://images.unsplash.com/photo-1502005097973-6a7082348e28?q=80&w=800&auto=format&fit=crop"
-                  alt="Edifício residencial"
-                  className="w-full h-[240px] sm:h-[300px] md:h-[340px] object-cover"
-                />
-              </div>
+              <HeroCarousel properties={featuredProperties} />
             </div>
           </div>
         </div>
@@ -303,9 +408,9 @@ const Index = () => {
                               </SelectTrigger>
                               <SelectContent className="bg-popover z-50">
                                 <SelectItem value="any">Qualquer</SelectItem>
-                                <SelectItem value="1">1+</SelectItem>
-                                <SelectItem value="2">2+</SelectItem>
-                                <SelectItem value="3">3+</SelectItem>
+                                <SelectItem value="1">1</SelectItem>
+                                <SelectItem value="2">2</SelectItem>
+                                <SelectItem value="3">3</SelectItem>
                                 <SelectItem value="4">4+</SelectItem>
                               </SelectContent>
                             </Select>
@@ -319,9 +424,9 @@ const Index = () => {
                               </SelectTrigger>
                               <SelectContent className="bg-popover z-50">
                                 <SelectItem value="any">Qualquer</SelectItem>
-                                <SelectItem value="1">1+</SelectItem>
-                                <SelectItem value="2">2+</SelectItem>
-                                <SelectItem value="3">3+</SelectItem>
+                                <SelectItem value="1">1</SelectItem>
+                                <SelectItem value="2">2</SelectItem>
+                                <SelectItem value="3">3</SelectItem>
                               </SelectContent>
                             </Select>
                           </div>
@@ -334,9 +439,9 @@ const Index = () => {
                               </SelectTrigger>
                               <SelectContent className="bg-popover z-50">
                                 <SelectItem value="any">Qualquer</SelectItem>
-                                <SelectItem value="1">1+</SelectItem>
-                                <SelectItem value="2">2+</SelectItem>
-                                <SelectItem value="3">3+</SelectItem>
+                                <SelectItem value="1">1</SelectItem>
+                                <SelectItem value="2">2</SelectItem>
+                                <SelectItem value="3">3</SelectItem>
                               </SelectContent>
                             </Select>
                           </div>
@@ -487,9 +592,9 @@ const Index = () => {
                     </SelectTrigger>
                     <SelectContent className="bg-popover z-50">
                       <SelectItem value="any">Qualquer</SelectItem>
-                      <SelectItem value="1">1+</SelectItem>
-                      <SelectItem value="2">2+</SelectItem>
-                      <SelectItem value="3">3+</SelectItem>
+                      <SelectItem value="1">1</SelectItem>
+                      <SelectItem value="2">2</SelectItem>
+                      <SelectItem value="3">3</SelectItem>
                       <SelectItem value="4">4+</SelectItem>
                     </SelectContent>
                   </Select>
@@ -503,9 +608,9 @@ const Index = () => {
                     </SelectTrigger>
                     <SelectContent className="bg-popover z-50">
                       <SelectItem value="any">Qualquer</SelectItem>
-                      <SelectItem value="1">1+</SelectItem>
-                      <SelectItem value="2">2+</SelectItem>
-                      <SelectItem value="3">3+</SelectItem>
+                      <SelectItem value="1">1</SelectItem>
+                      <SelectItem value="2">2</SelectItem>
+                      <SelectItem value="3">3</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -518,9 +623,9 @@ const Index = () => {
                     </SelectTrigger>
                     <SelectContent className="bg-popover z-50">
                       <SelectItem value="any">Qualquer</SelectItem>
-                      <SelectItem value="1">1+</SelectItem>
-                      <SelectItem value="2">2+</SelectItem>
-                      <SelectItem value="3">3+</SelectItem>
+                      <SelectItem value="1">1</SelectItem>
+                      <SelectItem value="2">2</SelectItem>
+                      <SelectItem value="3">3</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

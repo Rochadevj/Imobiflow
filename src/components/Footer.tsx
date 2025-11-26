@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Facebook, Youtube, Instagram } from "lucide-react";
+import { Facebook, Youtube, Instagram, Mail, Phone } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -33,9 +33,23 @@ const Footer = () => {
 
           <div>
             <h3 className="font-bold mb-4">Contato</h3>
-            <div className="space-y-2 text-primary-foreground/80 text-sm">
-              <p>Canoas, Rio Grande do Sul</p>
-              <p>CRECI: 078852</p>
+            <div className="space-y-3 text-primary-foreground/80 text-sm">
+              <a 
+                href="mailto:contato@alexandreandrade.com.br"
+                className="flex items-center gap-2 hover:text-accent transition-all duration-200 hover:translate-x-1"
+              >
+                <Mail className="h-4 w-4" />
+                E-mail
+              </a>
+              <a 
+                href="https://wa.me/5551991288418?text=Olá! Gostaria de alguma informação?"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 hover:text-accent transition-all duration-200 hover:translate-x-1"
+              >
+                <Phone className="h-4 w-4" />
+                (51) 99128-8418
+              </a>
             </div>
           </div>
 

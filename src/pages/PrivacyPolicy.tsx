@@ -119,7 +119,7 @@ const PrivacyPolicy = () => {
                 CRECI: 078852
               </p>
               <p className="text-muted-foreground mb-2">
-                Telefone/WhatsApp: (51) 99389-8811
+                Telefone/WhatsApp: (51) 991288418
               </p>
               <p className="text-muted-foreground mb-2">
                 Canoas, Rio Grande do Sul

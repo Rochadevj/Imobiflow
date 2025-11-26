@@ -87,3 +87,44 @@ All colors MUST be HSL.
     max-width: 100vw;
   }
 }
+
+@layer components {
+  /* Hero Carousel Animations */
+  .hero-carousel-image {
+    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .hero-carousel-image:hover {
+    transform: scale(1.05);
+  }
+
+  /* Smooth fade in for carousel content */
+  .carousel-overlay {
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.9) 0%,
+      rgba(0, 0, 0, 0.5) 50%,
+      transparent 100%
+    );
+    backdrop-filter: blur(1px);
+  }
+
+  /* Custom scrollbar for mobile */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--accent)) transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--accent));
+    border-radius: 20px;
+  }
+}

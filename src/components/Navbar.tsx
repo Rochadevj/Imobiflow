@@ -60,10 +60,10 @@ const Navbar = () => {
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-4">
             <Button variant="ghost" className="text-primary-foreground hover:text-accent hover:bg-primary/90 transition-all duration-200 hover:scale-105" asChild>
-              <Link to="/">Comprar</Link>
+              <Link to="/?type=comprar">Comprar</Link>
             </Button>
             <Button variant="ghost" className="text-primary-foreground hover:text-accent hover:bg-primary/90 transition-all duration-200 hover:scale-105" asChild>
-              <Link to="/">Alugar</Link>
+              <Link to="/?type=alugar">Alugar</Link>
             </Button>
 
             <Button variant="ghost" className="text-primary-foreground hover:text-accent hover:bg-primary/90 transition-all duration-200 hover:scale-105" asChild>
@@ -127,12 +127,12 @@ const Navbar = () => {
               <div className="flex flex-col gap-4 mt-8">
                 <SheetClose asChild>
                   <Button variant="ghost" className="text-primary-foreground hover:text-accent hover:bg-primary/90 justify-start" asChild>
-                    <Link to="/">Comprar</Link>
+                    <Link to="/?type=comprar">Comprar</Link>
                   </Button>
                 </SheetClose>
                 <SheetClose asChild>
                   <Button variant="ghost" className="text-primary-foreground hover:text-accent hover:bg-primary/90 justify-start" asChild>
-                    <Link to="/">Alugar</Link>
+                    <Link to="/?type=alugar">Alugar</Link>
                   </Button>
                 </SheetClose>
                 <SheetClose asChild>
