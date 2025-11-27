@@ -16,6 +16,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { trackPropertyView } from "@/lib/propertyViews";
 
 interface Property {
   id: string;
@@ -100,6 +101,11 @@ const PropertyDetail = () => {
         
         if (data) {
           setProperty(data as unknown as Property);
+          
+          // Registrar visualização do imóvel (apenas 1 por IP a cada 24h)
+          trackPropertyView(data.id).catch(err => 
+            console.error('Erro ao rastrear visualização:', err)
+          );
           
           // Buscar imóveis similares
           const { data: similar } = await supabase

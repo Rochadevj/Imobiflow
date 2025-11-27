@@ -329,7 +329,7 @@ const Index = () => {
                                 setBathrooms("");
                                 setParkingSpaces("");
                               }}
-                              className="text-accent hover:text-accent/80 text-xs"
+                              className="text-accent hover:text-white hover:bg-accent text-xs"
                             >
                               Limpar
                             </Button>
@@ -490,7 +490,7 @@ const Index = () => {
                     setBathrooms("");
                     setParkingSpaces("");
                   }}
-                  className="text-accent hover:text-accent/80 text-xs md:text-sm"
+                  className="text-accent hover:text-white hover:bg-accent text-xs md:text-sm"
                 >
                   Limpar
                 </Button>

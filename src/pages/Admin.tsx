@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import PropertyForm from "@/components/PropertyForm";
 import PropertyEditForm from "@/components/PropertyEditForm";
 import PropertyList from "@/components/PropertyList";
+import MostViewedProperties from "@/components/MostViewedProperties";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, List, BarChart3, Home, DollarSign, Eye } from "lucide-react";
@@ -183,6 +184,11 @@ const Admin = () => {
                 </p>
               </CardContent>
             </Card>
+
+            {/* Imóveis Mais Visitados */}
+            <div className="mt-6">
+              <MostViewedProperties />
+            </div>
           </TabsContent>
           
           <TabsContent value="list" className="mt-6">
