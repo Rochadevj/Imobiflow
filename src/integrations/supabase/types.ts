@@ -153,6 +153,44 @@ export type Database = {
           },
         ]
       }
+      property_views: {
+        Row: {
+          created_at: string | null
+          id: string
+          ip_address: string
+          property_id: string
+          session_id: string | null
+          user_agent: string | null
+          viewed_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          ip_address: string
+          property_id: string
+          session_id?: string | null
+          user_agent?: string | null
+          viewed_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          ip_address?: string
+          property_id?: string
+          session_id?: string | null
+          user_agent?: string | null
+          viewed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_views_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
