@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 interface Property {
   id: string;
+  codigo?: string;
   title: string;
   property_type: string;
   city: string;
