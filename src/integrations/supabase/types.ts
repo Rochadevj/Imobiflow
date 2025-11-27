@@ -155,31 +155,31 @@ export type Database = {
       }
       property_views: {
         Row: {
+          created_at: string | null
           id: string
-          property_id: string
           ip_address: string
-          user_agent: string | null
+          property_id: string
           session_id: string | null
-          viewed_at: string
-          created_at: string
+          user_agent: string | null
+          viewed_at: string | null
         }
         Insert: {
+          created_at?: string | null
           id?: string
-          property_id: string
           ip_address: string
-          user_agent?: string | null
+          property_id: string
           session_id?: string | null
-          viewed_at?: string
-          created_at?: string
+          user_agent?: string | null
+          viewed_at?: string | null
         }
         Update: {
+          created_at?: string | null
           id?: string
-          property_id?: string
           ip_address?: string
-          user_agent?: string | null
+          property_id?: string
           session_id?: string | null
-          viewed_at?: string
-          created_at?: string
+          user_agent?: string | null
+          viewed_at?: string | null
         }
         Relationships: [
           {
