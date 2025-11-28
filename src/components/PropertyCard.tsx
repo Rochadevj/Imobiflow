@@ -103,10 +103,10 @@ const PropertyCard = ({
           </Badge>
         )}
         {featured && (
-          <Badge className="absolute bottom-4 left-4 bg-accent text-primary z-10">
+          <Badge className="absolute bottom-4 left-4 bg-accent text-primary group-hover:text-white font-semibold shadow-lg z-10 transition-colors duration-300">
             Destaque
           </Badge>
-        )}
+        )}=
         {/* Favorite button */}
         <button
           onClick={toggleFavorite}
