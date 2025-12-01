@@ -206,8 +206,8 @@ export const getMostViewedProperties = async (
       return [];
     }
 
-    // Buscar informações dos imóveis, restringindo ao período de cadastro quando period for mês/ano
-    let propertiesQuery = supabase
+    // Buscar informações dos imóveis
+    const { data: properties, error: propError } = await supabase
       .from('properties')
       .select(`
         id,
@@ -220,14 +220,6 @@ export const getMostViewedProperties = async (
         property_images!inner(image_url, is_primary)
       `)
       .in('id', sortedPropertyIds);
-
-    if (period === 'month' || period === 'year') {
-      propertiesQuery = propertiesQuery
-        .gte('created_at', startDate.toISOString())
-        .lte('created_at', endDate.toISOString());
-    }
-
-    const { data: properties, error: propError } = await propertiesQuery;
 
     if (propError) {
       console.error('Erro ao buscar propriedades:', propError);

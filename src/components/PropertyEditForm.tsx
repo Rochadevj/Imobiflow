@@ -13,7 +13,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { X, Upload } from "lucide-react";
+import { X, Upload, Video, Image as ImageIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface PropertyEditFormProps {
   propertyId: string;
@@ -623,16 +624,28 @@ export default function PropertyEditForm({
               {existingImages.map((media) => (
                 <div key={media.id} className="relative group">
                   {media.isVideo ? (
-                    <video
-                      src={media.url}
-                      className="w-full h-32 object-cover rounded-lg border"
-                    />
+                    <>
+                      <video
+                        src={media.url}
+                        className="w-full h-32 object-cover rounded-lg border"
+                      />
+                      <Badge className="absolute top-2 left-2 bg-purple-600 hover:bg-purple-700 text-white text-xs flex items-center gap-1">
+                        <Video className="h-3 w-3" />
+                        Vídeo
+                      </Badge>
+                    </>
                   ) : (
-                    <img
-                      src={media.url}
-                      alt="Property"
-                      className="w-full h-32 object-cover rounded-lg border"
-                    />
+                    <>
+                      <img
+                        src={media.url}
+                        alt="Property"
+                        className="w-full h-32 object-cover rounded-lg border"
+                      />
+                      <Badge className="absolute top-2 left-2 bg-blue-600 hover:bg-blue-700 text-white text-xs flex items-center gap-1">
+                        <ImageIcon className="h-3 w-3" />
+                        Foto
+                      </Badge>
+                    </>
                   )}
                   <button
                     type="button"
