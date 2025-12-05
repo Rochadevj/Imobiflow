@@ -59,7 +59,7 @@ const Footer = () => {
               <a href="#" className="text-primary-foreground/80 hover:text-accent transition-all duration-300 hover:scale-125 hover:-translate-y-1">
                 <Facebook className="h-6 w-6" />
               </a>
-              <a href="#" className="text-primary-foreground/80 hover:text-accent transition-all duration-300 hover:scale-125 hover:-translate-y-1">
+              <a href="https://www.instagram.com/andrade_alexandrepereira/" target="_blank" rel="noopener noreferrer" className="text-primary-foreground/80 hover:text-accent transition-all duration-300 hover:scale-125 hover:-translate-y-1">
                 <Instagram className="h-6 w-6" />
               </a>
             </div>

@@ -324,7 +324,7 @@ const PropertyDetail = () => {
           <RealtorCard
             name="Alexandre Andrade"
             creci={"CRECI\u00A0-\u00A078852-RS"}
-            photo="/static/ad09874e-9610-42cd-bab5-046ffa0d7b7a.png"
+            photo="/static/unnamed (5).jpeg"
             phone="51993898811"
             propertyTitle={property.title}
           />

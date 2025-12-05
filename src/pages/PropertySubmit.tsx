@@ -45,7 +45,7 @@ const PropertySubmit = () => {
               <div className="relative">
                 <div className="rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
                   <img
-                    src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=800&auto=format&fit=crop"
+                    src="/static/natureza-morta-de-chaves-para-uma-nova-casa.jpg"
                     alt="Anunciar imóvel"
                     className="w-full h-[280px] object-cover"
                   />
