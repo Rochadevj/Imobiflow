@@ -24,7 +24,7 @@ const About = () => {
               <div className="relative">
                 <div className="rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
                   <img
-                    src="/static/unnamed (4).jpeg"
+                    src="https://image2url.com/r2/bucket3/images/1767721437678-6111c713-d5f6-49f9-9e56-66c3fc780c1f.png"
                     alt="Alexandre Andrade"
                     className="w-full h-[320px] object-cover object-center"
                   />
