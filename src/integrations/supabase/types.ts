@@ -193,25 +193,11 @@ export type Database = {
       }
     }
     Views: {
-      property_analytics: {
-        Row: {
-          property_id: string | null
-          total_views: number | null
-          unique_views: number | null
-          view_date: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "property_views_property_id_fkey"
-            columns: ["property_id"]
-            isOneToOne: false
-            referencedRelation: "properties"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
+      anonymize_ip: { Args: { ip_text: string }; Returns: string }
+      cleanup_old_property_views: { Args: never; Returns: number }
       generate_property_code: { Args: never; Returns: string }
       get_most_viewed_properties: {
         Args: { p_end_date?: string; p_limit?: number; p_start_date?: string }
