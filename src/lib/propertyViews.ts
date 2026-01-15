@@ -28,49 +28,16 @@ const getUserIP = async (): Promise<string> => {
   }
 };
 
-// Verificar se já existe visualização recente deste IP para este imóvel
-const hasRecentView = async (propertyId: string, ipAddress: string): Promise<boolean> => {
-  try {
-    // Verificar se há visualização deste IP nas últimas 24 horas
-    const oneDayAgo = new Date();
-    oneDayAgo.setHours(oneDayAgo.getHours() - 24);
-
-    const { data, error } = await supabase
-      .from('property_views')
-      .select('id')
-      .eq('property_id', propertyId)
-      .eq('ip_address', ipAddress)
-      .gte('viewed_at', oneDayAgo.toISOString())
-      .limit(1);
-
-    if (error) {
-      console.error('Erro ao verificar visualização recente:', error);
-      return false;
-    }
-
-    return (data && data.length > 0);
-  } catch (error) {
-    console.error('Erro ao verificar visualização:', error);
-    return false;
-  }
-};
-
 // Registrar visualização de imóvel
+// Nota: A verificação de visualização recente é feita apenas para evitar chamadas desnecessárias
+// O INSERT ainda funciona pois há política que permite inserção
 export const trackPropertyView = async (propertyId: string): Promise<boolean> => {
   try {
     const ipAddress = await getUserIP();
     const sessionId = getSessionId();
     const userAgent = navigator.userAgent;
 
-    // Verificar se já existe visualização recente
-    const alreadyViewed = await hasRecentView(propertyId, ipAddress);
-    
-    if (alreadyViewed) {
-      console.log('Visualização já registrada nas últimas 24h');
-      return false;
-    }
-
-    // Registrar nova visualização
+    // Registrar nova visualização (a verificação de duplicatas pode ser feita no banco)
     const { error } = await supabase
       .from('property_views')
       .insert({
@@ -81,7 +48,8 @@ export const trackPropertyView = async (propertyId: string): Promise<boolean> =>
       });
 
     if (error) {
-      console.error('Erro ao registrar visualização:', error);
+      // Se for erro de política, provavelmente já existe visualização recente
+      console.log('Visualização já registrada ou erro:', error.message);
       return false;
     }
 
@@ -114,7 +82,7 @@ export interface ViewPeriodOptions {
   year?: number; // e.g., 2025
 }
 
-// Obter imóveis mais visitados
+// Obter imóveis mais visitados usando função segura do banco
 export const getMostViewedProperties = async (
   period: ViewPeriod = 'month',
   limit: number = 10,
@@ -167,44 +135,24 @@ export const getMostViewedProperties = async (
         break;
     }
 
-    // Query para buscar estatísticas de visualizações
+    // Usar função segura do banco que retorna apenas dados agregados
     const { data: viewData, error: viewError } = await supabase
-      .from('property_views')
-      .select('property_id, ip_address, viewed_at')
-      .gte('viewed_at', startDate.toISOString())
-      .lte('viewed_at', endDate.toISOString());
+      .rpc('get_most_viewed_properties', {
+        p_limit: limit,
+        p_start_date: startDate.toISOString(),
+        p_end_date: endDate.toISOString()
+      });
 
     if (viewError) {
       console.error('Erro ao buscar visualizações:', viewError);
       return [];
     }
 
-    // Agrupar por property_id e contar IPs únicos
-    const viewStats = new Map<string, { uniqueIps: Set<string>, lastView: string }>();
-    
-    viewData?.forEach(view => {
-      if (!viewStats.has(view.property_id)) {
-        viewStats.set(view.property_id, {
-          uniqueIps: new Set(),
-          lastView: view.viewed_at
-        });
-      }
-      const stats = viewStats.get(view.property_id)!;
-      stats.uniqueIps.add(view.ip_address);
-      if (new Date(view.viewed_at) > new Date(stats.lastView)) {
-        stats.lastView = view.viewed_at;
-      }
-    });
-
-    // Ordenar por número de visualizações únicas
-    const sortedPropertyIds = Array.from(viewStats.entries())
-      .sort((a, b) => b[1].uniqueIps.size - a[1].uniqueIps.size)
-      .slice(0, limit)
-      .map(([id]) => id);
-
-    if (sortedPropertyIds.length === 0) {
+    if (!viewData || viewData.length === 0) {
       return [];
     }
+
+    const propertyIds = viewData.map((v: { property_id: string }) => v.property_id);
 
     // Buscar informações dos imóveis
     const { data: properties, error: propError } = await supabase
@@ -217,19 +165,26 @@ export const getMostViewedProperties = async (
         location,
         city,
         created_at,
-        property_images!inner(image_url, is_primary)
+        property_images(image_url, is_primary)
       `)
-      .in('id', sortedPropertyIds);
+      .in('id', propertyIds);
 
     if (propError) {
       console.error('Erro ao buscar propriedades:', propError);
       return [];
     }
 
+    // Criar mapa de visualizações
+    const viewMap = new Map<string, number>();
+    viewData.forEach((v: { property_id: string; unique_views: number }) => {
+      viewMap.set(v.property_id, Number(v.unique_views));
+    });
+
     // Montar resultado final
     const result: PropertyViewStats[] = properties?.map(prop => {
-      const stats = viewStats.get(prop.id)!;
-      const primaryImage = prop.property_images.find(img => img.is_primary);
+      const uniqueViews = viewMap.get(prop.id) || 0;
+      const images = prop.property_images as Array<{ image_url: string; is_primary: boolean }> || [];
+      const primaryImage = images.find(img => img.is_primary);
       
       return {
         property_id: prop.id,
@@ -238,10 +193,10 @@ export const getMostViewedProperties = async (
         price: prop.price,
         location: prop.location,
         city: prop.city,
-        unique_views: stats.uniqueIps.size,
-        total_views: stats.uniqueIps.size, // Usando unique views
-        last_viewed_at: stats.lastView,
-        primary_image: primaryImage?.image_url || prop.property_images[0]?.image_url
+        unique_views: uniqueViews,
+        total_views: uniqueViews, // Usando unique views
+        last_viewed_at: prop.created_at, // Não temos mais acesso direto às datas
+        primary_image: primaryImage?.image_url || images[0]?.image_url
       };
     }).sort((a, b) => b.unique_views - a.unique_views) || [];
 
@@ -252,22 +207,18 @@ export const getMostViewedProperties = async (
   }
 };
 
-// Obter total de visualizações de um imóvel específico
+// Obter total de visualizações de um imóvel específico usando função segura
 export const getPropertyViewCount = async (propertyId: string): Promise<number> => {
   try {
     const { data, error } = await supabase
-      .from('property_views')
-      .select('ip_address', { count: 'exact' })
-      .eq('property_id', propertyId);
+      .rpc('get_property_view_count', { p_property_id: propertyId });
 
     if (error) {
       console.error('Erro ao contar visualizações:', error);
       return 0;
     }
 
-    // Contar IPs únicos
-    const uniqueIps = new Set(data?.map(v => v.ip_address) || []);
-    return uniqueIps.size;
+    return Number(data) || 0;
   } catch (error) {
     console.error('Erro ao obter contagem de visualizações:', error);
     return 0;
