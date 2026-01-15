@@ -193,10 +193,37 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      property_analytics: {
+        Row: {
+          property_id: string | null
+          total_views: number | null
+          unique_views: number | null
+          view_date: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_views_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       generate_property_code: { Args: never; Returns: string }
+      get_most_viewed_properties: {
+        Args: { p_end_date?: string; p_limit?: number; p_start_date?: string }
+        Returns: {
+          property_id: string
+          unique_views: number
+        }[]
+      }
+      get_property_view_count: {
+        Args: { p_property_id: string }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
