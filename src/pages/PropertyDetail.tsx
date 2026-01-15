@@ -321,13 +321,14 @@ const PropertyDetail = () => {
 
         {/* Coluna Sidebar - 1/3 */}
         <div className="lg:col-span-1">
-          <RealtorCard
-            name="Alexandre Andrade"
-            creci={"CRECI\u00A0-\u00A078852-RS"}
-            photo="/static/unnamed (5).jpeg"
-            phone="51993898811"
-            propertyTitle={property.title}
-          />
+        <RealtorCard
+  name="Alexandre Andrade"
+  creci={"CRECI\u00A0-\u00A078852-RS"}
+  photo="https://image2url.com/r2/bucket3/images/1767721437678-6111c713-d5f6-49f9-9e56-66c3fc780c1f.png"
+  phone="51993898811"
+  propertyTitle={property.title}
+/>
+
         </div>
           </div>
         </div>
