@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Clock, MapPin, Search, ShieldCheck, SlidersHorizontal } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
 import HeroCarousel from "@/components/HeroCarousel";
@@ -228,6 +228,7 @@ const Index = () => {
       <section className="relative bg-primary/95 text-white pt-16 pb-48 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute right-0 top-0 w-[280px] h-[280px] md:w-[420px] md:h-[420px] bg-accent/10 rounded-bl-[120px] md:rounded-bl-[180px]" />
+          <div className="absolute left-0 bottom-0 w-[240px] h-[240px] bg-white/5 rounded-tr-[140px]" />
         </div>
         <div className="container mx-auto px-4 relative">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
@@ -240,6 +241,34 @@ const Index = () => {
               <p className="text-base sm:text-lg md:text-xl text-white/80 max-w-md mb-6 md:mb-8">
                 Experiência local e transparência para você encontrar ou anunciar seu imóvel em Canoas e região.
               </p>
+              <div className="flex flex-wrap gap-3 mb-6">
+                <a
+                  href="#imoveis"
+                  className="inline-flex items-center gap-2 rounded-full bg-white text-primary px-5 py-2 text-sm font-semibold shadow hover:bg-white/90 transition"
+                >
+                  Ver imóveis
+                </a>
+                <Link
+                  to="/anunciar"
+                  className="inline-flex items-center gap-2 rounded-full bg-accent text-white px-5 py-2 text-sm font-semibold shadow hover:bg-accent/90 transition"
+                >
+                  Anunciar imóvel
+                </Link>
+              </div>
+              <div className="flex flex-wrap gap-4 text-sm text-white/85">
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-accent" />
+                  Canoas e região
+                </div>
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-accent" />
+                  Negociação segura
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-accent" />
+                  Resposta rápida
+                </div>
+              </div>
             </div>
             <div className="relative">
               <HeroCarousel properties={featuredProperties} />
@@ -460,7 +489,38 @@ const Index = () => {
                 </Button>
                 </div>
               </div>
-     
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                {[
+                  { label: "Apartamento", value: "apartamento" },
+                  { label: "Casa", value: "casa" },
+                  { label: "Terreno", value: "terreno" },
+                  { label: "Comercial", value: "comercial" },
+                ].map((item) => (
+                  <button
+                    key={item.value}
+                    type="button"
+                    onClick={() => setPropertyType(item.value)}
+                    className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+                      propertyType === item.value
+                        ? "border-accent bg-accent text-primary"
+                        : "border-border text-muted-foreground hover:text-foreground hover:border-accent/60"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPropertyType("");
+                    setTransactionType("");
+                    setHeroTab("todos");
+                  }}
+                  className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-accent/60"
+                >
+                  Limpar seleção
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -468,7 +528,7 @@ const Index = () => {
 
 
       {/* Properties Section */}
-      <section className="container mx-auto px-4 py-8 md:py-16 flex-1">
+      <section id="imoveis" className="container mx-auto px-4 py-8 md:py-16 flex-1">
         <div className="flex flex-col lg:flex-row gap-6 md:gap-8">
           {/* Filtros Laterais - Desktop apenas */}
           <aside className="hidden lg:block lg:w-80 flex-shrink-0">

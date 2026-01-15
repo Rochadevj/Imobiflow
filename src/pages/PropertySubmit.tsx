@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { CheckCircle2, ClipboardList, Clock, Phone, ShieldCheck } from "lucide-react";
 
 const PropertySubmit = () => {
   const [loading, setLoading] = useState(false);
@@ -31,6 +32,7 @@ const PropertySubmit = () => {
         <section className="relative bg-primary/95 text-white pt-12 pb-16 overflow-hidden">
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute right-0 top-0 w-[420px] h-[420px] bg-accent/10 rounded-bl-[180px]" />
+            <div className="absolute left-0 bottom-0 w-[260px] h-[260px] bg-white/5 rounded-tr-[140px]" />
           </div>
           <div className="container mx-auto px-4 relative">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -38,9 +40,22 @@ const PropertySubmit = () => {
                 <h1 className="text-3xl md:text-4xl font-bold leading-tight mb-4 max-w-xl">
                   Anuncie de forma simples e prática
                 </h1>
-                <p className="text-base md:text-lg text-white/80 max-w-md">
+                <p className="text-base md:text-lg text-white/80 max-w-md mb-6">
                   Preencha o formulário abaixo com as informações do seu imóvel. Nossa equipe analisará os dados e em breve, um de nossos corretores entrará em contato para finalizar a publicação do seu anúncio.
                 </p>
+                <div className="flex flex-wrap gap-3">
+                  <a
+                    href="tel:+5551999999999"
+                    className="inline-flex items-center gap-2 rounded-full bg-white text-primary px-4 py-2 text-sm font-semibold shadow hover:bg-white/90 transition"
+                  >
+                    <Phone className="h-4 w-4" />
+                    Falar com corretor
+                  </a>
+                  <span className="inline-flex items-center gap-2 rounded-full bg-white/10 text-white px-4 py-2 text-sm">
+                    <Clock className="h-4 w-4 text-white/90" />
+                    Resposta em até 24h
+                  </span>
+                </div>
               </div>
               <div className="relative">
                 <div className="rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
@@ -56,8 +71,9 @@ const PropertySubmit = () => {
         </section>
 
         <section className="container mx-auto px-4 py-16">
-          <div className="max-w-4xl mx-auto bg-card rounded-lg shadow-lg p-8">
-            <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_320px] gap-8">
+            <div className="bg-card rounded-xl shadow-lg p-8">
+              <form onSubmit={handleSubmit} className="space-y-8">
               <div>
                 <h2 className="text-2xl font-bold mb-6 text-foreground flex items-center gap-2">
                   <span className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center text-sm">1</span>
@@ -136,7 +152,52 @@ const PropertySubmit = () => {
               <Button type="submit" disabled={loading} className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
                 {loading ? "Enviando..." : "Enviar Proposta"}
               </Button>
-            </form>
+              </form>
+            </div>
+
+            <aside className="space-y-6">
+              <div className="rounded-xl border border-border/60 bg-background/80 p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                  <ClipboardList className="h-5 w-5 text-accent" />
+                  Como funciona
+                </h3>
+                <div className="space-y-3 text-sm text-muted-foreground">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-accent mt-0.5" />
+                    <span>Envie os dados principais do imóvel</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-accent mt-0.5" />
+                    <span>Validamos informações e combinamos fotos</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-accent mt-0.5" />
+                    <span>Publicamos e divulgamos para compradores</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-border/60 bg-background/80 p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                  <ShieldCheck className="h-5 w-5 text-accent" />
+                  O que preparar
+                </h3>
+                <div className="space-y-3 text-sm text-muted-foreground">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-accent mt-0.5" />
+                    <span>Endereço completo e metragem</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-accent mt-0.5" />
+                    <span>Número de quartos e banheiros</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-accent mt-0.5" />
+                    <span>Valor esperado e condições</span>
+                  </div>
+                </div>
+              </div>
+            </aside>
           </div>
         </section>
       </main>
