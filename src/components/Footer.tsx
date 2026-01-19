@@ -8,7 +8,36 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           <div>
             <Link to="/" className="flex items-center gap-3 font-bold text-xl mb-4">
-              <img src="/logo-aa.svg" alt="Kaptei Solucoes Imobiliarias" className="h-10 w-auto" />
+              <svg
+                viewBox="0 0 320 72"
+                className="h-12 w-auto"
+                role="img"
+                aria-label="Kaptei Solucoes Imobiliarias"
+              >
+                <title>Kaptei Solucoes Imobiliarias</title>
+                <text
+                  x="0"
+                  y="42"
+                  fontFamily="Cinzel, 'Times New Roman', serif"
+                  fontSize="42"
+                  fontWeight="600"
+                  letterSpacing="1.5"
+                  fill="currentColor"
+                >
+                  Kaptei
+                </text>
+                <text
+                  x="0"
+                  y="68"
+                  fontFamily="Manrope, Arial, sans-serif"
+                  fontSize="12"
+                  letterSpacing="3"
+                  fill="currentColor"
+                  opacity="0.9"
+                >
+                  SOLUCOES IMOBILIARIAS
+                </text>
+              </svg>
             </Link>
             <p className="text-primary-foreground/80 text-sm">Canoas / Rio Grande do Sul</p>
           </div>

@@ -53,8 +53,40 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           <Link to="/" className="flex items-center gap-3 font-bold text-xl group">
-            <img src="/logo-aa.svg" alt="Kaptei Solucoes Imobiliarias" className="h-10 w-auto transition-transform duration-300 ease-in-out group-hover:scale-110" />
-            <span className="sr-only">Kaptei Solucoes Imobiliarias</span>
+<svg
+  viewBox="0 0 360 80"
+  className="h-12 w-auto"
+  role="img"
+  aria-label="Kaptei Soluções Imobiliárias"
+>
+  <title>Kaptei Soluções Imobiliárias</title>
+
+  <text
+    x="0"
+    y="46"
+    fontFamily="Montserrat, Arial, sans-serif"
+    fontSize="48"
+    fontWeight="700"
+    letterSpacing="0.8"
+    fill="currentColor"
+  >
+    Kaptei
+  </text>
+
+  <text
+    x="2"
+    y="72"
+    fontFamily="Inter, Arial, sans-serif"
+    fontSize="14"
+    fontWeight="500"
+    letterSpacing="3.5"
+    fill="currentColor"
+    opacity="0.85"
+  >
+    SOLUÇÕES IMOBILIÁRIAS
+  </text>
+</svg>
+
           </Link>
 
           {/* Desktop Menu */}

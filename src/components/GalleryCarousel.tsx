@@ -129,11 +129,11 @@ export default function GalleryCarousel({ images, location, city, state, zipcode
 
       {displayContent.length > 0 && (viewMode === "photos" || viewMode === "video") && (
   <div className="relative">
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     {displayedItems.map((item, idx) => (
       <div
         key={currentIndex + idx}
-        className="relative aspect-[16/11] overflow-hidden rounded-xl cursor-pointer shadow-md hover:shadow-2xl transition-all"
+        className="relative aspect-[4/3] overflow-hidden rounded-xl cursor-pointer shadow-md hover:shadow-2xl transition-all"
         onClick={() => setSelectedImage(item)}
       >
         {isVideoUrl(item) ? (
@@ -188,7 +188,7 @@ export default function GalleryCarousel({ images, location, city, state, zipcode
       {viewMode === "map" && (
         <div>
           {location ? (
-            <div className="rounded-xl overflow-hidden border border-gray-200 h-[400px] bg-gray-100">
+            <div className="rounded-xl overflow-hidden border border-gray-200 h-[520px] bg-gray-100">
               <iframe
                 width="100%"
                 height="100%"
@@ -203,7 +203,7 @@ export default function GalleryCarousel({ images, location, city, state, zipcode
               />
             </div>
           ) : (
-            <div className="rounded-xl border-2 border-dashed border-gray-300 h-[400px] bg-gray-50 flex items-center justify-center">
+            <div className="rounded-xl border-2 border-dashed border-gray-300 h-[520px] bg-gray-50 flex items-center justify-center">
               <p className="text-gray-500">Endereço não disponível para exibição no mapa</p>
             </div>
           )}

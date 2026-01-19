@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Upload, X } from "lucide-react";
 import { z } from "zod";
+import { applyWatermark } from "@/lib/watermark";
 
 const propertySchema = z.object({
   title: z.string().min(5, "Título deve ter pelo menos 5 caracteres").max(100),
@@ -121,7 +122,7 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
       // upload images
       if (images.length > 0) {
         for (let i = 0; i < images.length; i++) {
-          const file = images[i];
+          const file = await applyWatermark(images[i]);
           const fileExt = file.name.split('.').pop();
           const fileName = `${property.id}/${Date.now()}-img-${i}.${fileExt}`;
 

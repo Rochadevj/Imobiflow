@@ -43,7 +43,7 @@ const About = () => {
               <div className="relative">
                 <div className="rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
                   <img
-                    src="https://image2url.com/r2/default/images/1768503458615-ed858721-5db1-4885-8ebb-49003a1fc30a.png"
+                    src="/static/912b6244-30a1-455b-891e-53a6b4c28e8c.jpeg"
                     alt="Kaptei Solucoes Imobiliarias"
                     className="w-full h-[360px] object-cover object-center"
                   />

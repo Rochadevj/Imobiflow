@@ -15,6 +15,7 @@ import {
 import { toast } from "sonner";
 import { X, Upload, Video, Image as ImageIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { applyWatermark } from "@/lib/watermark";
 
 interface PropertyEditFormProps {
   propertyId: string;
@@ -249,13 +250,14 @@ export default function PropertyEditForm({
       // Upload new images
       if (newImages.length > 0) {
         for (const image of newImages) {
-          const fileExt = image.name.split(".").pop();
+          const watermarked = await applyWatermark(image);
+          const fileExt = watermarked.name.split(".").pop();
           const fileName = `${propertyId}-img-${Date.now()}.${fileExt}`;
           const filePath = `${fileName}`;
 
           const { error: uploadError } = await supabase.storage
             .from("property-images")
-            .upload(filePath, image);
+            .upload(filePath, watermarked);
 
           if (uploadError) throw uploadError;
 
