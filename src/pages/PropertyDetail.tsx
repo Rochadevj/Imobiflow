@@ -113,7 +113,7 @@ const PropertyDetail = () => {
             .select("*")
             .eq("property_type", data.property_type)
             .eq("city", data.city)
-            .neq("id", id)
+            .neq("id", data.id)
             .limit(6);
           
           if (similar) {
@@ -218,7 +218,7 @@ const PropertyDetail = () => {
 
           {/* Tipo e Favorito */}
           <div className="flex items-center justify-between">
-            <Badge className="bg-[#083c51] hover:bg-[#0a4a64] text-white px-4 py-1">
+            <Badge className="bg-primary hover:bg-primary/90 text-white px-4 py-1">
           {property.property_type.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
             </Badge>
             <Button
@@ -290,7 +290,7 @@ const PropertyDetail = () => {
               <Badge
             key={index}
             variant="outline"
-            className="px-4 py-2 text-sm border-gray-300 hover:bg-[#083c51] hover:text-white hover:border-[#083c51] transition-all duration-200 hover:scale-105 cursor-default"
+            className="px-4 py-2 text-sm border-gray-300 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 hover:scale-105 cursor-default"
               >
             {feature}
               </Badge>
@@ -322,7 +322,7 @@ const PropertyDetail = () => {
         {/* Coluna Sidebar - 1/3 */}
         <div className="lg:col-span-1">
         <RealtorCard
-  name="Alexandre Andrade"
+  name="Kaptei Solucoes Imobiliarias"
   creci={"CRECI\u00A0-\u00A078852-RS"}
   photo="https://image2url.com/r2/bucket3/images/1767721437678-6111c713-d5f6-49f9-9e56-66c3fc780c1f.png"
   phone="51993898811"

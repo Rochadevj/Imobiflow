@@ -53,8 +53,8 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           <Link to="/" className="flex items-center gap-3 font-bold text-xl group">
-            <img src="/logo-aa.svg" alt="Alexandre Andrade" className="h-10 w-auto transition-transform duration-300 ease-in-out group-hover:scale-110" />
-            <span className="sr-only">Alexandre Andrade Imobiliária</span>
+            <img src="/logo-aa.svg" alt="Kaptei Solucoes Imobiliarias" className="h-10 w-auto transition-transform duration-300 ease-in-out group-hover:scale-110" />
+            <span className="sr-only">Kaptei Solucoes Imobiliarias</span>
           </Link>
 
           {/* Desktop Menu */}

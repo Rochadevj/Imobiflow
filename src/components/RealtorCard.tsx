@@ -43,11 +43,11 @@ export default function RealtorCard({
         <img
           src={photo}
           alt={name}
-          className="w-20 h-20 rounded-full object-cover border-4 border-[#083c51]"
+          className="w-20 h-20 rounded-full object-cover border-4 border-primary"
         />
         <div>
           <p className="text-sm text-gray-600">Corretor</p>
-          <h3 className="text-lg font-bold text-[#083c51]">{name}</h3>
+          <h3 className="text-lg font-bold text-primary">{name}</h3>
           <p className="text-sm text-gray-600">{creci}</p>
         </div>
       </div>
@@ -101,7 +101,7 @@ export default function RealtorCard({
             />
           </div>
 
-          <Button type="submit" className="w-full bg-[#083c51] hover:bg-[#0a4a64] hover:scale-105 transition-all duration-200 hover:shadow-lg">
+          <Button type="submit" className="w-full bg-primary hover:bg-primary/90 hover:scale-105 transition-all duration-200 hover:shadow-lg">
             Enviar
           </Button>
         </form>

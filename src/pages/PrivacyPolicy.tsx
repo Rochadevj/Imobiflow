@@ -20,7 +20,7 @@ const PrivacyPolicy = () => {
           <div className="max-w-4xl mx-auto prose prose-lg">
             <h2 className="text-2xl font-bold text-foreground mb-4">1. Informações que Coletamos</h2>
             <p className="text-muted-foreground mb-6">
-              A Alexandre Andrade Imóveis coleta informações quando você se cadastra em nosso site, 
+              A Kaptei Solucoes Imobiliarias coleta informações quando você se cadastra em nosso site, 
               entra em contato conosco ou interage com nossos serviços. As informações coletadas incluem:
             </p>
             <ul className="list-disc pl-6 text-muted-foreground mb-8 space-y-2">
@@ -113,7 +113,7 @@ const PrivacyPolicy = () => {
             </p>
             <div className="bg-gray-50 p-6 rounded-lg mb-8">
               <p className="text-muted-foreground mb-2">
-                <strong>Alexandre Andrade Corretor de Imóveis</strong>
+                <strong>Kaptei Solucoes Imobiliarias</strong>
               </p>
               <p className="text-muted-foreground mb-2">
                 CRECI: 078852

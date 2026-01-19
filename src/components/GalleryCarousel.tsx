@@ -146,7 +146,7 @@ export default function GalleryCarousel({ images, location, city, state, zipcode
             />
             <div className="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/30 transition-colors">
               <div className="bg-white/90 rounded-full p-3">
-                <Video className="w-8 h-8 text-[#083c51]" />
+                <Video className="w-8 h-8 text-primary" />
               </div>
             </div>
           </>
@@ -169,7 +169,7 @@ export default function GalleryCarousel({ images, location, city, state, zipcode
               className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-3 shadow-lg transition-all z-10"
               aria-label="Anterior"
             >
-              <ChevronLeft className="w-7 h-7 text-[#083c51]" />
+              <ChevronLeft className="w-7 h-7 text-primary" />
             </button>
           )}
 
@@ -179,7 +179,7 @@ export default function GalleryCarousel({ images, location, city, state, zipcode
               className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-3 shadow-lg transition-all z-10"
               aria-label="Próximo"
             >
-              <ChevronRight className="w-7 h-7 text-[#083c51]" />
+              <ChevronRight className="w-7 h-7 text-primary" />
             </button>
           )}
         </div>
@@ -256,7 +256,7 @@ export default function GalleryCarousel({ images, location, city, state, zipcode
                   className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-3 shadow-lg transition-all z-10"
                   aria-label="Anterior"
                 >
-                  <ChevronLeft className="w-6 h-6 text-[#083c51]" />
+                  <ChevronLeft className="w-6 h-6 text-primary" />
                 </button>
                 <button
                   onClick={(e) => {
@@ -269,7 +269,7 @@ export default function GalleryCarousel({ images, location, city, state, zipcode
                   className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-3 shadow-lg transition-all z-10"
                   aria-label="Próximo"
                 >
-                  <ChevronRight className="w-6 h-6 text-[#083c51]" />
+                  <ChevronRight className="w-6 h-6 text-primary" />
                 </button>
               </>
             )}

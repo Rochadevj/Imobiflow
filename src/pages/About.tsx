@@ -44,7 +44,7 @@ const About = () => {
                 <div className="rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
                   <img
                     src="https://image2url.com/r2/default/images/1768503458615-ed858721-5db1-4885-8ebb-49003a1fc30a.png"
-                    alt="Alexandre Andrade"
+                    alt="Kaptei Solucoes Imobiliarias"
                     className="w-full h-[360px] object-cover object-center"
                   />
                 </div>
@@ -57,7 +57,7 @@ const About = () => {
           <div className="max-w-4xl mx-auto">
             <div className="grid md:grid-cols-2 gap-12 mb-12">
               <div className="space-y-6">
-                <h2 className="text-3xl font-bold text-foreground">Alexandre Andrade</h2>
+                <h2 className="text-3xl font-bold text-foreground">Kaptei Solucoes Imobiliarias</h2>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="rounded-lg border border-border/60 bg-background/80 p-4">
                     <p className="text-xs uppercase tracking-wide text-muted-foreground">Imóveis</p>
@@ -90,7 +90,7 @@ const About = () => {
                     <div>
                       <h3 className="font-semibold mb-1">Especialidade</h3>
                       <p className="text-muted-foreground">
-                        Corretor de Imóveis em Canoas e região metropolitana de Porto Alegre
+                        Imobiliaria em Canoas e regiao metropolitana de Porto Alegre
                       </p>
                     </div>
                   </div>

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Configurações do Supabase
-SUPABASE_URL="https://poyeihvifrmnusapuhdk.supabase.co"
-SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBveWVpaHZpZnJtbnVzYXB1aGRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM1MjY0MjMsImV4cCI6MjA3OTEwMjQyM30.AvjPQr_pFMQS827hnDTcN-Xx9IQiJsX6h6IUyM4Bxhk"
+SUPABASE_URL="https://ddnoxanxwhsicjufclpa.supabase.co"
+SUPABASE_KEY="sb_publishable_zcECfrknsZl1GtaKiQxtmg_EVHd68gx"
 
 echo "🔧 Tentando adicionar colunas state e zipcode..."
 echo ""
@@ -20,7 +20,7 @@ echo "⚠️  Como esperado, isso não funcionará porque não temos permissão 
 echo ""
 echo "📋 VOCÊ PRECISA EXECUTAR ESTE SQL MANUALMENTE:"
 echo ""
-echo "1. Acesse: https://supabase.com/dashboard/project/poyeihvifrmnusapuhdk/editor"
+echo "1. Acesse: https://supabase.com/dashboard/project/ddnoxanxwhsicjufclpa/editor"
 echo ""
 echo "2. Clique em 'SQL Editor' no menu lateral"
 echo ""

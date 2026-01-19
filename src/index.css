@@ -9,70 +9,70 @@ All colors MUST be HSL.
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 192 95% 9%;
+    --foreground: 224 41% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 192 95% 9%;
+    --card-foreground: 224 41% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 192 95% 9%;
+    --popover-foreground: 224 41% 11%;
 
-    --primary: 192 95% 9%;
+    --primary: 224 41% 11%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 192 39% 95%;
-    --secondary-foreground: 192 95% 9%;
+    --secondary: 224 20% 96%;
+    --secondary-foreground: 224 41% 11%;
 
-    --muted: 192 15% 96%;
-    --muted-foreground: 192 5% 40%;
+    --muted: 224 12% 96%;
+    --muted-foreground: 224 10% 45%;
 
-    --accent: 45 93% 47%;
-    --accent-foreground: 192 95% 9%;
+    --accent: 32 92% 51%;
+    --accent-foreground: 224 41% 11%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 192 20% 90%;
-    --input: 192 20% 90%;
-    --ring: 192 95% 9%;
+    --border: 224 15% 90%;
+    --input: 224 15% 90%;
+    --ring: 32 92% 51%;
 
     --radius: 0.5rem;
 
-    --hero-gradient-start: 192 95% 9%;
-    --hero-gradient-end: 192 75% 15%;
+    --hero-gradient-start: 224 41% 11%;
+    --hero-gradient-end: 224 32% 18%;
   }
 
   .dark {
-    --background: 192 95% 9%;
+    --background: 224 41% 11%;
     --foreground: 0 0% 100%;
 
-    --card: 192 75% 12%;
+    --card: 224 32% 16%;
     --card-foreground: 0 0% 100%;
 
-    --popover: 192 75% 12%;
+    --popover: 224 32% 16%;
     --popover-foreground: 0 0% 100%;
 
-    --primary: 45 93% 47%;
-    --primary-foreground: 192 95% 9%;
+    --primary: 32 92% 51%;
+    --primary-foreground: 224 41% 11%;
 
-    --secondary: 192 50% 20%;
+    --secondary: 224 25% 20%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 192 50% 20%;
-    --muted-foreground: 192 10% 70%;
+    --muted: 224 25% 20%;
+    --muted-foreground: 224 12% 75%;
 
-    --accent: 45 93% 47%;
-    --accent-foreground: 192 95% 9%;
+    --accent: 32 92% 51%;
+    --accent-foreground: 224 41% 11%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 192 50% 20%;
-    --input: 192 50% 20%;
-    --ring: 45 93% 47%;
+    --border: 224 25% 20%;
+    --input: 224 25% 20%;
+    --ring: 32 92% 51%;
 
-    --hero-gradient-start: 192 95% 9%;
-    --hero-gradient-end: 192 75% 15%;
+    --hero-gradient-start: 224 41% 11%;
+    --hero-gradient-end: 224 32% 18%;
   }
 }
 

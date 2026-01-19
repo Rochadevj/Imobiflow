@@ -70,7 +70,7 @@ export default function SimilarPropertiesCarousel({ properties }: SimilarPropert
               {/* Content */}
               <div className="p-4 space-y-3">
                 {/* Type */}
-                <div className="text-sm font-semibold text-[#083c51]">
+                <div className="text-sm font-semibold text-primary">
                   {property.property_type}
                 </div>
 
@@ -112,7 +112,7 @@ export default function SimilarPropertiesCarousel({ properties }: SimilarPropert
             className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white hover:bg-gray-50 rounded-full p-3 shadow-lg transition-all z-10"
             aria-label="Anterior"
           >
-            <ChevronLeft className="w-6 h-6 text-[#083c51]" />
+            <ChevronLeft className="w-6 h-6 text-primary" />
           </button>
         )}
 
@@ -122,7 +122,7 @@ export default function SimilarPropertiesCarousel({ properties }: SimilarPropert
             className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white hover:bg-gray-50 rounded-full p-3 shadow-lg transition-all z-10"
             aria-label="Próximo"
           >
-            <ChevronRight className="w-6 h-6 text-[#083c51]" />
+            <ChevronRight className="w-6 h-6 text-primary" />
           </button>
         )}
       </div>

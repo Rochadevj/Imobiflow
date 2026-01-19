@@ -1,6 +1,7 @@
--- Create storage bucket for property images
+-- Create storage bucket for property images (idempotent)
 INSERT INTO storage.buckets (id, name, public)
-VALUES ('property-images', 'property-images', true);
+VALUES ('property-images', 'property-images', true)
+ON CONFLICT (id) DO NOTHING;
 
 -- Create properties table
 CREATE TABLE public.properties (
