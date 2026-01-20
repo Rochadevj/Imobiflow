@@ -72,17 +72,24 @@ export const applyWatermark = async (file: File): Promise<File> => {
     return file;
   }
 
+  const outputWidth = 1500;
+  const outputHeight = 1000;
+
   const objectUrl = URL.createObjectURL(file);
-  const [baseImage, watermarkRaw] = await Promise.all([
-    loadImage(objectUrl),
-    loadImage(WATERMARK_SRC),
-  ]);
+  const baseImage = await loadImage(objectUrl);
   URL.revokeObjectURL(objectUrl);
-  const watermark = removeWhiteBackground(watermarkRaw);
+
+  let watermark: HTMLCanvasElement | null = null;
+  try {
+    const watermarkRaw = await loadImage(WATERMARK_SRC);
+    watermark = removeWhiteBackground(watermarkRaw);
+  } catch (error) {
+    console.warn("Watermark image not loaded, skipping watermark.", error);
+  }
 
   const canvas = document.createElement("canvas");
-  canvas.width = baseImage.naturalWidth || baseImage.width;
-  canvas.height = baseImage.naturalHeight || baseImage.height;
+  canvas.width = outputWidth;
+  canvas.height = outputHeight;
 
   const ctx = canvas.getContext("2d");
   if (!ctx) {
@@ -91,27 +98,36 @@ export const applyWatermark = async (file: File): Promise<File> => {
 
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
-  ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
+  const sourceWidth = baseImage.naturalWidth || baseImage.width;
+  const sourceHeight = baseImage.naturalHeight || baseImage.height;
+  const coverScale = Math.max(outputWidth / sourceWidth, outputHeight / sourceHeight);
+  const drawWidth = sourceWidth * coverScale;
+  const drawHeight = sourceHeight * coverScale;
+  const offsetX = (outputWidth - drawWidth) / 2;
+  const offsetY = (outputHeight - drawHeight) / 2;
+  ctx.drawImage(baseImage, offsetX, offsetY, drawWidth, drawHeight);
 
-  const padding = Math.round(canvas.width * 0.025);
-  const desiredWidth = 480;
-  const maxWidth = canvas.width - padding * 2;
-  const targetWidth = Math.min(desiredWidth, maxWidth);
-  const scale = targetWidth / watermark.width;
-  const targetHeight = watermark.height * scale;
-  const x = Math.round((canvas.width - targetWidth) / 2);
-  const y = Math.round((canvas.height - targetHeight) / 2);
+  if (watermark) {
+    const padding = Math.round(canvas.width * 0.025);
+    const desiredWidth = 480;
+    const maxWidth = canvas.width - padding * 2;
+    const targetWidth = Math.min(desiredWidth, maxWidth);
+    const watermarkScale = targetWidth / watermark.width;
+    const targetHeight = watermark.height * watermarkScale;
+    const x = Math.round((canvas.width - targetWidth) / 2);
+    const y = Math.round((canvas.height - targetHeight) / 2);
 
-  ctx.shadowColor = "rgba(0, 0, 0, 0.28)";
-  ctx.shadowBlur = Math.round(canvas.width * 0.006);
-  ctx.shadowOffsetX = Math.round(canvas.width * 0.002);
-  ctx.shadowOffsetY = Math.round(canvas.width * 0.002);
-  ctx.globalAlpha = 0.7;
-  ctx.drawImage(watermark, x, y, targetWidth, targetHeight);
-  ctx.globalAlpha = 1;
-  ctx.shadowBlur = 0;
-  ctx.shadowOffsetX = 0;
-  ctx.shadowOffsetY = 0;
+    ctx.shadowColor = "rgba(0, 0, 0, 0.28)";
+    ctx.shadowBlur = Math.round(canvas.width * 0.006);
+    ctx.shadowOffsetX = Math.round(canvas.width * 0.002);
+    ctx.shadowOffsetY = Math.round(canvas.width * 0.002);
+    ctx.globalAlpha = 0.7;
+    ctx.drawImage(watermark, x, y, targetWidth, targetHeight);
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+  }
 
   const blob: Blob | null = await new Promise((resolve) =>
     canvas.toBlob(resolve, file.type || "image/png", 0.9),
