@@ -72,9 +72,6 @@ export const applyWatermark = async (file: File): Promise<File> => {
     return file;
   }
 
-  const outputWidth = 1500;
-  const outputHeight = 1000;
-
   const objectUrl = URL.createObjectURL(file);
   const baseImage = await loadImage(objectUrl);
   URL.revokeObjectURL(objectUrl);
@@ -88,8 +85,8 @@ export const applyWatermark = async (file: File): Promise<File> => {
   }
 
   const canvas = document.createElement("canvas");
-  canvas.width = outputWidth;
-  canvas.height = outputHeight;
+  canvas.width = baseImage.naturalWidth || baseImage.width;
+  canvas.height = baseImage.naturalHeight || baseImage.height;
 
   const ctx = canvas.getContext("2d");
   if (!ctx) {
@@ -98,14 +95,7 @@ export const applyWatermark = async (file: File): Promise<File> => {
 
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
-  const sourceWidth = baseImage.naturalWidth || baseImage.width;
-  const sourceHeight = baseImage.naturalHeight || baseImage.height;
-  const coverScale = Math.max(outputWidth / sourceWidth, outputHeight / sourceHeight);
-  const drawWidth = sourceWidth * coverScale;
-  const drawHeight = sourceHeight * coverScale;
-  const offsetX = (outputWidth - drawWidth) / 2;
-  const offsetY = (outputHeight - drawHeight) / 2;
-  ctx.drawImage(baseImage, offsetX, offsetY, drawWidth, drawHeight);
+  ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
 
   if (watermark) {
     const padding = Math.round(canvas.width * 0.025);
