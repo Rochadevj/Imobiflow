@@ -266,28 +266,28 @@ export default function GalleryCarousel({ images, location, city, state, zipcode
       }}>
         <DialogContent
           hideClose
-          className={`max-w-[95vw] max-h-[95vh] p-0 border-0 shadow-none ${selectedIndex === null ? "bg-white" : "bg-transparent"}`}
+          className={`max-w-[92vw] max-h-[92vh] p-0 border-0 shadow-none ${selectedIndex === null ? "bg-white" : "bg-transparent overflow-hidden"}`}
         >
           {selectedIndex === null ? (
-            <div className="relative w-full h-full rounded-xl bg-white">
-              <div className="flex items-center justify-between px-8 py-4 border-b">
-                <h3 className="text-lg font-semibold text-foreground">Galeria de Imagens</h3>
+            <div className="relative w-full h-full rounded-lg bg-white">
+              <div className="flex items-center justify-between px-5 py-3 border-b">
+                <h3 className="text-base font-semibold text-foreground">Galeria de Imagens</h3>
                 <button
                   onClick={() => setIsModalOpen(false)}
-                  className="rounded-full p-2 hover:bg-muted transition"
+                  className="rounded-full p-1.5 hover:bg-muted transition"
                   aria-label="Fechar"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
-              <div className="px-8 pb-8 pt-4 overflow-y-auto max-h-[80vh]">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="px-5 pb-5 pt-3 overflow-y-auto max-h-[80vh]">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {displayContent.map((item, idx) => (
                     <button
                       key={`${item}-grid-${idx}`}
                       type="button"
                       onClick={() => setSelectedIndex(idx)}
-                      className="rounded-xl overflow-hidden border border-border/60 hover:border-accent/70 transition-all text-left"
+                      className="rounded-lg overflow-hidden border border-border/60 hover:border-accent/70 transition-all text-left"
                     >
                       {isVideoUrl(item) ? (
                         <div className="relative w-full h-full">
@@ -305,45 +305,45 @@ export default function GalleryCarousel({ images, location, city, state, zipcode
               </div>
             </div>
           ) : (
-            <div className="relative w-full h-full rounded-xl bg-black/70">
-              <div className="flex items-center justify-between px-8 py-4 text-white">
-                <div className="text-sm text-white/80">
+            <div className="relative w-full h-full rounded-lg bg-black/70">
+              <div className="flex items-center justify-between px-5 py-3 text-white">
+                <div className="text-xs text-white/80">
                   {`${selectedIndex + 1}/${displayContent.length}`}
                 </div>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setShowThumbs((v) => !v)}
-                    className="rounded-full p-2 hover:bg-white/10 transition"
+                    className="rounded-full p-1.5 hover:bg-white/10 transition"
                     aria-label="Mostrar miniaturas"
                   >
-                    <Grid2X2 className="w-5 h-5" />
+                    <Grid2X2 className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setZoom((z) => Math.min(2.5, z + 0.2))}
-                    className="rounded-full p-2 hover:bg-white/10 transition"
+                    className="rounded-full p-1.5 hover:bg-white/10 transition"
                     aria-label="Aproximar"
                     disabled={isVideoUrl(displayContent[selectedIndex])}
                   >
-                    <ZoomIn className="w-5 h-5" />
+                    <ZoomIn className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setZoom((z) => Math.max(1, z - 0.2))}
-                    className="rounded-full p-2 hover:bg-white/10 transition"
+                    className="rounded-full p-1.5 hover:bg-white/10 transition"
                     aria-label="Afastar"
                     disabled={isVideoUrl(displayContent[selectedIndex])}
                   >
-                    <ZoomOut className="w-5 h-5" />
+                    <ZoomOut className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setIsPlaying((v) => !v)}
-                    className="rounded-full p-2 hover:bg-white/10 transition"
+                    className="rounded-full p-1.5 hover:bg-white/10 transition"
                     aria-label={isPlaying ? "Pausar" : "Reproduzir"}
                   >
-                    {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                    {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                   </button>
                   <button
                     onClick={() => setSelectedIndex(null)}
-                    className="rounded-full px-3 py-2 text-sm font-semibold text-white/90 hover:text-white hover:bg-white/10 transition"
+                    className="rounded-full px-2.5 py-1.5 text-xs font-semibold text-white/90 hover:text-white hover:bg-white/10 transition"
                     aria-label="Voltar para galeria"
                   >
                     Voltar
@@ -351,9 +351,9 @@ export default function GalleryCarousel({ images, location, city, state, zipcode
                 </div>
               </div>
 
-              <div className="px-8 pb-8">
-                <div className="flex flex-col gap-6">
-                  <div className="relative flex items-center justify-center min-h-[55vh] max-h-[70vh]">
+              <div className="px-5 pb-5">
+                <div className="flex flex-col gap-3">
+                  <div className="relative flex items-center justify-center min-h-[48vh] max-h-[60vh]">
                     {isVideoUrl(displayContent[selectedIndex]) ? (
                       <video
                         src={displayContent[selectedIndex]}
@@ -397,13 +397,13 @@ export default function GalleryCarousel({ images, location, city, state, zipcode
                   </div>
 
                   {showThumbs && (
-                    <div className="flex gap-4 overflow-x-auto py-2">
+                    <div className="flex flex-wrap justify-center gap-3 max-h-[18vh] overflow-hidden py-3 px-2">
                       {displayContent.map((item, idx) => (
                         <button
                           key={`${item}-thumb-${idx}`}
                           type="button"
                           onClick={() => setSelectedIndex(idx)}
-                          className={`flex-shrink-0 w-32 h-24 rounded-lg overflow-hidden border transition-all ${
+                          className={`flex-shrink-0 w-36 h-24 rounded-lg overflow-hidden border transition-all ${
                             idx === selectedIndex
                               ? "border-white ring-2 ring-white/50"
                               : "border-white/20 hover:border-white/50"
