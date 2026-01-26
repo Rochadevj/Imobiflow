@@ -83,6 +83,8 @@ const PropertyDetail = () => {
             bedrooms,
             bathrooms,
             parking_spaces,
+            iptu,
+            condominio,
             featured,
             features,
             property_images(image_url, is_primary)
@@ -253,6 +255,7 @@ const PropertyDetail = () => {
             vagas={property.parking_spaces}
             codigo={property.codigo || property.id.slice(0, 8)}
             preco={property.price}
+            transactionType={property.transaction_type}
           />
 
           {/* Sobre o Imóvel */}
@@ -264,18 +267,30 @@ const PropertyDetail = () => {
 
             {/* IPTU e Condomínio */}
             {(property.iptu || property.condominio) && (
-          <div className="flex gap-4 pt-4">
-            {property.iptu && (
-              <div className="text-sm text-gray-600">
-            <span className="font-semibold">IPTU:</span> R$ {property.iptu.toFixed(2)}
+              <div className="pt-4 space-y-2">
+                {property.condominio && (
+                  <div className="text-sm text-gray-600">
+                    <span className="font-semibold">Condomínio:</span>{" "}
+                    {new Intl.NumberFormat("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }).format(property.condominio)}
+                  </div>
+                )}
+                {property.iptu && (
+                  <div className="text-sm text-gray-600">
+                    <span className="font-semibold">IPTU:</span>{" "}
+                    {new Intl.NumberFormat("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }).format(property.iptu)}
+                  </div>
+                )}
               </div>
-            )}
-            {property.condominio && (
-              <div className="text-sm text-gray-600">
-            <span className="font-semibold">Condomínio:</span> R$ {property.condominio.toFixed(2)}
-              </div>
-            )}
-          </div>
             )}
           </div>
 

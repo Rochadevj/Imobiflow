@@ -47,6 +47,8 @@ export default function PropertyEditForm({
     cep: "",
     destaque: false,
     status: "disponivel",
+    condominio: "",
+    iptu: "",
   });
 
   const [existingImages, setExistingImages] = useState<
@@ -110,6 +112,8 @@ export default function PropertyEditForm({
             cep: property.zipcode || "",
           destaque: property.featured || false,
           status: statusMap[property.status || "available"] || "disponivel",
+          condominio: property.condominio !== null && property.condominio !== undefined ? String(property.condominio) : "",
+          iptu: property.iptu !== null && property.iptu !== undefined ? String(property.iptu) : "",
         });
         
         // Load features if they exist
@@ -242,6 +246,8 @@ export default function PropertyEditForm({
           featured: formData.destaque,
           status: statusMap[formData.status] || formData.status,
           features: features.length > 0 ? features : null,
+          condominio: formData.tipo === "aluguel" && formData.condominio ? parseFloat(formData.condominio) : null,
+          iptu: formData.tipo === "aluguel" && formData.iptu ? parseFloat(formData.iptu) : null,
         })
         .eq("id", propertyId);
 
@@ -411,7 +417,9 @@ export default function PropertyEditForm({
             </div>
 
             <div>
-              <Label htmlFor="preco">Preço (R$)</Label>
+              <Label htmlFor="preco">
+                {formData.tipo === "aluguel" ? "Valor aluguel (R$)" : "Preço (R$)"}
+              </Label>
               <Input
                 id="preco"
                 name="preco"
@@ -421,7 +429,40 @@ export default function PropertyEditForm({
                 onChange={handleInputChange}
                 required
               />
+              {formData.tipo === "aluguel" && (
+                <p className="text-xs text-muted-foreground mt-1">Ex: R$ 4.800,00 / mês</p>
+              )}
             </div>
+
+            {formData.tipo === "aluguel" && (
+              <>
+                <div>
+                  <Label htmlFor="condominio">Condomínio (R$)</Label>
+                  <Input
+                    id="condominio"
+                    name="condominio"
+                    type="number"
+                    step="0.01"
+                    value={formData.condominio}
+                    onChange={handleInputChange}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Ex: R$ 480,00</p>
+                </div>
+
+                <div>
+                  <Label htmlFor="iptu">IPTU (R$)</Label>
+                  <Input
+                    id="iptu"
+                    name="iptu"
+                    type="number"
+                    step="0.01"
+                    value={formData.iptu}
+                    onChange={handleInputChange}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Ex: R$ 78,00</p>
+                </div>
+              </>
+            )}
 
             <div>
               <Label htmlFor="area">Área (m²)</Label>
@@ -459,7 +500,7 @@ export default function PropertyEditForm({
               className="w-4 h-4"
             />
             <Label htmlFor="destaque" className="cursor-pointer">
-              Destacar este imóvel
+              Exibir em Imóveis imperdíveis
             </Label>
           </div>
         </CardContent>

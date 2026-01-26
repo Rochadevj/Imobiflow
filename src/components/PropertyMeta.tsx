@@ -9,6 +9,7 @@ interface PropertyMetaProps {
   vagas: number;
   codigo: string;
   preco: number;
+  transactionType?: string;
 }
 
 export default function PropertyMeta({
@@ -20,15 +21,21 @@ export default function PropertyMeta({
   vagas,
   codigo,
   preco,
+  transactionType,
 }: PropertyMetaProps) {
-  const formatPrice = (value: number) => {
+  const formatPrice = (value: number, withCents: boolean) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      minimumFractionDigits: withCents ? 2 : 0,
+      maximumFractionDigits: withCents ? 2 : 0,
     }).format(value);
   };
+
+  const isRental = transactionType === "aluguel";
+  const priceValue = isRental
+    ? `${formatPrice(preco, true)} / mês`
+    : formatPrice(preco, false);
 
   const metaItems = [
     { icon: Home, label: "Área Total", value: `${areaTotal}m²` },
@@ -38,7 +45,7 @@ export default function PropertyMeta({
     { icon: Bath, label: "Banheiros", value: banheiros },
     { icon: Car, label: "Vagas", value: vagas },
     { icon: Hash, label: "Código", value: codigo },
-    { icon: DollarSign, label: "Preço", value: formatPrice(preco), highlight: true },
+    { icon: DollarSign, label: isRental ? "Valor aluguel" : "Preço", value: priceValue, highlight: true },
   ];
 
   return (

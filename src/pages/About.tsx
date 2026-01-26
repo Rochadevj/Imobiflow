@@ -41,11 +41,13 @@ const About = () => {
                 </div>
               </div>
               <div className="relative">
-                <div className="rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
+                <div className="rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10 relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-accent/20" />
+                  <div className="absolute inset-0 bg-black/10" />
                   <img
                     src="/static/912b6244-30a1-455b-891e-53a6b4c28e8c.jpeg"
                     alt="Kaptei Solucoes Imobiliarias"
-                    className="w-full h-[360px] object-cover object-center"
+                    className="relative w-full h-[360px] object-cover object-center"
                   />
                 </div>
               </div>

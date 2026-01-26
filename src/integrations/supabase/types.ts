@@ -51,11 +51,13 @@ export type Database = {
           bedrooms: number | null
           city: string
           codigo: string | null
+          condominio: number | null
           created_at: string | null
           description: string
           featured: boolean | null
           features: string[] | null
           id: string
+          iptu: number | null
           location: string
           parking_spaces: number | null
           price: number
@@ -76,11 +78,13 @@ export type Database = {
           bedrooms?: number | null
           city: string
           codigo?: string | null
+          condominio?: number | null
           created_at?: string | null
           description: string
           featured?: boolean | null
           features?: string[] | null
           id?: string
+          iptu?: number | null
           location: string
           parking_spaces?: number | null
           price: number
@@ -101,11 +105,13 @@ export type Database = {
           bedrooms?: number | null
           city?: string
           codigo?: string | null
+          condominio?: number | null
           created_at?: string | null
           description?: string
           featured?: boolean | null
           features?: string[] | null
           id?: string
+          iptu?: number | null
           location?: string
           parking_spaces?: number | null
           price?: number

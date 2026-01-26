@@ -43,6 +43,9 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
     bedrooms: "",
     bathrooms: "",
     parkingSpaces: "",
+    featured: false,
+    condominio: "",
+    iptu: "",
   });
   const [features, setFeatures] = useState<string[]>([]);
   const [newFeature, setNewFeature] = useState("");
@@ -109,6 +112,13 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
           parking_spaces: formData.parkingSpaces ? parseInt(formData.parkingSpaces) : null,
           features: features.length > 0 ? features : null,
           user_id: user.id,
+          featured: formData.featured,
+          condominio: formData.transactionType === "aluguel" && formData.condominio
+            ? parseFloat(formData.condominio)
+            : null,
+          iptu: formData.transactionType === "aluguel" && formData.iptu
+            ? parseFloat(formData.iptu)
+            : null,
         }])
         .select()
         .single();
@@ -185,6 +195,9 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
         bedrooms: "",
         bathrooms: "",
         parkingSpaces: "",
+        featured: false,
+        condominio: "",
+        iptu: "",
       });
       setImages([]);
       setVideos([]);
@@ -265,18 +278,23 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="price">Preço (R$) *</Label>
-              <Input
-                id="price"
-                type="number"
-                step="0.01"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                placeholder="250000.00"
-                required
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="price">
+              {formData.transactionType === "aluguel" ? "Valor aluguel (R$) *" : "Preço (R$) *"}
+            </Label>
+            <Input
+              id="price"
+              type="number"
+              step="0.01"
+              value={formData.price}
+              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+              placeholder={formData.transactionType === "aluguel" ? "4800.00" : "250000.00"}
+              required
+            />
+            {formData.transactionType === "aluguel" && (
+              <p className="text-xs text-muted-foreground">Ex: R$ 4.800,00 / mês</p>
+            )}
+          </div>
 
             <div className="space-y-2">
               <Label htmlFor="area">Área (m²)</Label>
@@ -389,6 +407,49 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
               rows={4}
               required
             />
+          </div>
+
+          {formData.transactionType === "aluguel" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="condominio">Condomínio (R$)</Label>
+                <Input
+                  id="condominio"
+                  type="number"
+                  step="0.01"
+                  value={formData.condominio}
+                  onChange={(e) => setFormData({ ...formData, condominio: e.target.value })}
+                  placeholder="480.00"
+                />
+                <p className="text-xs text-muted-foreground">Ex: R$ 480,00</p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="iptu">IPTU (R$)</Label>
+                <Input
+                  id="iptu"
+                  type="number"
+                  step="0.01"
+                  value={formData.iptu}
+                  onChange={(e) => setFormData({ ...formData, iptu: e.target.value })}
+                  placeholder="78.00"
+                />
+                <p className="text-xs text-muted-foreground">Ex: R$ 78,00</p>
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="featured"
+              name="featured"
+              checked={formData.featured}
+              onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
+              className="w-4 h-4"
+            />
+            <Label htmlFor="featured" className="cursor-pointer">
+              Exibir em Imóveis imperdíveis
+            </Label>
           </div>
 
           <div className="space-y-2">

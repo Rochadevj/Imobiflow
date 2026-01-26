@@ -221,6 +221,9 @@ const Index = () => {
            matchesBathrooms && matchesParkingSpaces;
   });
 
+  const featuredList = properties.filter((p) => p.featured).slice(0, 6);
+  const recentList = properties.slice(0, 6);
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
@@ -527,6 +530,144 @@ const Index = () => {
       </div>
 
 
+      {/* Destaques e novidades */}
+      <section className="container mx-auto px-4 py-10 md:py-14">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6 md:mb-8">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-bold mb-2">Imóveis imperdíveis</h2>
+            <p className="text-muted-foreground text-sm md:text-base">
+              Seleção especial com as melhores oportunidades da semana
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <a
+              href="tel:+5551999999999"
+              className="inline-flex items-center justify-center rounded-full border border-accent text-accent px-4 py-2 text-sm font-semibold hover:bg-accent hover:text-primary transition"
+            >
+              Falar com corretor
+            </a>
+            <a
+              href="#imoveis"
+              className="inline-flex items-center justify-center rounded-full bg-primary text-white px-4 py-2 text-sm font-semibold shadow hover:bg-primary/90 transition"
+            >
+              Ver todos
+            </a>
+          </div>
+        </div>
+        {loading ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Carregando imóveis...</p>
+          </div>
+        ) : featuredList.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Em breve, novidades em destaque.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            {featuredList.map((property) => {
+              const primaryImage = property.property_images.find((img) => img.is_primary);
+              const imageUrl = primaryImage?.image_url || property.property_images[0]?.image_url;
+              return (
+                <Link key={property.id} to={`/property/${property.codigo || property.id}`} className="no-underline">
+                  <PropertyCard
+                    id={property.id}
+                    title={property.title}
+                    propertyType={property.property_type}
+                    transactionType={property.transaction_type}
+                    location={property.location}
+                    city={property.city}
+                    price={property.price}
+                    area={property.area}
+                    bedrooms={property.bedrooms}
+                    bathrooms={property.bathrooms}
+                    parkingSpaces={property.parking_spaces}
+                    imageUrl={imageUrl}
+                    featured={property.featured}
+                  />
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      <section className="container mx-auto px-4 pb-8 md:pb-12">
+        <div className="bg-secondary rounded-xl p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h3 className="text-xl md:text-2xl font-bold text-foreground mb-1">Quer anunciar seu imóvel?</h3>
+            <p className="text-muted-foreground text-sm md:text-base">
+              Divulgação estratégica, fotos profissionais e suporte completo.
+            </p>
+          </div>
+          <Link
+            to="/anunciar"
+            className="inline-flex items-center justify-center rounded-full bg-primary text-white px-5 py-2 text-sm font-semibold shadow hover:bg-primary/90 transition"
+          >
+            Anunciar agora
+          </Link>
+        </div>
+      </section>
+
+      <section className="container mx-auto px-4 pb-8 md:pb-12">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6 md:mb-8">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-bold mb-2">Novidades recentes</h2>
+            <p className="text-muted-foreground text-sm md:text-base">
+              Confira os imóveis adicionados mais recentemente
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              to="/anunciar"
+              className="inline-flex items-center justify-center rounded-full border border-accent text-accent px-4 py-2 text-sm font-semibold hover:bg-accent hover:text-primary transition"
+            >
+              Anunciar imóvel
+            </Link>
+            <a
+              href="#imoveis"
+              className="inline-flex items-center justify-center rounded-full bg-primary text-white px-4 py-2 text-sm font-semibold shadow hover:bg-primary/90 transition"
+            >
+              Ver lista completa
+            </a>
+          </div>
+        </div>
+        {loading ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Carregando imóveis...</p>
+          </div>
+        ) : recentList.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Nenhum imóvel disponível no momento.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            {recentList.map((property) => {
+              const primaryImage = property.property_images.find((img) => img.is_primary);
+              const imageUrl = primaryImage?.image_url || property.property_images[0]?.image_url;
+              return (
+                <Link key={property.id} to={`/property/${property.codigo || property.id}`} className="no-underline">
+                  <PropertyCard
+                    id={property.id}
+                    title={property.title}
+                    propertyType={property.property_type}
+                    transactionType={property.transaction_type}
+                    location={property.location}
+                    city={property.city}
+                    price={property.price}
+                    area={property.area}
+                    bedrooms={property.bedrooms}
+                    bathrooms={property.bathrooms}
+                    parkingSpaces={property.parking_spaces}
+                    imageUrl={imageUrl}
+                    featured={property.featured}
+                  />
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
       {/* Properties Section */}
       <section id="imoveis" className="container mx-auto px-4 py-8 md:py-16 flex-1">
         <div className="flex flex-col lg:flex-row gap-6 md:gap-8">
@@ -695,11 +836,28 @@ const Index = () => {
 
           {/* Lista de Imóveis - Agora aparece primeiro no mobile */}
           <div className="flex-1 min-w-0 order-first lg:order-none">
-            <div className="mb-6 md:mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold mb-2">Imóveis Disponíveis</h2>
-              <p className="text-muted-foreground text-sm md:text-base">
-                {filteredProperties.length} {filteredProperties.length === 1 ? "imóvel encontrado" : "imóveis encontrados"}
-              </p>
+            <div className="mb-6 md:mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+              <div>
+                <h2 className="text-2xl md:text-3xl font-bold mb-2">Imóveis Disponíveis</h2>
+                <p className="text-muted-foreground text-sm md:text-base">
+                  {filteredProperties.length} {filteredProperties.length === 1 ? "imóvel encontrado" : "imóveis encontrados"}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <a
+                  href="tel:+5551999999999"
+                  className="inline-flex items-center justify-center rounded-full border border-accent text-accent px-4 py-2 text-sm font-semibold hover:bg-accent hover:text-primary transition"
+                >
+                  Agendar visita
+                </a>
+                <Link
+                  to="/anunciar"
+                  onClick={() => window.scrollTo({ top: 0, behavior: "auto" })}
+                  className="inline-flex items-center justify-center rounded-full bg-primary text-white px-4 py-2 text-sm font-semibold shadow hover:bg-primary/90 transition"
+                >
+                  Quero vender
+                </Link>
+              </div>
             </div>
 
             {loading ? (
