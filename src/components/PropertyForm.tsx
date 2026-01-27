@@ -15,7 +15,7 @@ const propertySchema = z.object({
   title: z.string().min(5, "Título deve ter pelo menos 5 caracteres").max(100),
   description: z.string().min(20, "Descrição deve ter pelo menos 20 caracteres").max(1000),
   propertyType: z.string().min(1, "Selecione um tipo de imóvel"),
-  price: z.number().positive("Preço deve ser maior que zero"),
+  price: z.number().nonnegative("Preço inválido"),
   location: z.string().min(3, "Localização inválida").max(200),
   city: z.string().min(2, "Cidade inválida").max(100),
 });
@@ -46,6 +46,7 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
     featured: false,
     condominio: "",
     iptu: "",
+    isLaunch: false,
   });
   const [features, setFeatures] = useState<string[]>([]);
   const [newFeature, setNewFeature] = useState("");
@@ -77,7 +78,14 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
     
     try {
       // Convert Brazilian format (123.456,78) to number
-      const priceValue = parseFloat(formData.price.replace(/\./g, '').replace(',', '.'));
+      const priceValue = formData.isLaunch
+        ? 0
+        : parseFloat(formData.price.replace(/\./g, '').replace(',', '.'));
+
+      if (!formData.isLaunch && (!Number.isFinite(priceValue) || priceValue <= 0)) {
+        toast.error("Informe um preço válido");
+        return;
+      }
       
       const validatedData = propertySchema.parse({
         title: formData.title,
@@ -100,26 +108,29 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
           description: validatedData.description,
           property_type: validatedData.propertyType,
           transaction_type: formData.transactionType,
-          price: validatedData.price,
-          location: validatedData.location,
-          city: validatedData.city,
-            state: formData.state || null,
-            zipcode: formData.zipcode || null,
-          area: formData.area ? parseFloat(formData.area) : null,
-          area_privativa: formData.areaPrivativa ? parseFloat(formData.areaPrivativa) : null,
+        price: validatedData.price,
+        location: validatedData.location,
+        city: validatedData.city,
+          state: formData.state || null,
+          zipcode: formData.zipcode || null,
+        area: formData.area ? parseFloat(formData.area) : null,
+        area_privativa: formData.areaPrivativa ? parseFloat(formData.areaPrivativa) : null,
           bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : null,
           bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : null,
           parking_spaces: formData.parkingSpaces ? parseInt(formData.parkingSpaces) : null,
           features: features.length > 0 ? features : null,
           user_id: user.id,
-          featured: formData.featured,
-          condominio: formData.transactionType === "aluguel" && formData.condominio
-            ? parseFloat(formData.condominio)
-            : null,
-          iptu: formData.transactionType === "aluguel" && formData.iptu
-            ? parseFloat(formData.iptu)
-            : null,
-        }])
+        featured: formData.featured,
+        is_launch: formData.isLaunch,
+        condominio: formData.transactionType === "aluguel" && formData.condominio
+          && !formData.isLaunch
+          ? parseFloat(formData.condominio)
+          : null,
+        iptu: formData.transactionType === "aluguel" && formData.iptu
+          && !formData.isLaunch
+          ? parseFloat(formData.iptu)
+          : null,
+      }])
         .select()
         .single();
       if (propertyError) {
@@ -198,6 +209,7 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
         featured: false,
         condominio: "",
         iptu: "",
+        isLaunch: false,
       });
       setImages([]);
       setVideos([]);
@@ -264,9 +276,18 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
 
             <div className="space-y-2">
               <Label htmlFor="transactionType">Categoria *</Label>
-              <Select
+          <Select
                 value={formData.transactionType}
-                onValueChange={(value) => setFormData({ ...formData, transactionType: value })}
+                onValueChange={(value) =>
+                  setFormData({
+                    ...formData,
+                    transactionType: value,
+                    isLaunch: value === "lancamento",
+                    price: value === "lancamento" ? "" : formData.price,
+                    condominio: value === "lancamento" ? "" : formData.condominio,
+                    iptu: value === "lancamento" ? "" : formData.iptu,
+                  })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione" />
@@ -274,27 +295,30 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
                 <SelectContent>
                   <SelectItem value="venda">Venda</SelectItem>
                   <SelectItem value="aluguel">Aluguel</SelectItem>
+                  <SelectItem value="lancamento">Lançamento</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="price">
-              {formData.transactionType === "aluguel" ? "Valor aluguel (R$) *" : "Preço (R$) *"}
-            </Label>
-            <Input
-              id="price"
-              type="number"
-              step="0.01"
-              value={formData.price}
-              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-              placeholder={formData.transactionType === "aluguel" ? "4800.00" : "250000.00"}
-              required
-            />
-            {formData.transactionType === "aluguel" && (
-              <p className="text-xs text-muted-foreground">Ex: R$ 4.800,00 / mês</p>
-            )}
-          </div>
+          {!formData.isLaunch && (
+            <div className="space-y-2">
+              <Label htmlFor="price">
+                {formData.transactionType === "aluguel" ? "Valor aluguel (R$) *" : "Preço (R$) *"}
+              </Label>
+              <Input
+                id="price"
+                type="number"
+                step="0.01"
+                value={formData.price}
+                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                placeholder={formData.transactionType === "aluguel" ? "4800.00" : "250000.00"}
+                required
+              />
+              {formData.transactionType === "aluguel" && (
+                <p className="text-xs text-muted-foreground">Ex: R$ 4.800,00 / mês</p>
+              )}
+            </div>
+          )}
 
             <div className="space-y-2">
               <Label htmlFor="area">Área (m²)</Label>
@@ -409,7 +433,7 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
             />
           </div>
 
-          {formData.transactionType === "aluguel" && (
+          {formData.transactionType === "aluguel" && !formData.isLaunch && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="condominio">Condomínio (R$)</Label>
@@ -449,6 +473,29 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
             />
             <Label htmlFor="featured" className="cursor-pointer">
               Exibir em Imóveis imperdíveis
+            </Label>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="isLaunch"
+              name="isLaunch"
+              checked={formData.isLaunch}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  isLaunch: e.target.checked,
+                  transactionType: e.target.checked ? "lancamento" : "venda",
+                  price: e.target.checked ? "" : formData.price,
+                  condominio: e.target.checked ? "" : formData.condominio,
+                  iptu: e.target.checked ? "" : formData.iptu,
+                })
+              }
+              className="w-4 h-4"
+            />
+            <Label htmlFor="isLaunch" className="cursor-pointer">
+              Marcar como Lançamento (sem preço)
             </Label>
           </div>
 

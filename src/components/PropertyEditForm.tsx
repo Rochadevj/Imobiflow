@@ -49,6 +49,7 @@ export default function PropertyEditForm({
     status: "disponivel",
     condominio: "",
     iptu: "",
+    isLaunch: false,
   });
 
   const [existingImages, setExistingImages] = useState<
@@ -114,6 +115,7 @@ export default function PropertyEditForm({
           status: statusMap[property.status || "available"] || "disponivel",
           condominio: property.condominio !== null && property.condominio !== undefined ? String(property.condominio) : "",
           iptu: property.iptu !== null && property.iptu !== undefined ? String(property.iptu) : "",
+          isLaunch: property.is_launch || false,
         });
         
         // Load features if they exist
@@ -158,6 +160,17 @@ export default function PropertyEditForm({
   };
 
   const handleSelectChange = (name: string, value: string) => {
+    if (name === "tipo") {
+      setFormData((prev) => ({
+        ...prev,
+        tipo: value,
+        isLaunch: value === "lancamento",
+        preco: value === "lancamento" ? "" : prev.preco,
+        condominio: value === "lancamento" ? "" : prev.condominio,
+        iptu: value === "lancamento" ? "" : prev.iptu,
+      }));
+      return;
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -222,9 +235,16 @@ export default function PropertyEditForm({
       
       // Update property details
       // Convert Brazilian format (123.456,78) to number
-      const priceValue = parseFloat(formData.preco.replace(/\./g, '').replace(',', '.'));
+      const priceValue = formData.isLaunch
+        ? 0
+        : parseFloat(formData.preco.replace(/\./g, '').replace(',', '.'));
       const areaValue = formData.area ? parseFloat(formData.area) : null;
       const areaPrivativaValue = formData.areaPrivativa ? parseFloat(formData.areaPrivativa) : null;
+
+      if (!formData.isLaunch && (!Number.isFinite(priceValue) || priceValue <= 0)) {
+        toast.error("Informe um preço válido");
+        return;
+      }
       
       const { error: updateError } = await supabase
         .from("properties")
@@ -246,8 +266,9 @@ export default function PropertyEditForm({
           featured: formData.destaque,
           status: statusMap[formData.status] || formData.status,
           features: features.length > 0 ? features : null,
-          condominio: formData.tipo === "aluguel" && formData.condominio ? parseFloat(formData.condominio) : null,
-          iptu: formData.tipo === "aluguel" && formData.iptu ? parseFloat(formData.iptu) : null,
+          condominio: formData.tipo === "aluguel" && !formData.isLaunch && formData.condominio ? parseFloat(formData.condominio) : null,
+          iptu: formData.tipo === "aluguel" && !formData.isLaunch && formData.iptu ? parseFloat(formData.iptu) : null,
+          is_launch: formData.isLaunch,
         })
         .eq("id", propertyId);
 
@@ -393,6 +414,7 @@ export default function PropertyEditForm({
                 <SelectContent>
                   <SelectItem value="venda">Venda</SelectItem>
                   <SelectItem value="aluguel">Aluguel</SelectItem>
+                  <SelectItem value="lancamento">Lançamento</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -416,25 +438,27 @@ export default function PropertyEditForm({
               </Select>
             </div>
 
-            <div>
-              <Label htmlFor="preco">
-                {formData.tipo === "aluguel" ? "Valor aluguel (R$)" : "Preço (R$)"}
-              </Label>
-              <Input
-                id="preco"
-                name="preco"
-                type="number"
-                step="0.01"
-                value={formData.preco}
-                onChange={handleInputChange}
-                required
-              />
-              {formData.tipo === "aluguel" && (
-                <p className="text-xs text-muted-foreground mt-1">Ex: R$ 4.800,00 / mês</p>
-              )}
-            </div>
+            {!formData.isLaunch && (
+              <div>
+                <Label htmlFor="preco">
+                  {formData.tipo === "aluguel" ? "Valor aluguel (R$)" : "Preço (R$)"}
+                </Label>
+                <Input
+                  id="preco"
+                  name="preco"
+                  type="number"
+                  step="0.01"
+                  value={formData.preco}
+                  onChange={handleInputChange}
+                  required
+                />
+                {formData.tipo === "aluguel" && (
+                  <p className="text-xs text-muted-foreground mt-1">Ex: R$ 4.800,00 / mês</p>
+                )}
+              </div>
+            )}
 
-            {formData.tipo === "aluguel" && (
+            {formData.tipo === "aluguel" && !formData.isLaunch && (
               <>
                 <div>
                   <Label htmlFor="condominio">Condomínio (R$)</Label>
@@ -501,6 +525,29 @@ export default function PropertyEditForm({
             />
             <Label htmlFor="destaque" className="cursor-pointer">
               Exibir em Imóveis imperdíveis
+            </Label>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="isLaunch"
+              name="isLaunch"
+              checked={formData.isLaunch}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  isLaunch: e.target.checked,
+                  tipo: e.target.checked ? "lancamento" : "venda",
+                  preco: e.target.checked ? "" : formData.preco,
+                  condominio: e.target.checked ? "" : formData.condominio,
+                  iptu: e.target.checked ? "" : formData.iptu,
+                })
+              }
+              className="w-4 h-4"
+            />
+            <Label htmlFor="isLaunch" className="cursor-pointer">
+              Marcar como Lançamento (sem preço)
             </Label>
           </div>
         </CardContent>

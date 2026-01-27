@@ -10,6 +10,7 @@ interface PropertyMetaProps {
   codigo: string;
   preco: number;
   transactionType?: string;
+  showPrice?: boolean;
 }
 
 export default function PropertyMeta({
@@ -22,6 +23,7 @@ export default function PropertyMeta({
   codigo,
   preco,
   transactionType,
+  showPrice = true,
 }: PropertyMetaProps) {
   const formatPrice = (value: number, withCents: boolean) => {
     return new Intl.NumberFormat("pt-BR", {
@@ -45,7 +47,9 @@ export default function PropertyMeta({
     { icon: Bath, label: "Banheiros", value: banheiros },
     { icon: Car, label: "Vagas", value: vagas },
     { icon: Hash, label: "Código", value: codigo },
-    { icon: DollarSign, label: isRental ? "Valor aluguel" : "Preço", value: priceValue, highlight: true },
+    ...(showPrice
+      ? [{ icon: DollarSign, label: isRental ? "Valor aluguel" : "Preço", value: priceValue, highlight: true }]
+      : []),
   ];
 
   return (

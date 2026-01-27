@@ -10,6 +10,12 @@ interface RealtorCardProps {
   photo: string;
   phone: string;
   propertyTitle: string;
+  propertyCode: string;
+  propertyType: string;
+  transactionType?: string;
+  area?: number;
+  location?: string;
+  city?: string;
 }
 
 export default function RealtorCard({
@@ -18,11 +24,50 @@ export default function RealtorCard({
   photo,
   phone,
   propertyTitle,
+  propertyCode,
+  propertyType,
+  transactionType,
+  area,
+  location,
+  city,
 }: RealtorCardProps) {
+  const getPropertyTypeLabel = (type: string) => {
+    const types: Record<string, string> = {
+      apartamento: "Apartamento",
+      casa: "Casa",
+      casa_condominio: "Casa em Condomínio",
+      cobertura: "Cobertura",
+      sala_comercial: "Sala Comercial",
+      sobrado: "Sobrado",
+      sobrado_condominio: "Sobrado em Condomínio",
+      terreno: "Terreno",
+      comercial: "Comercial",
+      galpao: "Galpão",
+      chacara: "Chácara",
+      sitio: "Sítio",
+      lancamento: "Lançamento",
+    };
+    return types[type] || type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+  };
+
+  const getTransactionLabel = (type?: string) => {
+    if (type === "aluguel") return "para Alugar";
+    if (type === "venda") return "para Comprar";
+    if (type === "lancamento") return "sobre o lançamento";
+    return "para Comprar";
+  };
+
+  const areaSuffix = area && !propertyTitle.includes("m²") ? ` com ${area}m²` : "";
+  const locationText = location ? ` no bairro ${location}` : "";
+  const cityText = city ? ` em ${city}` : "";
+  const propertyName = propertyTitle || getPropertyTypeLabel(propertyType);
+  const messageTemplate = `Gostaria de mais informações sobre o código ${propertyCode} - ${propertyName}${areaSuffix}${locationText}${cityText} ${getTransactionLabel(transactionType)}. Obrigado.`;
+
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
     telefone: "",
+    mensagem: messageTemplate,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -98,6 +143,15 @@ export default function RealtorCard({
               value={formData.telefone}
               onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
               required
+            />
+          </div>
+
+          <div>
+            <Textarea
+              id="mensagem"
+              value={formData.mensagem}
+              onChange={(e) => setFormData({ ...formData, mensagem: e.target.value })}
+              rows={4}
             />
           </div>
 

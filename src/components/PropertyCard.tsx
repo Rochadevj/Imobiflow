@@ -19,6 +19,7 @@ interface PropertyCardProps {
   parkingSpaces?: number;
   imageUrl?: string;
   featured?: boolean;
+  isLaunch?: boolean;
 }
 
 const PropertyCard = ({
@@ -36,6 +37,7 @@ const PropertyCard = ({
   parkingSpaces,
   imageUrl,
   featured,
+  isLaunch,
 }: PropertyCardProps) => {
   const [isFavorited, setIsFavorited] = useState(false);
 
@@ -81,7 +83,7 @@ const PropertyCard = ({
     window.dispatchEvent(new Event('favoritesChanged'));
   };
   return (
-    <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 group">
+    <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 group h-full">
       <div className="relative h-64 overflow-hidden">
         {imageUrl ? (
           <img
@@ -106,7 +108,7 @@ const PropertyCard = ({
           <Badge className="absolute bottom-4 left-4 bg-accent text-primary group-hover:text-white font-semibold shadow-lg z-10 transition-colors duration-300">
             Destaque
           </Badge>
-        )}=
+        )}
         {/* Favorite button */}
         <button
           onClick={toggleFavorite}
@@ -117,15 +119,17 @@ const PropertyCard = ({
         </button>
       </div>
 
-      <CardContent className="p-6">
-        <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-1">{title}</h3>
+      <CardContent className="p-5 flex flex-col h-[190px]">
+        <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2 min-h-[44px]">
+          {title}
+        </h3>
         
-        <div className="flex items-center text-muted-foreground mb-4">
+        <div className="flex items-center text-muted-foreground mb-3 min-h-[20px]">
           <MapPin className="h-4 w-4 mr-1" />
-          <span className="text-sm">{location} | {city}</span>
+          <span className="text-sm line-clamp-1">{location} | {city}</span>
         </div>
 
-        <div className="flex flex-wrap gap-4 mb-4 text-sm text-muted-foreground">
+        <div className="flex flex-wrap gap-3 mb-3 text-sm text-muted-foreground min-h-[36px]">
           {(areaPrivativa || area) && (
             <div className="flex items-center">
               <Ruler className="h-4 w-4 mr-1" />
@@ -152,9 +156,15 @@ const PropertyCard = ({
           )}
         </div>
 
-        <div className="text-2xl font-bold text-accent">
-          R$ {price.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-        </div>
+        {!isLaunch && (
+          <div className="mt-auto text-xl font-bold text-accent">
+            <span className="text-xs font-semibold text-muted-foreground mr-2">Por</span>
+            R$ {price.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+            {transactionType === "aluguel" && (
+              <span className="text-xs font-semibold text-muted-foreground ml-2">/ mês</span>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

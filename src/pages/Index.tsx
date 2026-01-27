@@ -27,6 +27,7 @@ interface Property {
   bathrooms?: number;
   parking_spaces?: number;
   featured: boolean;
+  is_launch?: boolean;
   property_images: { image_url: string; is_primary: boolean }[];
 }
 
@@ -46,9 +47,14 @@ const Index = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [featuredProperties, setFeaturedProperties] = useState<HeroProperty[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingSections, setLoadingSections] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [showFilters, setShowFilters] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [showList, setShowList] = useState(false);
+  const [featuredImperdiveis, setFeaturedImperdiveis] = useState<Property[]>([]);
+  const [featuredVenda, setFeaturedVenda] = useState<Property[]>([]);
+  const [featuredLocacao, setFeaturedLocacao] = useState<Property[]>([]);
+  const [launches, setLaunches] = useState<Property[]>([]);
   
   // Filtros avançados
   const [propertyType, setPropertyType] = useState("");
@@ -66,6 +72,8 @@ const Index = () => {
   // Ler parâmetros da URL quando a página carrega
   useEffect(() => {
     const type = searchParams.get('type');
+    const list = searchParams.get('list');
+    setShowList(list === '1');
     if (type === 'comprar') {
       setHeroTab('comprar');
       setTransactionType('venda');
@@ -79,8 +87,17 @@ const Index = () => {
   }, [searchParams]);
 
   useEffect(() => {
-    fetchProperties();
+    if (showList) {
+      setLoading(true);
+      fetchProperties();
+    } else {
+      setLoading(false);
+    }
+  }, [showList]);
+
+  useEffect(() => {
     fetchFeaturedProperties();
+    fetchSectionProperties();
   }, []);
 
   const fetchProperties = async () => {
@@ -101,9 +118,11 @@ const Index = () => {
           bathrooms,
           parking_spaces,
           featured,
+          is_launch,
           property_images(image_url, is_primary)
         `)
         .eq("status", "available")
+        .neq("is_launch", true)
         .order("featured", { ascending: false })
         .order("created_at", { ascending: false });
 
@@ -132,6 +151,7 @@ const Index = () => {
         `)
         .eq("status", "available")
         .eq("featured", true)
+        .neq("is_launch", true)
         .not("property_images", "is", null)
         .limit(8)
         .order("created_at", { ascending: false });
@@ -168,6 +188,7 @@ const Index = () => {
             property_images!inner(image_url, is_primary)
           `)
           .eq("status", "available")
+          .neq("is_launch", true)
           .not("property_images", "is", null)
           .limit(6)
           .order("created_at", { ascending: false });
@@ -197,7 +218,76 @@ const Index = () => {
     }
   };
 
-  const filteredProperties = properties.filter((property) => {
+  const fetchSectionProperties = async () => {
+    try {
+      setLoadingSections(true);
+      const baseSelect = `
+        id,
+        codigo,
+        title,
+        property_type,
+        transaction_type,
+        price,
+        location,
+        city,
+        area,
+        bedrooms,
+        bathrooms,
+        parking_spaces,
+        featured,
+        is_launch,
+        property_images(image_url, is_primary)
+      `;
+
+      const { data: imperdiveis } = await supabase
+        .from("properties")
+        .select(baseSelect)
+        .eq("status", "available")
+        .eq("featured", true)
+        .neq("is_launch", true)
+        .order("created_at", { ascending: false })
+        .limit(6);
+
+      const { data: venda } = await supabase
+        .from("properties")
+        .select(baseSelect)
+        .eq("status", "available")
+        .eq("featured", true)
+        .eq("transaction_type", "venda")
+        .neq("is_launch", true)
+        .order("created_at", { ascending: false })
+        .limit(6);
+
+      const { data: locacao } = await supabase
+        .from("properties")
+        .select(baseSelect)
+        .eq("status", "available")
+        .eq("featured", true)
+        .eq("transaction_type", "aluguel")
+        .neq("is_launch", true)
+        .order("created_at", { ascending: false })
+        .limit(6);
+
+      const { data: launchData } = await supabase
+        .from("properties")
+        .select(baseSelect)
+        .eq("status", "available")
+        .eq("is_launch", true)
+        .order("created_at", { ascending: false })
+        .limit(6);
+
+      setFeaturedImperdiveis(imperdiveis || []);
+      setFeaturedVenda(venda || []);
+      setFeaturedLocacao(locacao || []);
+      setLaunches(launchData || []);
+    } catch (error) {
+      console.error("Erro ao carregar destaques:", error);
+    } finally {
+      setLoadingSections(false);
+    }
+  };
+
+  const filteredProperties = showList ? properties.filter((property) => {
     // Filtro de busca por texto
     const matchesSearch = 
       property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -219,10 +309,7 @@ const Index = () => {
     return matchesSearch && matchesType && matchesTransactionType && matchesMinPrice && matchesMaxPrice && 
            matchesMinArea && matchesMaxArea && matchesNeighborhood && matchesBedrooms && 
            matchesBathrooms && matchesParkingSpaces;
-  });
-
-  const featuredList = properties.filter((p) => p.featured).slice(0, 6);
-  const recentList = properties.slice(0, 6);
+  }) : [];
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -279,7 +366,6 @@ const Index = () => {
           </div>
         </div>
       </section>
-      {/* Barra de busca posicionada abaixo do hero com leve overlap controlado */}
       <div className="relative z-20 -mt-24 md:-mt-32 mb-8 md:mb-12">
         <div className="container mx-auto px-4">
           <div className="bg-white text-foreground rounded-xl shadow-xl border border-border overflow-hidden max-w-5xl mx-auto">
@@ -289,6 +375,7 @@ const Index = () => {
                 onClick={() => {
                   setHeroTab('comprar');
                   setTransactionType('venda');
+                  setShowList(true);
                 }}
                 className={`pb-3 md:pb-4 text-sm font-medium relative ${heroTab==='comprar'?'text-accent':'text-muted-foreground hover:text-foreground'}`}
               >
@@ -300,6 +387,7 @@ const Index = () => {
                 onClick={() => {
                   setHeroTab('alugar');
                   setTransactionType('aluguel');
+                  setShowList(true);
                 }}
                 className={`pb-3 md:pb-4 text-sm font-medium relative ${heroTab==='alugar'?'text-accent':'text-muted-foreground hover:text-foreground'}`}
               >
@@ -311,6 +399,7 @@ const Index = () => {
                 onClick={() => {
                   setHeroTab('todos');
                   setTransactionType('');
+                  setShowList(true);
                 }}
                 className={`pb-3 md:pb-4 text-sm font-medium relative ${heroTab==='todos'?'text-accent':'text-muted-foreground hover:text-foreground'}`}
               >
@@ -531,40 +620,46 @@ const Index = () => {
 
 
       {/* Destaques e novidades */}
+      {!showList && (
+      <>
       <section className="container mx-auto px-4 py-10 md:py-14">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6 md:mb-8">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-bold mb-2">Imóveis imperdíveis</h2>
-            <p className="text-muted-foreground text-sm md:text-base">
-              Seleção especial com as melhores oportunidades da semana
-            </p>
+        <div className="mb-6 md:mb-8">
+          <div className="flex items-center justify-center gap-4 mb-3">
+            <span className="h-px w-16 sm:w-24 md:w-32 bg-muted-foreground/40" />
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-wide text-center uppercase">
+              Imóveis imperdíveis
+            </h2>
+            <span className="h-px w-16 sm:w-24 md:w-32 bg-muted-foreground/40" />
           </div>
-          <div className="flex flex-wrap gap-2">
+          <p className="text-muted-foreground text-sm md:text-base text-center">
+            Seleção especial com as melhores oportunidades da semana
+          </p>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
             <a
               href="tel:+5551999999999"
               className="inline-flex items-center justify-center rounded-full border border-accent text-accent px-4 py-2 text-sm font-semibold hover:bg-accent hover:text-primary transition"
             >
               Falar com corretor
             </a>
-            <a
-              href="#imoveis"
+            <Link
+              to="/?list=1"
               className="inline-flex items-center justify-center rounded-full bg-primary text-white px-4 py-2 text-sm font-semibold shadow hover:bg-primary/90 transition"
             >
               Ver todos
-            </a>
+            </Link>
           </div>
         </div>
-        {loading ? (
+        {loadingSections ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground">Carregando imóveis...</p>
           </div>
-        ) : featuredList.length === 0 ? (
+        ) : featuredImperdiveis.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground">Em breve, novidades em destaque.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-            {featuredList.map((property) => {
+            {featuredImperdiveis.map((property) => {
               const primaryImage = property.property_images.find((img) => img.is_primary);
               const imageUrl = primaryImage?.image_url || property.property_images[0]?.image_url;
               return (
@@ -583,6 +678,7 @@ const Index = () => {
                     parkingSpaces={property.parking_spaces}
                     imageUrl={imageUrl}
                     featured={property.featured}
+                    isLaunch={property.is_launch}
                   />
                 </Link>
               );
@@ -592,56 +688,43 @@ const Index = () => {
       </section>
 
       <section className="container mx-auto px-4 pb-8 md:pb-12">
-        <div className="bg-secondary rounded-xl p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h3 className="text-xl md:text-2xl font-bold text-foreground mb-1">Quer anunciar seu imóvel?</h3>
-            <p className="text-muted-foreground text-sm md:text-base">
-              Divulgação estratégica, fotos profissionais e suporte completo.
-            </p>
+        <div className="mb-6 md:mb-8">
+          <div className="flex items-center justify-center gap-4 mb-3">
+            <span className="h-px w-16 sm:w-24 md:w-32 bg-muted-foreground/40" />
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-wide text-center uppercase">
+              Destaques de venda
+            </h2>
+            <span className="h-px w-16 sm:w-24 md:w-32 bg-muted-foreground/40" />
           </div>
-          <Link
-            to="/anunciar"
-            className="inline-flex items-center justify-center rounded-full bg-primary text-white px-5 py-2 text-sm font-semibold shadow hover:bg-primary/90 transition"
-          >
-            Anunciar agora
-          </Link>
-        </div>
-      </section>
-
-      <section className="container mx-auto px-4 pb-8 md:pb-12">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6 md:mb-8">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-bold mb-2">Novidades recentes</h2>
-            <p className="text-muted-foreground text-sm md:text-base">
-              Confira os imóveis adicionados mais recentemente
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
+          <p className="text-muted-foreground text-sm md:text-base text-center">
+            As melhores opções para quem quer comprar
+          </p>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
             <Link
               to="/anunciar"
               className="inline-flex items-center justify-center rounded-full border border-accent text-accent px-4 py-2 text-sm font-semibold hover:bg-accent hover:text-primary transition"
             >
               Anunciar imóvel
             </Link>
-            <a
-              href="#imoveis"
+            <Link
+              to="/?list=1&type=comprar"
               className="inline-flex items-center justify-center rounded-full bg-primary text-white px-4 py-2 text-sm font-semibold shadow hover:bg-primary/90 transition"
             >
-              Ver lista completa
-            </a>
+              Ver todos
+            </Link>
           </div>
         </div>
-        {loading ? (
+        {loadingSections ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground">Carregando imóveis...</p>
           </div>
-        ) : recentList.length === 0 ? (
+        ) : featuredVenda.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">Nenhum imóvel disponível no momento.</p>
+            <p className="text-muted-foreground">Nenhum destaque de venda no momento.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-            {recentList.map((property) => {
+            {featuredVenda.map((property) => {
               const primaryImage = property.property_images.find((img) => img.is_primary);
               const imageUrl = primaryImage?.image_url || property.property_images[0]?.image_url;
               return (
@@ -660,6 +743,7 @@ const Index = () => {
                     parkingSpaces={property.parking_spaces}
                     imageUrl={imageUrl}
                     featured={property.featured}
+                    isLaunch={property.is_launch}
                   />
                 </Link>
               );
@@ -668,7 +752,75 @@ const Index = () => {
         )}
       </section>
 
-      {/* Properties Section */}
+
+      <section className="container mx-auto px-4 pb-8 md:pb-12">
+        <div className="mb-6 md:mb-8">
+          <div className="flex items-center justify-center gap-4 mb-3">
+            <span className="h-px w-16 sm:w-24 md:w-32 bg-muted-foreground/40" />
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-wide text-center uppercase">
+              Destaques de locação
+            </h2>
+            <span className="h-px w-16 sm:w-24 md:w-32 bg-muted-foreground/40" />
+          </div>
+          <p className="text-muted-foreground text-sm md:text-base text-center">
+            Sua nova casa está aqui
+          </p>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+            <Link
+              to="/anunciar"
+              className="inline-flex items-center justify-center rounded-full border border-accent text-accent px-4 py-2 text-sm font-semibold hover:bg-accent hover:text-primary transition"
+            >
+              Anunciar imóvel
+            </Link>
+            <Link
+              to="/?list=1&type=alugar"
+              className="inline-flex items-center justify-center rounded-full bg-primary text-white px-4 py-2 text-sm font-semibold shadow hover:bg-primary/90 transition"
+            >
+              Ver todos
+            </Link>
+          </div>
+        </div>
+        {loadingSections ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Carregando imóveis...</p>
+          </div>
+        ) : featuredLocacao.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Nenhum destaque de locação no momento.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            {featuredLocacao.map((property) => {
+              const primaryImage = property.property_images.find((img) => img.is_primary);
+              const imageUrl = primaryImage?.image_url || property.property_images[0]?.image_url;
+              return (
+                <Link key={property.id} to={`/property/${property.codigo || property.id}`} className="no-underline">
+                  <PropertyCard
+                    id={property.id}
+                    title={property.title}
+                    propertyType={property.property_type}
+                    transactionType={property.transaction_type}
+                    location={property.location}
+                    city={property.city}
+                    price={property.price}
+                    area={property.area}
+                    bedrooms={property.bedrooms}
+                    bathrooms={property.bathrooms}
+                    parkingSpaces={property.parking_spaces}
+                    imageUrl={imageUrl}
+                    featured={property.featured}
+                    isLaunch={property.is_launch}
+                  />
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </section>
+      </>
+      )}
+
+      {showList && (
       <section id="imoveis" className="container mx-auto px-4 py-8 md:py-16 flex-1">
         <div className="flex flex-col lg:flex-row gap-6 md:gap-8">
           {/* Filtros Laterais - Desktop apenas */}
@@ -889,6 +1041,7 @@ const Index = () => {
                         parkingSpaces={property.parking_spaces}
                         imageUrl={imageUrl}
                         featured={property.featured}
+                        isLaunch={property.is_launch}
                       />
                     </Link>
                   );
@@ -898,6 +1051,63 @@ const Index = () => {
           </div>
         </div>
       </section>
+      )}
+
+      {!showList && (
+        <section className="container mx-auto px-4 py-8 md:py-12">
+          <div className="rounded-3xl bg-[#2b2b2b] text-white p-6 md:p-10 shadow-xl">
+            <div className="flex items-center justify-between gap-4 mb-6">
+              <h2 className="text-2xl md:text-3xl font-bold tracking-wide">
+                LANÇAMENTOS<span className="text-accent">.</span>
+              </h2>
+            </div>
+            {loadingSections ? (
+              <div className="text-center py-8 text-white/70">Carregando lançamentos...</div>
+            ) : launches.length === 0 ? (
+              <div className="text-center py-8 text-white/70">Nenhum lançamento disponível no momento.</div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+                {launches.map((property) => {
+                  const primaryImage = property.property_images.find((img) => img.is_primary);
+                  const imageUrl = primaryImage?.image_url || property.property_images[0]?.image_url;
+                  return (
+                    <Link key={property.id} to={`/property/${property.codigo || property.id}`} className="no-underline">
+                      <div className="flex bg-black/70 rounded-2xl overflow-hidden border border-white/10 hover:border-accent/60 transition">
+                        <div className="w-2/5 min-h-[140px]">
+                          {imageUrl ? (
+                            <img
+                              src={imageUrl}
+                              alt={property.title}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="h-full w-full bg-white/10 flex items-center justify-center text-white/60 text-sm">
+                              Sem imagem
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 p-4 flex flex-col justify-between">
+                          <div>
+                            <p className="text-xs text-white/70 mb-2">
+                              {property.location}, {property.city}
+                            </p>
+                            <h3 className="text-base md:text-lg font-semibold text-white line-clamp-2">
+                              {property.title}
+                            </h3>
+                          </div>
+                          <span className="mt-3 inline-flex items-center text-sm text-accent font-semibold">
+                            Ver unidades
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       <Footer />
     </div>

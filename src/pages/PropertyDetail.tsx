@@ -41,6 +41,7 @@ interface Property {
   features: string[];
   iptu?: number;
   condominio?: number;
+  is_launch?: boolean;
   location?: string;
   property_images?: { image_url: string; is_primary?: boolean }[];
 }
@@ -85,6 +86,7 @@ const PropertyDetail = () => {
             parking_spaces,
             iptu,
             condominio,
+            is_launch,
             featured,
             features,
             property_images(image_url, is_primary)
@@ -245,6 +247,60 @@ const PropertyDetail = () => {
             </p>
           </div>
 
+          {/* Preço em destaque */}
+          {!property.is_launch && (
+            <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-5">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <p className="text-sm font-medium text-gray-500">
+                    {property.transaction_type === "aluguel" ? "Valor aluguel" : "Preço"}
+                  </p>
+                  <p className="text-2xl md:text-3xl font-bold text-primary">
+                    {new Intl.NumberFormat("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                      minimumFractionDigits: property.transaction_type === "aluguel" ? 2 : 0,
+                      maximumFractionDigits: property.transaction_type === "aluguel" ? 2 : 0,
+                    }).format(property.price)}
+                    {property.transaction_type === "aluguel" && (
+                      <span className="text-base font-semibold text-gray-600"> / mês</span>
+                    )}
+                  </p>
+                </div>
+                {(property.condominio || property.iptu) && (
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    {property.condominio && (
+                      <div className="rounded-lg bg-gray-50 px-3 py-2">
+                        <p className="text-gray-500">Condomínio</p>
+                        <p className="font-semibold text-gray-900">
+                          {new Intl.NumberFormat("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }).format(property.condominio)}
+                        </p>
+                      </div>
+                    )}
+                    {property.iptu && (
+                      <div className="rounded-lg bg-gray-50 px-3 py-2">
+                        <p className="text-gray-500">IPTU</p>
+                        <p className="font-semibold text-gray-900">
+                          {new Intl.NumberFormat("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }).format(property.iptu)}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Metadados */}
           <PropertyMeta
             areaTotal={property.area}
@@ -256,49 +312,27 @@ const PropertyDetail = () => {
             codigo={property.codigo || property.id.slice(0, 8)}
             preco={property.price}
             transactionType={property.transaction_type}
+            showPrice={!property.is_launch}
           />
 
           {/* Sobre o Imóvel */}
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">Sobre o imóvel</h2>
-            <p className="text-gray-700 whitespace-pre-line leading-relaxed">
+            <h2 className="text-2xl font-bold text-gray-900">
+              {property.is_launch ? "Descrição do empreendimento" : "Sobre o imóvel"}
+            </h2>
+            <p className={`text-gray-700 whitespace-pre-line leading-relaxed ${property.is_launch ? "text-base md:text-lg" : ""}`}>
           {property.description || "Descrição não disponível."}
             </p>
 
             {/* IPTU e Condomínio */}
-            {(property.iptu || property.condominio) && (
-              <div className="pt-4 space-y-2">
-                {property.condominio && (
-                  <div className="text-sm text-gray-600">
-                    <span className="font-semibold">Condomínio:</span>{" "}
-                    {new Intl.NumberFormat("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    }).format(property.condominio)}
-                  </div>
-                )}
-                {property.iptu && (
-                  <div className="text-sm text-gray-600">
-                    <span className="font-semibold">IPTU:</span>{" "}
-                    {new Intl.NumberFormat("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    }).format(property.iptu)}
-                  </div>
-                )}
-              </div>
-            )}
+            
           </div>
 
           {/* Diferenciais */}
           {property.features && property.features.length > 0 && (
             <div className="space-y-4">
           <h2 className="text-2xl font-bold text-gray-900">
-            Diferenciais deste imóvel
+            {property.is_launch ? "Sobre o empreendimento" : "Diferenciais deste imóvel"}
           </h2>
           <div className="flex flex-wrap gap-2">
             {property.features.map((feature, index) => (
@@ -342,6 +376,12 @@ const PropertyDetail = () => {
   photo="https://image2url.com/r2/bucket3/images/1767721437678-6111c713-d5f6-49f9-9e56-66c3fc780c1f.png"
   phone="51993898811"
   propertyTitle={property.title}
+  propertyCode={property.codigo || property.id.slice(0, 8)}
+  propertyType={property.property_type}
+  transactionType={property.transaction_type}
+  area={property.area}
+  location={property.location}
+  city={property.city}
 />
 
         </div>

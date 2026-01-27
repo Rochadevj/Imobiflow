@@ -57,6 +57,7 @@ export type Database = {
           featured: boolean | null
           features: string[] | null
           id: string
+          is_launch: boolean | null
           iptu: number | null
           location: string
           parking_spaces: number | null
@@ -84,6 +85,7 @@ export type Database = {
           featured?: boolean | null
           features?: string[] | null
           id?: string
+          is_launch?: boolean | null
           iptu?: number | null
           location: string
           parking_spaces?: number | null
@@ -111,6 +113,7 @@ export type Database = {
           featured?: boolean | null
           features?: string[] | null
           id?: string
+          is_launch?: boolean | null
           iptu?: number | null
           location?: string
           parking_spaces?: number | null
