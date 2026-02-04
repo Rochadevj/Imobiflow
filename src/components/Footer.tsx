@@ -7,7 +7,7 @@ const Footer = () => {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           <div>
-            <Link to="/" className="flex items-center gap-3 font-bold text-xl mb-4">
+            <Link to="/imobiliaria" className="flex items-center gap-3 font-bold text-xl mb-4">
               <svg
                 viewBox="0 0 320 72"
                 className="h-12 w-auto"
@@ -45,7 +45,7 @@ const Footer = () => {
           <div>
             <h3 className="font-bold mb-4">Menu</h3>
             <nav className="flex flex-col gap-2">
-              <Link to="/" className="text-primary-foreground/80 hover:text-accent transition-all duration-200 hover:translate-x-2">
+              <Link to="/imobiliaria" className="text-primary-foreground/80 hover:text-accent transition-all duration-200 hover:translate-x-2">
                 Início
               </Link>
               <Link to="/sobre" className="text-primary-foreground/80 hover:text-accent transition-all duration-200 hover:translate-x-2">

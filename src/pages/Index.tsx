@@ -642,7 +642,7 @@ const Index = () => {
               Falar com corretor
             </a>
             <Link
-              to="/?list=1"
+              to="/imobiliaria?list=1"
               className="inline-flex items-center justify-center rounded-full bg-primary text-white px-4 py-2 text-sm font-semibold shadow hover:bg-primary/90 transition"
             >
               Ver todos
@@ -707,7 +707,7 @@ const Index = () => {
               Anunciar imóvel
             </Link>
             <Link
-              to="/?list=1&type=comprar"
+              to="/imobiliaria?list=1&type=comprar"
               className="inline-flex items-center justify-center rounded-full bg-primary text-white px-4 py-2 text-sm font-semibold shadow hover:bg-primary/90 transition"
             >
               Ver todos
@@ -773,7 +773,7 @@ const Index = () => {
               Anunciar imóvel
             </Link>
             <Link
-              to="/?list=1&type=alugar"
+              to="/imobiliaria?list=1&type=alugar"
               className="inline-flex items-center justify-center rounded-full bg-primary text-white px-4 py-2 text-sm font-semibold shadow hover:bg-primary/90 transition"
             >
               Ver todos
