@@ -128,4 +128,43 @@ All colors MUST be HSL.
     border-radius: 20px;
   }
 }
-@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Manrope:wght@500;600&display=swap");
+@layer utilities {
+  @keyframes fade-up {
+    0% {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes float-slow {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-12px);
+    }
+  }
+
+  .animate-fade-up {
+    animation: fade-up 0.9s ease-out both;
+  }
+
+  .animate-fade-up-delay-1 {
+    animation: fade-up 0.9s ease-out 0.15s both;
+  }
+
+  .animate-fade-up-delay-2 {
+    animation: fade-up 0.9s ease-out 0.3s both;
+  }
+
+  .float-slow {
+    animation: float-slow 9s ease-in-out infinite;
+  }
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Manrope:wght@500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap");

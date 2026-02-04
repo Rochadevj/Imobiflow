@@ -52,7 +52,7 @@ const Navbar = () => {
     <nav className="bg-primary text-primary-foreground shadow-lg">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
-          <Link to="/" className="flex items-center gap-3 font-bold text-xl group">
+          <Link to="/imobiliaria" className="flex items-center gap-3 font-bold text-xl group">
 <svg
   viewBox="0 0 360 80"
   className="h-12 w-auto"
@@ -92,10 +92,10 @@ const Navbar = () => {
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-4">
             <Button variant="ghost" className="text-primary-foreground hover:text-accent hover:bg-primary/80 transition-colors duration-300" asChild>
-              <Link to="/?type=comprar">Comprar</Link>
+              <Link to="/imobiliaria?type=comprar">Comprar</Link>
             </Button>
             <Button variant="ghost" className="text-primary-foreground hover:text-accent hover:bg-primary/80 transition-colors duration-300" asChild>
-              <Link to="/?type=alugar">Alugar</Link>
+              <Link to="/imobiliaria?type=alugar">Alugar</Link>
             </Button>
 
             <Button variant="ghost" className="text-primary-foreground hover:text-accent hover:bg-primary/80 transition-colors duration-300" asChild>
@@ -159,12 +159,12 @@ const Navbar = () => {
               <div className="flex flex-col gap-4 mt-8">
                 <SheetClose asChild>
                   <Button variant="ghost" className="text-primary-foreground hover:text-accent hover:bg-primary/90 justify-start" asChild>
-                    <Link to="/?type=comprar">Comprar</Link>
+                    <Link to="/imobiliaria?type=comprar">Comprar</Link>
                   </Button>
                 </SheetClose>
                 <SheetClose asChild>
                   <Button variant="ghost" className="text-primary-foreground hover:text-accent hover:bg-primary/90 justify-start" asChild>
-                    <Link to="/?type=alugar">Alugar</Link>
+                    <Link to="/imobiliaria?type=alugar">Alugar</Link>
                   </Button>
                 </SheetClose>
                 <SheetClose asChild>
