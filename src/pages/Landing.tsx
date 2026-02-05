@@ -2,16 +2,21 @@ import { Link } from "react-router-dom";
 import {
   ArrowRight,
   BarChart3,
+  BadgeCheck,
   Bell,
   Building2,
   CheckCircle2,
   FileText,
   Globe,
+  Handshake,
   LayoutGrid,
+  Link2,
   LineChart,
   MessageCircle,
+  Rocket,
   ShieldCheck,
   Sparkles,
+  TimerReset,
   Users2,
   Zap,
 } from "lucide-react";
@@ -172,9 +177,53 @@ const faqs = [
   },
 ];
 
+const pillars = [
+  {
+    icon: Rocket,
+    title: "Velocidade comercial",
+    text: "Centralize captação, atendimento e negociação para reduzir ciclo de venda.",
+  },
+  {
+    icon: Link2,
+    title: "Integrações que destravam escala",
+    text: "Conecte portais, WhatsApp e fluxos de mídia sem retrabalho operacional.",
+  },
+  {
+    icon: Handshake,
+    title: "Confiança em cada etapa",
+    text: "Trilha de atendimento, documentação e governança para decisões seguras.",
+  },
+];
+
+const workflowComparison = [
+  {
+    title: "Operação fragmentada",
+    points: [
+      "Leads perdidos entre planilhas e mensagens",
+      "Baixa previsibilidade de conversão",
+      "Equipe sem visão clara de prioridades",
+    ],
+  },
+  {
+    title: "Operação orientada por sistema",
+    points: [
+      "Pipeline único com funil rastreável",
+      "Rotinas automáticas de follow-up",
+      "Metas, desempenho e carteira em tempo real",
+    ],
+  },
+];
+
+const trustSignals = [
+  "Onboarding guiado por especialistas",
+  "Implementação rápida sem parar a operação",
+  "Suporte humano para equipe comercial",
+  "Estrutura pronta para escalar com segurança",
+];
+
 const Landing = () => {
   return (
-    <div className="min-h-screen bg-[#eef1f7] text-slate-900 font-['Manrope']">
+    <div className="min-h-screen bg-[linear-gradient(180deg,#e8edf7_0%,#eef2f9_34%,#f1f5fd_68%,#f7f1e8_100%)] text-slate-900 font-['Manrope']">
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10">
           <div className="absolute -top-32 right-0 h-[380px] w-[380px] rounded-full bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.55),_transparent_70%)] blur-3xl float-slow" />
@@ -186,7 +235,7 @@ const Landing = () => {
         <div className="absolute top-0 left-0 h-1 w-full bg-gradient-to-r from-amber-400 via-orange-400 to-sky-400 opacity-80" />
 
         <header className="container mx-auto px-4 pt-8">
-          <div className="flex items-center justify-between gap-6">
+          <div className="flex items-center justify-between gap-6 rounded-2xl border border-white/50 bg-white/75 px-4 py-3 shadow-[0_12px_30px_rgba(15,23,42,0.08)] backdrop-blur sm:px-6">
             <Link to="/" className="flex items-center gap-3">
               <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-400 text-slate-900 shadow-[0_10px_25px_rgba(251,146,60,0.35)]">
                 <Sparkles className="h-5 w-5" />
@@ -200,6 +249,7 @@ const Landing = () => {
             </Link>
 
             <nav className="hidden lg:flex items-center gap-6 text-sm text-slate-600">
+              <a href="#diferenciais" className="hover:text-amber-600 transition">Diferenciais</a>
               <a href="#recursos" className="hover:text-amber-600 transition">Recursos</a>
               <a href="#como-funciona" className="hover:text-amber-600 transition">Como funciona</a>
               <a href="#planos" className="hover:text-amber-600 transition">Planos</a>
@@ -266,7 +316,7 @@ const Landing = () => {
                 {stats.map((item) => (
                   <div
                     key={item.label}
-                    className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white/80 px-4 py-4 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                    className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white/90 px-4 py-4 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
                   >
                     <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 via-orange-400 to-sky-400 opacity-70" />
                     <p className="text-2xl font-semibold text-slate-900">{item.value}</p>
@@ -274,14 +324,14 @@ const Landing = () => {
                   </div>
                 ))}
               </div>
-              <div className="flex flex-wrap gap-4 text-sm text-slate-500">
+              <div className="flex flex-wrap gap-3 text-sm text-slate-600">
                 {[
                   "Implantação em 7 dias",
                   "Suporte humano",
                   "Sem cartão de crédito",
                 ].map((item) => (
-                  <span key={item} className="inline-flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-amber-500" />
+                  <span key={item} className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1.5 shadow-sm">
+                    <BadgeCheck className="h-4 w-4 text-emerald-500" />
                     {item}
                   </span>
                 ))}
@@ -369,8 +419,84 @@ const Landing = () => {
         </div>
       </section>
 
+      <section id="diferenciais" className="container mx-auto px-4 py-20 animate-fade-up">
+        <div className="rounded-[32px] border border-slate-200/80 bg-gradient-to-br from-white/92 via-slate-50/85 to-sky-50/80 p-6 shadow-sm backdrop-blur sm:p-8">
+          <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr]">
+            <div className="space-y-6">
+              <p className="text-xs uppercase tracking-[0.4em] text-amber-700">Diferenciais de produto</p>
+              <h2 className="text-3xl font-['Space Grotesk'] font-semibold sm:text-4xl">
+                Design de software pensado para equipes comerciais de alta performance.
+              </h2>
+              <p className="text-slate-600">
+                A estrutura combina velocidade operacional, gestão centralizada e visão executiva de funil.
+                O resultado é mais eficiência no dia a dia e melhor previsibilidade de receita.
+              </p>
+              <div className="grid gap-4 sm:grid-cols-3">
+                {pillars.map((pillar) => (
+                  <div
+                    key={pillar.title}
+                    className="group rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                  >
+                    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-100 to-sky-100 text-amber-600">
+                      <pillar.icon className="h-5 w-5" />
+                    </span>
+                    <h3 className="mt-4 text-base font-semibold">{pillar.title}</h3>
+                    <p className="mt-2 text-sm text-slate-600">{pillar.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {workflowComparison.map((column, index) => (
+                <div
+                  key={column.title}
+                  className={`rounded-2xl border p-6 shadow-sm ${
+                    index === 0
+                      ? "border-slate-200 bg-slate-50"
+                      : "border-emerald-200 bg-gradient-to-br from-emerald-50 to-white"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    {index === 0 ? (
+                      <TimerReset className="h-4 w-4 text-slate-500" />
+                    ) : (
+                      <BadgeCheck className="h-4 w-4 text-emerald-600" />
+                    )}
+                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-600">
+                      {column.title}
+                    </p>
+                  </div>
+                  <div className="mt-4 space-y-3">
+                    {column.points.map((point) => (
+                      <p key={point} className="flex items-start gap-2 text-sm text-slate-600">
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 text-amber-500" />
+                        {point}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-6 shadow-sm">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-600">
+                  Camada de confiança
+                </p>
+                <div className="mt-4 grid gap-3">
+                  {trustSignals.map((signal) => (
+                    <p key={signal} className="flex items-start gap-2 text-sm text-slate-600">
+                      <ShieldCheck className="mt-0.5 h-4 w-4 text-emerald-600" />
+                      {signal}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="recursos" className="container mx-auto px-4 py-20 animate-fade-up">
-        <div className="rounded-[32px] border border-slate-200/70 bg-white/80 p-6 shadow-sm backdrop-blur sm:p-8">
+        <div className="rounded-[32px] border border-slate-200/70 bg-gradient-to-br from-slate-50/90 via-white/90 to-amber-50/80 p-6 shadow-sm backdrop-blur sm:p-8">
           <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
             <div className="space-y-6">
               <p className="text-xs uppercase tracking-[0.4em] text-amber-700">Recursos principais</p>
@@ -391,7 +517,7 @@ const Landing = () => {
               {features.map((feature) => (
                 <div
                   key={feature.title}
-                  className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white/90 p-6 shadow-sm transition hover:-translate-y-1 hover:border-amber-200 hover:shadow-xl"
+                  className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-6 shadow-sm transition hover:-translate-y-1 hover:border-amber-200 hover:shadow-xl"
                 >
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.22),_transparent_55%)] opacity-0 transition group-hover:opacity-100" />
                   <div className="relative">
@@ -409,7 +535,7 @@ const Landing = () => {
       </section>
 
       <section id="como-funciona" className="container mx-auto px-4 py-20 animate-fade-up">
-        <div className="rounded-[32px] border border-slate-200/70 bg-white/80 p-6 shadow-sm backdrop-blur sm:p-8">
+        <div className="rounded-[32px] border border-slate-200/70 bg-gradient-to-br from-white/90 via-slate-50/80 to-sky-50/80 p-6 shadow-sm backdrop-blur sm:p-8">
           <div className="flex flex-col gap-10">
             <div className="flex flex-col gap-4">
               <p className="text-xs uppercase tracking-[0.4em] text-amber-700">Como funciona</p>
@@ -422,7 +548,7 @@ const Landing = () => {
               {steps.map((step) => (
                 <div
                   key={step.step}
-                  className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white/90 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                  className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
                 >
                   <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-amber-400 to-sky-400 opacity-70" />
                   <div className="relative">
@@ -481,7 +607,7 @@ const Landing = () => {
       </section>
 
       <section className="container mx-auto px-4 py-20 animate-fade-up">
-        <div className="rounded-[32px] border border-slate-200/70 bg-white/80 p-6 shadow-sm backdrop-blur sm:p-8">
+        <div className="rounded-[32px] border border-slate-200/70 bg-gradient-to-br from-white/90 via-slate-50/85 to-indigo-50/70 p-6 shadow-sm backdrop-blur sm:p-8">
           <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
             <div className="space-y-6">
               <p className="text-xs uppercase tracking-[0.4em] text-amber-700">Resultados reais</p>
@@ -511,7 +637,7 @@ const Landing = () => {
               {testimonials.map((testimonial) => (
                 <div
                   key={testimonial.name}
-                  className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white/90 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                  className="relative overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
                 >
                   <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 via-orange-400 to-sky-400 opacity-70" />
                   <p className="text-slate-700">“{testimonial.quote}”</p>
@@ -525,10 +651,19 @@ const Landing = () => {
       </section>
 
       <section id="planos" className="container mx-auto px-4 py-20 animate-fade-up">
-        <div className="rounded-[32px] border border-slate-200/70 bg-white/80 p-6 shadow-sm backdrop-blur sm:p-8">
+        <div className="relative overflow-hidden rounded-[32px] border border-slate-200/70 bg-gradient-to-br from-slate-50/95 via-white/92 to-amber-50/82 p-6 shadow-sm backdrop-blur sm:p-8">
+          <div className="absolute -right-24 top-10 h-52 w-52 rounded-full bg-amber-200/40 blur-3xl" />
+          <div className="absolute -left-16 bottom-0 h-40 w-40 rounded-full bg-sky-200/35 blur-3xl" />
           <div className="text-center">
-            <p className="text-xs uppercase tracking-[0.4em] text-amber-700">Planos</p>
-            <h2 className="mt-4 text-3xl font-['Space Grotesk'] font-semibold sm:text-4xl">
+            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+              <BadgeCheck className="h-3.5 w-3.5" />
+              Sem fidelidade e sem setup oculto
+            </div>
+            <div className="mx-auto mt-4 inline-flex items-center gap-2 rounded-full border border-amber-300 bg-gradient-to-r from-amber-100 via-orange-100 to-amber-100 px-5 py-2.5 text-base font-semibold text-amber-800 shadow-sm">
+              <Sparkles className="h-4 w-4 text-amber-600" />
+              Planos
+            </div>
+            <h2 className="mt-4 text-4xl font-['Space Grotesk'] font-semibold sm:text-5xl">
               Escolha o ritmo ideal para sua operação.
             </h2>
             <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-gradient-to-r from-amber-400 to-sky-400" />
@@ -581,7 +716,7 @@ const Landing = () => {
       </section>
 
       <section id="faq" className="container mx-auto px-4 py-20 animate-fade-up">
-        <div className="rounded-[32px] border border-slate-200/70 bg-white/80 p-6 shadow-sm backdrop-blur sm:p-8">
+        <div className="rounded-[32px] border border-slate-200/70 bg-gradient-to-br from-slate-50/90 via-white/90 to-sky-50/70 p-6 shadow-sm backdrop-blur sm:p-8">
           <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
             <div>
               <p className="text-xs uppercase tracking-[0.4em] text-amber-700">FAQ</p>
@@ -597,7 +732,7 @@ const Landing = () => {
               {faqs.map((faq) => (
                 <details
                   key={faq.question}
-                  className="group rounded-2xl border border-slate-200 bg-white/90 p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
+                  className="group rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
                 >
                   <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-semibold">
                     {faq.question}
@@ -624,6 +759,16 @@ const Landing = () => {
               <p className="text-slate-600 max-w-xl">
                 Um único painel para marketing, vendas, estoque e relacionamento com clientes.
               </p>
+              <div className="flex flex-wrap gap-2">
+                {["CRM + Site + BI", "Onboarding assistido", "Escalável para múltiplas equipes"].map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-full border border-slate-200 bg-white/85 px-3 py-1 text-xs text-slate-600 shadow-sm"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
             </div>
             <div className="flex flex-wrap gap-3">
               <Button
