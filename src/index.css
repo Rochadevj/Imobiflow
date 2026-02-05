@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Manrope:wght@500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -166,5 +168,3 @@ All colors MUST be HSL.
     animation: float-slow 9s ease-in-out infinite;
   }
 }
-
-@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Manrope:wght@500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap");
