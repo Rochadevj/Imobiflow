@@ -329,7 +329,7 @@ const Index = () => {
                 <span className="text-accent">com quem entende</span>
               </h1>
               <p className="text-base sm:text-lg md:text-xl text-white/80 max-w-md mb-6 md:mb-8">
-                Experiência local e transparência para você encontrar ou anunciar seu imóvel em Canoas e região.
+                Experiência, transparência e tecnologia para você encontrar ou anunciar seu imóvel.
               </p>
               <div className="flex flex-wrap gap-3 mb-6">
                 <a
@@ -348,7 +348,7 @@ const Index = () => {
               <div className="flex flex-wrap gap-4 text-sm text-white/85">
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-accent" />
-                  Canoas e região
+                  Atendimento nacional
                 </div>
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="h-4 w-4 text-accent" />
@@ -636,7 +636,7 @@ const Index = () => {
           </p>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
             <a
-              href="tel:+5551999999999"
+              href="tel:+5500000000000"
               className="inline-flex items-center justify-center rounded-full border border-accent text-accent px-4 py-2 text-sm font-semibold hover:bg-accent hover:text-primary transition"
             >
               Falar com corretor
@@ -997,7 +997,7 @@ const Index = () => {
               </div>
               <div className="flex flex-wrap gap-2">
                 <a
-                  href="tel:+5551999999999"
+                  href="tel:+5500000000000"
                   className="inline-flex items-center justify-center rounded-full border border-accent text-accent px-4 py-2 text-sm font-semibold hover:bg-accent hover:text-primary transition"
                 >
                   Agendar visita

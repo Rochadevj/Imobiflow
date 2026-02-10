@@ -25,7 +25,7 @@ const About = () => {
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <a
-                    href="tel:+5551999999999"
+                    href="tel:+5500000000000"
                     className="inline-flex items-center gap-2 rounded-full bg-white text-primary px-4 py-2 text-sm font-semibold shadow hover:bg-white/90 transition"
                   >
                     <Phone className="h-4 w-4" />
@@ -46,7 +46,7 @@ const About = () => {
                   <div className="absolute inset-0 bg-black/10" />
                   <img
                     src="/static/912b6244-30a1-455b-891e-53a6b4c28e8c.jpeg"
-                    alt="Kaptei Solucoes Imobiliarias"
+                    alt="Imobiliaria Exemplo"
                     className="relative w-full h-[360px] object-cover object-center"
                   />
                 </div>
@@ -60,13 +60,13 @@ const About = () => {
             <div className="grid lg:grid-cols-2 gap-10">
               <div className="space-y-6">
                 <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/80 px-4 py-2 text-xs uppercase tracking-wide text-muted-foreground">
-                  Atendimento premium em Canoas e região
+                  Atendimento consultivo para diferentes regioes
                 </div>
                 <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-                  Kaptei Solucoes Imobiliarias
+                  Imobiliaria Exemplo
                 </h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  A Kaptei Soluções Imobiliárias foi criada para transformar negócios imobiliários em
+                  A Imobiliaria Exemplo foi criada para transformar negocios imobiliarios em
                   experiências seguras, transparentes e juridicamente bem fundamentadas. Atuamos com
                   especialização em vendas, locações e regularização de imóveis, oferecendo atendimento
                   personalizado, análise criteriosa de cada oportunidade e acompanhamento completo em
@@ -91,9 +91,9 @@ const About = () => {
                 </div>
                 <div className="grid gap-4 sm:grid-cols-3">
                   {[
-                    { icon: MapPin, title: "Localização", text: "Centro de Canoas/RS" },
-                    { icon: Award, title: "CRECI", text: "078852" },
-                    { icon: Building2, title: "Especialidade", text: "Canoas e Grande Porto Alegre" },
+                    { icon: MapPin, title: "Atendimento", text: "Online e presencial" },
+                    { icon: Award, title: "Registro", text: "CRECI 000000-XX (demo)" },
+                    { icon: Building2, title: "Especialidade", text: "Compra, venda e locacao" },
                   ].map((item) => (
                     <div key={item.title} className="rounded-xl border border-border/60 bg-background/80 p-4 text-sm">
                       <item.icon className="h-5 w-5 text-accent mb-2" />
@@ -107,28 +107,18 @@ const About = () => {
               <div className="space-y-6">
                 <div className="rounded-2xl border border-border/40 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 p-6 shadow-lg transition hover:-translate-y-0.5 hover:shadow-2xl">
                   <div className="flex flex-col gap-6">
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="space-y-2">
-                        <p className="text-xs uppercase tracking-wide text-white/60">Parceria jurídica</p>
-                        <h3 className="text-2xl font-bold text-white">CRA Advocacia</h3>
-                        <p className="text-sm text-white/70 leading-relaxed">
-                          Especialistas em direito imobiliário, contratual e regularização, oferecendo
-                          análise preventiva, due diligence e segurança jurídica em cada contrato.
-                        </p>
-                      </div>
-                      <div className="relative">
-                        <div className="absolute -inset-6 rounded-full bg-amber-300/20 blur-3xl" />
-                      <img
-                        src="/static/sublogo.png"
-                        alt="CRA Advocacia"
-                        className="relative h-40 md:h-44 w-auto min-w-[170px] md:min-w-[210px] max-w-none object-contain flex-shrink-0 drop-shadow-[0_30px_40px_rgba(0,0,0,0.45)] transition-transform duration-[1200ms] hover:scale-105 animate-[spin_16s_linear_infinite]"
-                      />
-                      </div>
+                    <div className="space-y-2">
+                      <p className="text-xs uppercase tracking-wide text-white/60">Estrutura da operação</p>
+                      <h3 className="text-2xl font-bold text-white">Time multidisciplinar (Demo)</h3>
+                      <p className="text-sm text-white/70 leading-relaxed">
+                        A demo simula um fluxo completo com equipe comercial, suporte documental,
+                        análise de risco e acompanhamento de ponta a ponta em cada negociação.
+                      </p>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {[
-                        "Direito Imobiliário",
-                        "Direito Contratual",
+                        "Atendimento Consultivo",
+                        "Análise Documental",
                         "Due Diligence",
                         "Registro e Escrituras",
                         "Regularização",
@@ -146,11 +136,11 @@ const About = () => {
                 </div>
 
                 <div className="rounded-xl border border-border/60 bg-background/80 p-6">
-                  <h3 className="text-xl font-bold text-foreground">Diferenciais Kaptei</h3>
+                  <h3 className="text-xl font-bold text-foreground">Diferenciais da Demo</h3>
                   <div className="mt-4 grid gap-3">
                     {[
                       "Departamento jurídico próprio para prevenção de riscos",
-                      "Atendimento presencial qualificado no Centro de Canoas/RS",
+                      "Atendimento consultivo com processos claros e padronizados",
                       "Negociação transparente com segurança jurídica",
                       "Acompanhamento completo até o fechamento",
                     ].map((item) => (
@@ -187,7 +177,7 @@ const About = () => {
                 {[
                   {
                     title: "Experiência local",
-                    text: "Conhecimento profundo do mercado imobiliário de Canoas e região.",
+                    text: "Conhecimento de diferentes perfis do mercado imobiliario.",
                   },
                   {
                     title: "Atendimento personalizado",

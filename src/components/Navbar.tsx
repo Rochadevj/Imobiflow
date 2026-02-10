@@ -57,9 +57,9 @@ const Navbar = () => {
   viewBox="0 0 360 80"
   className="h-12 w-auto"
   role="img"
-  aria-label="Kaptei Soluções Imobiliárias"
+  aria-label="Imobiliaria Exemplo"
 >
-  <title>Kaptei Soluções Imobiliárias</title>
+  <title>Imobiliaria Exemplo</title>
 
   <text
     x="0"
@@ -70,7 +70,7 @@ const Navbar = () => {
     letterSpacing="0.8"
     fill="currentColor"
   >
-    Kaptei
+    ImobEx
   </text>
 
   <text

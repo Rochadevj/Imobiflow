@@ -49,7 +49,7 @@ const PropertySubmit = () => {
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <a
-                    href="tel:+5551999999999"
+                    href="tel:+5500000000000"
                     className="inline-flex items-center gap-2 rounded-full bg-white text-primary px-4 py-2 text-sm font-semibold shadow hover:bg-white/90 transition"
                   >
                     <Phone className="h-4 w-4" />

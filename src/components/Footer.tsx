@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Facebook, Youtube, Instagram, Mail, Phone } from "lucide-react";
+import { Facebook, Instagram, Mail, Phone } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -12,9 +12,9 @@ const Footer = () => {
                 viewBox="0 0 320 72"
                 className="h-12 w-auto"
                 role="img"
-                aria-label="Kaptei Solucoes Imobiliarias"
+                aria-label="Imobiliaria Exemplo"
               >
-                <title>Kaptei Solucoes Imobiliarias</title>
+                <title>Imobiliaria Exemplo</title>
                 <text
                   x="0"
                   y="42"
@@ -24,7 +24,7 @@ const Footer = () => {
                   letterSpacing="1.5"
                   fill="currentColor"
                 >
-                  Kaptei
+                  ImobEx
                 </text>
                 <text
                   x="0"
@@ -39,7 +39,7 @@ const Footer = () => {
                 </text>
               </svg>
             </Link>
-            <p className="text-primary-foreground/80 text-sm">Canoas / Rio Grande do Sul</p>
+            <p className="text-primary-foreground/80 text-sm">Atendimento em todo o Brasil</p>
           </div>
 
           <div>
@@ -64,20 +64,20 @@ const Footer = () => {
             <h3 className="font-bold mb-4">Contato</h3>
             <div className="space-y-3 text-primary-foreground/80 text-sm">
               <a 
-                href="mailto:contato@alexandreandrade.com.br"
+                href="mailto:contato@example.com"
                 className="flex items-center gap-2 hover:text-accent transition-all duration-200 hover:translate-x-1"
               >
                 <Mail className="h-4 w-4" />
                 E-mail
               </a>
               <a 
-                href="https://wa.me/5551991288418?text=Olá! Gostaria de alguma informação?"
+                href="https://wa.me/5500000000000?text=Ola! Gostaria de mais informacoes sobre os imoveis."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 hover:text-accent transition-all duration-200 hover:translate-x-1"
               >
                 <Phone className="h-4 w-4" />
-                (51) 99128-8418
+                (00) 00000-0000
               </a>
             </div>
           </div>
@@ -88,7 +88,7 @@ const Footer = () => {
               <a href="#" className="text-primary-foreground/80 hover:text-accent transition-all duration-300 hover:scale-125 hover:-translate-y-1">
                 <Facebook className="h-6 w-6" />
               </a>
-              <a href="https://www.instagram.com/andrade_alexandrepereira/" target="_blank" rel="noopener noreferrer" className="text-primary-foreground/80 hover:text-accent transition-all duration-300 hover:scale-125 hover:-translate-y-1">
+              <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" className="text-primary-foreground/80 hover:text-accent transition-all duration-300 hover:scale-125 hover:-translate-y-1">
                 <Instagram className="h-6 w-6" />
               </a>
             </div>
@@ -97,7 +97,7 @@ const Footer = () => {
 
         <div className="border-t border-primary-foreground/20 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-primary-foreground/60 text-sm">
-            Kaptei Solucoes Imobiliarias | {new Date().getFullYear()} © Todos os direitos reservados
+            Imobiliaria Exemplo | {new Date().getFullYear()} © Todos os direitos reservados
           </p>
           <Link to="/politica-privacidade" className="text-primary-foreground/60 hover:text-accent text-sm transition-colors">
             Política de Privacidade
