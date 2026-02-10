@@ -21,7 +21,7 @@ const RouteAwareWhatsApp = () => {
   const location = useLocation();
   const hide = /^\/(admin|auth)(\/|$)/.test(location.pathname);
   if (hide) return null;
-  return <WhatsAppButton phone="51 991288418" message="Olá! Gostaria de alguma informação?" />;
+  return <WhatsAppButton phone="55 00 00000-0000" message="Ola! Gostaria de mais informacoes sobre os imoveis." />;
 };
 
 const App = () => (

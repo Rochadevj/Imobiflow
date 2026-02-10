@@ -54,7 +54,8 @@ export default function GalleryCarousel({ images, location, city, state, zipcode
     return () => window.clearInterval(timer);
   }, [isPlaying, selectedIndex, displayContent.length]);
 
-  const maxIndex = Math.max(0, displayContent.length - 1);
+  const itemsPerView = 3;
+  const maxIndex = Math.max(0, displayContent.length - itemsPerView);
 
   const goToPrevious = () => {
     setCurrentIndex((prev) => Math.max(0, prev - 1));
@@ -64,7 +65,7 @@ export default function GalleryCarousel({ images, location, city, state, zipcode
     setCurrentIndex((prev) => Math.min(maxIndex, prev + 1));
   };
 
-  const displayedItems = displayContent;
+  const visibleItems = displayContent.slice(currentIndex, currentIndex + itemsPerView);
 
   return (
     <div className="w-full space-y-5">
@@ -132,37 +133,48 @@ export default function GalleryCarousel({ images, location, city, state, zipcode
       {displayContent.length > 0 && (viewMode === "photos" || viewMode === "video") && (
         <div className="space-y-4">
           <div className="relative">
-            <div
-              className="relative aspect-[16/9] overflow-hidden rounded-xl cursor-pointer shadow-md hover:shadow-2xl transition-all"
-              onClick={() => {
-                setIsModalOpen(true);
-                setSelectedIndex(null);
-              }}
-            >
-              {isVideoUrl(displayContent[currentIndex]) ? (
-                <>
-                  <video
-                    src={displayContent[currentIndex]}
-                    className="w-full h-full object-cover"
-                    muted
-                    playsInline
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/30 transition-colors">
-                    <div className="bg-white/90 rounded-full p-3">
-                      <Video className="w-8 h-8 text-primary" />
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <img
-                  src={displayContent[currentIndex]}
-                  alt={`Imagem ${currentIndex + 1}`}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                />
-              )}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {visibleItems.map((item, idx) => {
+                const absoluteIndex = currentIndex + idx;
+                return (
+                  <button
+                    key={`${item}-${absoluteIndex}`}
+                    type="button"
+                    onClick={() => {
+                      setIsModalOpen(true);
+                      setSelectedIndex(absoluteIndex);
+                    }}
+                    className="relative w-full aspect-[4/3] overflow-hidden rounded-xl bg-black/10 border border-gray-200 shadow-md hover:shadow-lg transition-all"
+                  >
+                    {isVideoUrl(item) ? (
+                      <>
+                        <video
+                          src={item}
+                          className="w-full h-full object-cover"
+                          muted
+                          playsInline
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/30 transition-colors">
+                          <div className="bg-white/90 rounded-full p-2.5">
+                            <Video className="w-6 h-6 text-primary" />
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <img
+                        src={item}
+                        alt={`Imagem ${absoluteIndex + 1}`}
+                        loading="eager"
+                        decoding="async"
+                        className="w-full h-full object-cover"
+                      />
+                    )}
+                  </button>
+                );
+              })}
             </div>
 
-            {currentIndex > 0 && (
+            {displayContent.length > itemsPerView && currentIndex > 0 && (
               <button
                 onClick={goToPrevious}
                 className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/25 hover:bg-black/35 rounded-full p-3 shadow-lg transition-all z-10"
@@ -172,7 +184,7 @@ export default function GalleryCarousel({ images, location, city, state, zipcode
               </button>
             )}
 
-            {currentIndex < maxIndex && (
+            {displayContent.length > itemsPerView && currentIndex < maxIndex && (
               <button
                 onClick={goToNext}
                 className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/25 hover:bg-black/35 rounded-full p-3 shadow-lg transition-all z-10"
@@ -183,47 +195,13 @@ export default function GalleryCarousel({ images, location, city, state, zipcode
             )}
           </div>
 
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
-            {displayedItems.map((item, idx) => (
-              <button
-                key={`${item}-${idx}`}
-                type="button"
-                onClick={() => {
-                  setCurrentIndex(idx);
-                  setIsModalOpen(true);
-                  setSelectedIndex(null);
-                }}
-                className={`relative overflow-hidden rounded-lg border transition-all ${
-                  idx === currentIndex
-                    ? "border-primary ring-2 ring-primary/30"
-                    : "border-gray-200 hover:border-primary/60"
-                }`}
-              >
-                {isVideoUrl(item) ? (
-                  <div className="relative">
-                    <video
-                      src={item}
-                      className="w-full h-24 object-cover"
-                      muted
-                      playsInline
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/25">
-                      <Video className="w-5 h-5 text-white" />
-                    </div>
-                  </div>
-                ) : (
-                  <img
-                    src={item}
-                    alt={`Miniatura ${idx + 1}`}
-                    className="w-full h-24 object-cover"
-                  />
-                )}
-              </button>
-            ))}
+          <div className="flex justify-end">
+            <span className="text-xs text-muted-foreground">
+              Mostrando {Math.min(currentIndex + 1, displayContent.length)}-{Math.min(currentIndex + itemsPerView, displayContent.length)} de {displayContent.length}
+            </span>
           </div>
         </div>
       )}
-
       {viewMode === "map" && (
         <div>
           {location ? (

@@ -1,6 +1,6 @@
 <div align="center">
   <h1>🏠 Sistema de Gestão Imobiliária</h1>
-  <p><strong>Corretor Alexandre</strong></p>
+  <p><strong>Imobiliaria Exemplo (Demo)</strong></p>
   <p>Sistema completo e moderno para gerenciamento de imobiliárias</p>
   
   ![React](https://img.shields.io/badge/React-18.3.1-blue?logo=react)
@@ -14,7 +14,7 @@
 
 ## 📋 Sobre o Projeto
 
-O **Corretor Alexandre** é uma plataforma completa de gestão imobiliária desenvolvida com as tecnologias mais modernas do mercado. O sistema permite o cadastro, edição e remoção de imóveis disponíveis para **compra, aluguel e lançamentos**, oferecendo uma experiência intuitiva tanto para administradores quanto para usuários finais.
+O **Imobiliaria Exemplo (Demo)** é uma plataforma completa de gestão imobiliária desenvolvida com as tecnologias mais modernas do mercado. O sistema permite o cadastro, edição e remoção de imóveis disponíveis para **compra, aluguel e lançamentos**, oferecendo uma experiência intuitiva tanto para administradores quanto para usuários finais.
 
 ### 🎯 Principais Características
 
@@ -93,8 +93,8 @@ Antes de começar, certifique-se de ter instalado em sua máquina:
 ### 1️⃣ Clone o repositório
 
 ```bash
-git clone https://github.com/Rochadevj/corretor-alexandre.git
-cd corretor-alexandre
+git clone https://github.com/seu-usuario/imobiliaria-exemplo-demo.git
+cd imobiliaria-exemplo-demo
 ```
 
 ### 2️⃣ Instale as dependências
@@ -160,7 +160,7 @@ npm run preview
 ## 📂 Estrutura do Projeto
 
 ```
-corretor-alexandre/
+imobiliaria-exemplo-demo/
 ├── public/              # Arquivos públicos estáticos
 ├── src/
 │   ├── components/      # Componentes React reutilizáveis
@@ -250,7 +250,7 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 Para dúvidas ou sugestões, entre em contato:
 
-- 📱 WhatsApp: +55 51 99128-8418
+- 📱 WhatsApp: +55 00 00000-0000
 - 💼 GitHub: [@Rochadevj](https://github.com/Rochadevj)
 
 ---

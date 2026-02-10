@@ -12,8 +12,8 @@ const WhatsAppIcon = ({ className = "w-7 h-7" }: { className?: string }) => (
 );
 
 export default function WhatsAppButton({
-  phone = "51 991288418",
-  message = "Olá! Gostaria de alguma informação?",
+  phone = "55 00 00000-0000",
+  message = "Ola! Gostaria de mais informacoes sobre os imoveis.",
 }: WhatsAppButtonProps) {
   const [showTip, setShowTip] = useState(true);
 

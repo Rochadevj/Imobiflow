@@ -2,12 +2,11 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
-import { Phone } from "lucide-react";
+import { Phone, UserRound } from "lucide-react";
 
 interface RealtorCardProps {
   name: string;
   creci: string;
-  photo: string;
   phone: string;
   propertyTitle: string;
   propertyCode: string;
@@ -21,7 +20,6 @@ interface RealtorCardProps {
 export default function RealtorCard({
   name,
   creci,
-  photo,
   phone,
   propertyTitle,
   propertyCode,
@@ -85,11 +83,9 @@ export default function RealtorCard({
     <div className="sticky top-24 bg-white rounded-lg shadow-lg p-6 space-y-6">
       {/* Realtor Info */}
       <div className="flex items-center gap-4">
-        <img
-          src={photo}
-          alt={name}
-          className="w-20 h-20 rounded-full object-cover border-4 border-primary"
-        />
+        <div className="w-20 h-20 rounded-full border-4 border-primary bg-primary/10 flex items-center justify-center">
+          <UserRound className="w-10 h-10 text-primary" />
+        </div>
         <div>
           <p className="text-sm text-gray-600">Corretor</p>
           <h3 className="text-lg font-bold text-primary">{name}</h3>

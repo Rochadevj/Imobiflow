@@ -370,19 +370,18 @@ const PropertyDetail = () => {
 
         {/* Coluna Sidebar - 1/3 */}
         <div className="lg:col-span-1">
-        <RealtorCard
-  name="Kaptei Solucoes Imobiliarias"
-  creci={"CRECI\u00A0-\u00A078852-RS"}
-  photo="https://image2url.com/r2/bucket3/images/1767721437678-6111c713-d5f6-49f9-9e56-66c3fc780c1f.png"
-  phone="51993898811"
-  propertyTitle={property.title}
-  propertyCode={property.codigo || property.id.slice(0, 8)}
-  propertyType={property.property_type}
-  transactionType={property.transaction_type}
-  area={property.area}
-  location={property.location}
-  city={property.city}
-/>
+          <RealtorCard
+            name="Imobiliaria Exemplo"
+            creci={"CRECI - 000000-XX (demo)"}
+            phone="5500000000000"
+            propertyTitle={property.title}
+            propertyCode={property.codigo || property.id.slice(0, 8)}
+            propertyType={property.property_type}
+            transactionType={property.transaction_type}
+            area={property.area}
+            location={property.location}
+            city={property.city}
+          />
 
         </div>
           </div>
