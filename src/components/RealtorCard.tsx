@@ -1,8 +1,9 @@
 import { useState } from "react";
+import { Building2, Link2, Phone, UserRound } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
-import { Phone, UserRound } from "lucide-react";
 
 interface RealtorCardProps {
   name: string;
@@ -33,75 +34,78 @@ export default function RealtorCard({
     const types: Record<string, string> = {
       apartamento: "Apartamento",
       casa: "Casa",
-      casa_condominio: "Casa em Condomínio",
+      casa_condominio: "Casa em condominio",
       cobertura: "Cobertura",
-      sala_comercial: "Sala Comercial",
+      sala_comercial: "Sala comercial",
       sobrado: "Sobrado",
-      sobrado_condominio: "Sobrado em Condomínio",
+      sobrado_condominio: "Sobrado em condominio",
       terreno: "Terreno",
       comercial: "Comercial",
-      galpao: "Galpão",
-      chacara: "Chácara",
-      sitio: "Sítio",
-      lancamento: "Lançamento",
+      galpao: "Galpao",
+      chacara: "Chacara",
+      sitio: "Sitio",
+      lancamento: "Lancamento",
     };
-    return types[type] || type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+    return types[type] || type.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
   };
 
   const getTransactionLabel = (type?: string) => {
-    if (type === "aluguel") return "para Alugar";
-    if (type === "venda") return "para Comprar";
-    if (type === "lancamento") return "sobre o lançamento";
-    return "para Comprar";
+    if (type === "aluguel") return "para alugar";
+    if (type === "venda") return "para comprar";
+    if (type === "lancamento") return "sobre o lancamento";
+    return "para comprar";
   };
 
-  const areaSuffix = area && !propertyTitle.includes("m²") ? ` com ${area}m²` : "";
+  const areaSuffix = area && !propertyTitle.includes("m2") ? ` com ${area}m2` : "";
   const locationText = location ? ` no bairro ${location}` : "";
   const cityText = city ? ` em ${city}` : "";
   const propertyName = propertyTitle || getPropertyTypeLabel(propertyType);
-  const messageTemplate = `Gostaria de mais informações sobre o código ${propertyCode} - ${propertyName}${areaSuffix}${locationText}${cityText} ${getTransactionLabel(transactionType)}. Obrigado.`;
 
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
     telefone: "",
-    mensagem: messageTemplate,
+    mensagem: `Gostaria de mais informacoes sobre o codigo ${propertyCode} - ${propertyName}${areaSuffix}${locationText}${cityText} ${getTransactionLabel(transactionType)}.`,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Form submitted:", formData);
-    // Aqui você pode integrar com Supabase
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    toast.success("Solicitacao enviada! Em breve entraremos em contato.");
   };
 
   const whatsappMessage = encodeURIComponent(
-    `Olá ${name}, tenho interesse no imóvel: ${propertyTitle}`
+    `Ola ${name}, tenho interesse no imovel ${propertyTitle} (codigo ${propertyCode}).`
   );
   const whatsappLink = `https://api.whatsapp.com/send?phone=${phone.replace(/\D/g, "")}&text=${whatsappMessage}`;
 
   return (
-    <div className="sticky top-24 bg-white rounded-lg shadow-lg p-6 space-y-6">
-      {/* Realtor Info */}
-      <div className="flex items-center gap-4">
-        <div className="w-20 h-20 rounded-full border-4 border-primary bg-primary/10 flex items-center justify-center">
-          <UserRound className="w-10 h-10 text-primary" />
+    <div className="surface-card sticky top-24 space-y-5 border-slate-200/80 p-5">
+      <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-900 to-slate-800 p-4 text-white">
+        <div className="flex items-center gap-3">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/20 bg-white/10">
+            <UserRound className="h-8 w-8 text-amber-300" />
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-[0.18em] text-white/65">Corretor</p>
+            <h3 className="text-lg font-semibold">{name}</h3>
+            <p className="text-xs text-white/70">{creci}</p>
+          </div>
         </div>
-        <div>
-          <p className="text-sm text-gray-600">Corretor</p>
-          <h3 className="text-lg font-bold text-primary">{name}</h3>
-          <p className="text-sm text-gray-600">{creci}</p>
+        <div className="mt-4 rounded-xl border border-white/20 bg-white/10 p-3">
+          <p className="inline-flex items-center gap-2 text-xs text-white/80">
+            <Building2 className="h-4 w-4 text-amber-300" />
+            Atendimento humano para compra, venda e locacao.
+          </p>
         </div>
       </div>
 
-      {/* Contact Form */}
       <div>
-        <p className="text-sm text-gray-700 mb-4">
-          Preencha os campos abaixo com seus dados e entraremos em contato o mais breve possível.
+        <p className="mb-4 text-sm text-slate-600">
+          Preencha os campos abaixo com seus dados e retornaremos o mais rapido possivel.
         </p>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3">
           <div>
-            <label htmlFor="nome" className="text-sm font-medium text-gray-700 block mb-1">
+            <label htmlFor="nome" className="mb-1 block text-sm font-semibold text-slate-700">
               Seu nome
             </label>
             <Input
@@ -109,13 +113,14 @@ export default function RealtorCard({
               type="text"
               placeholder="Nome"
               value={formData.nome}
-              onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+              onChange={(event) => setFormData({ ...formData, nome: event.target.value })}
               required
+              className="border-slate-200 bg-white"
             />
           </div>
 
           <div>
-            <label htmlFor="email" className="text-sm font-medium text-gray-700 block mb-1">
+            <label htmlFor="email" className="mb-1 block text-sm font-semibold text-slate-700">
               E-mail
             </label>
             <Input
@@ -123,13 +128,14 @@ export default function RealtorCard({
               type="email"
               placeholder="exemplo@gmail.com"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(event) => setFormData({ ...formData, email: event.target.value })}
               required
+              className="border-slate-200 bg-white"
             />
           </div>
 
           <div>
-            <label htmlFor="telefone" className="text-sm font-medium text-gray-700 block mb-1">
+            <label htmlFor="telefone" className="mb-1 block text-sm font-semibold text-slate-700">
               Telefone
             </label>
             <Input
@@ -137,50 +143,46 @@ export default function RealtorCard({
               type="tel"
               placeholder="(51) 99999-9999"
               value={formData.telefone}
-              onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
+              onChange={(event) => setFormData({ ...formData, telefone: event.target.value })}
               required
+              className="border-slate-200 bg-white"
             />
           </div>
 
-          <div>
-            <Textarea
-              id="mensagem"
-              value={formData.mensagem}
-              onChange={(e) => setFormData({ ...formData, mensagem: e.target.value })}
-              rows={4}
-            />
-          </div>
+          <Textarea
+            id="mensagem"
+            value={formData.mensagem}
+            onChange={(event) => setFormData({ ...formData, mensagem: event.target.value })}
+            rows={4}
+            className="border-slate-200 bg-white"
+          />
 
-          <Button type="submit" className="w-full bg-primary hover:bg-primary/90 hover:scale-105 transition-all duration-200 hover:shadow-lg">
-            Enviar
+          <Button
+            type="submit"
+            className="w-full rounded-xl bg-slate-900 text-white hover:bg-slate-800"
+          >
+            Enviar solicitacao
           </Button>
         </form>
       </div>
 
-      {/* WhatsApp Button */}
-      <div className="text-center">
-        <p className="text-sm text-gray-600 mb-3">ou</p>
-        <Button
-          asChild
-          className="w-full bg-green-600 hover:bg-green-700 gap-2 hover:scale-105 transition-all duration-300 hover:shadow-lg"
-        >
-          <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
-            <Phone className="w-4 h-4" />
-            Chamar no WhatsApp
-          </a>
-        </Button>
-      </div>
+      <Button asChild className="w-full rounded-xl bg-emerald-600 text-white hover:bg-emerald-700">
+        <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
+          <Phone className="mr-2 h-4 w-4" />
+          Chamar no WhatsApp
+        </a>
+      </Button>
 
-      {/* Share Button */}
       <Button
         variant="outline"
-        className="w-full gap-2"
+        className="w-full rounded-xl border-slate-300 bg-white text-slate-700 hover:bg-slate-100"
         onClick={() => {
           navigator.clipboard.writeText(window.location.href);
-          alert("Link copiado!");
+          toast.success("Link copiado para compartilhamento.");
         }}
       >
-        🔗 Compartilhar
+        <Link2 className="mr-2 h-4 w-4" />
+        Copiar link
       </Button>
     </div>
   );

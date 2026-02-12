@@ -242,7 +242,7 @@ const Landing = () => {
               </span>
               <div>
                 <p className="text-lg font-['Space Grotesk'] font-semibold tracking-tight">
-                  ImobiFlow
+                  Imobiflow
                 </p>
                 <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Sistema de Gestão</p>
               </div>
@@ -795,7 +795,7 @@ const Landing = () => {
         <div className="container mx-auto px-4 py-10">
           <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
             <div className="space-y-2">
-              <p className="text-lg font-['Space Grotesk'] font-semibold">ImobiFlow</p>
+              <p className="text-lg font-['Space Grotesk'] font-semibold">Imobiflow</p>
               <p className="text-sm text-slate-600">
                 Software de gestão para negócios imobiliários.
               </p>
@@ -821,7 +821,7 @@ const Landing = () => {
             </div>
           </div>
           <div className="mt-8 flex flex-col gap-3 text-xs text-slate-400 md:flex-row md:items-center md:justify-between">
-            <span>ImobiFlow · {new Date().getFullYear()} · Todos os direitos reservados</span>
+            <span>Imobiflow · {new Date().getFullYear()} · Todos os direitos reservados</span>
             <span>Política de privacidade</span>
           </div>
         </div>

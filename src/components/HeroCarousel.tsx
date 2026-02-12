@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -17,90 +17,75 @@ interface HeroCarouselProps {
   properties: HeroProperty[];
 }
 
+const getPropertyTypeLabel = (type: string) => {
+  const types: Record<string, string> = {
+    apartamento: "Apartamento",
+    casa: "Casa",
+    terreno: "Terreno",
+    comercial: "Comercial",
+    industrial: "Industrial",
+    sala_comercial: "Sala comercial",
+    loja: "Loja",
+    galpao: "Galpao",
+    chacara: "Chacara",
+    sitio: "Sitio",
+  };
+  return types[type] || type.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
+};
+
 export default function HeroCarousel({ properties }: HeroCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-  // Auto-advance carousel every 3 seconds
   useEffect(() => {
-    if (!isAutoPlaying || properties.length === 0) return;
-    
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => 
-        prevIndex === properties.length - 1 ? 0 : prevIndex + 1
-      );
-    }, 5000);
+    if (!isAutoPlaying || properties.length <= 1) return;
 
-    return () => clearInterval(interval);
-  }, [currentIndex, properties.length, isAutoPlaying]);
+    const interval = window.setInterval(() => {
+      setCurrentIndex((previous) => (previous === properties.length - 1 ? 0 : previous + 1));
+    }, 5500);
 
-  // Reset to first slide when properties change
+    return () => window.clearInterval(interval);
+  }, [isAutoPlaying, properties.length]);
+
   useEffect(() => {
     setCurrentIndex(0);
   }, [properties]);
 
-  const goToPrevious = () => {
-    setIsAutoPlaying(false);
-    setCurrentIndex(currentIndex === 0 ? properties.length - 1 : currentIndex - 1);
-    setTimeout(() => setIsAutoPlaying(true), 8000); // Resume auto-play after 8s
-  };
-
-  const goToNext = () => {
-    setIsAutoPlaying(false);
-    setCurrentIndex(currentIndex === properties.length - 1 ? 0 : currentIndex + 1);
-    setTimeout(() => setIsAutoPlaying(true), 8000); // Resume auto-play after 8s
-  };
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("pt-BR", {
+  const formatPrice = (price: number) =>
+    new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(price);
+
+  const goToPrevious = () => {
+    setIsAutoPlaying(false);
+    setCurrentIndex((previous) => (previous === 0 ? properties.length - 1 : previous - 1));
+    window.setTimeout(() => setIsAutoPlaying(true), 7000);
   };
 
-  const getPropertyTypeLabel = (type: string) => {
-    const types: Record<string, string> = {
-      apartamento: "Apartamento",
-      casa: "Casa",
-      terreno: "Terreno",
-      comercial: "Comercial",
-      industrial: "Industrial",
-      sala_comercial: "Sala Comercial",
-      loja: "Loja",
-      galpao: "Galpão",
-      chacara: "Chácara",
-      sitio: "Sítio"
-    };
-    // Se não encontrar no mapa, formata removendo underscore e capitalizando
-    return types[type] || type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-  };
-
-  const getTransactionLabel = (type: string) => {
-    return type === "venda" ? "Venda" : "Aluguel";
+  const goToNext = () => {
+    setIsAutoPlaying(false);
+    setCurrentIndex((previous) => (previous === properties.length - 1 ? 0 : previous + 1));
+    window.setTimeout(() => setIsAutoPlaying(true), 7000);
   };
 
   if (properties.length === 0) {
-    // Fallback to default image if no properties
     return (
-      <div className="relative">
-        <div className="rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10">
-          <img
-            src="https://images.unsplash.com/photo-1502005097973-6a7082348e28?q=80&w=800&auto=format&fit=crop"
-            alt="Edifício residencial"
-            className="w-full h-[240px] sm:h-[300px] md:h-[340px] object-cover"
-          />
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4">
-            <div className="text-white">
-              <h3 className="font-semibold text-base md:text-lg mb-2">
-                Encontre seu imóvel ideal
-              </h3>
-              <p className="text-white/90 text-sm">
-                Navegue por nossa seleção de imóveis ou use os filtros para encontrar exatamente o que procura.
-              </p>
-            </div>
-          </div>
+      <div className="relative overflow-hidden rounded-3xl border border-white/20 shadow-[0_20px_40px_rgba(15,23,42,0.3)]">
+        <img
+          src="https://images.unsplash.com/photo-1502005097973-6a7082348e28?q=80&w=1200&auto=format&fit=crop"
+          alt="Imovel em destaque"
+          className="h-[320px] w-full object-cover md:h-[360px]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/45 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+          <p className="text-xs uppercase tracking-[0.2em] text-white/70">Demo imobiliaria</p>
+          <h3 className="mt-2 text-2xl font-semibold">Encontre seu imovel ideal</h3>
+          <p className="mt-1 text-sm text-white/80">
+            Use os filtros para visualizar opcoes de compra, locacao e lancamentos.
+          </p>
         </div>
       </div>
     );
@@ -109,104 +94,56 @@ export default function HeroCarousel({ properties }: HeroCarouselProps) {
   const currentProperty = properties[currentIndex];
 
   return (
-    <div className="relative group">
-      <div className="rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10 relative">
-        {/* Main Image */}
-        <div className="relative">
-          <img
-            src={currentProperty.image_url || "https://images.unsplash.com/photo-1502005097973-6a7082348e28?q=80&w=800&auto=format&fit=crop"}
-            alt={currentProperty.title}
-            className="w-full h-[240px] sm:h-[300px] md:h-[340px] object-cover hero-carousel-image"
-            loading="eager"
-          />
-          
-          {/* Overlay with property info */}
-          <div className="absolute bottom-0 left-0 right-0 carousel-overlay p-4">
-            <Link 
-              to={`/property/${currentProperty.id}`}
-              className="block hover:scale-[1.02] transition-transform duration-200"
-            >
-              {/* Property Type and Transaction */}
-              <div className="flex items-center gap-2 mb-2">
-                <span className="bg-white/20 backdrop-blur text-white text-xs px-2 py-1 rounded-full">
-                  {getPropertyTypeLabel(currentProperty.property_type)}
-                </span>
-                <span className="bg-accent/90 text-white text-xs px-2 py-1 rounded-full">
-                  {getTransactionLabel(currentProperty.transaction_type)}
-                </span>
-              </div>
-              
-              {/* Title */}
-              <h3 className="text-white font-semibold text-sm md:text-base mb-1 line-clamp-1">
-                {currentProperty.title}
-              </h3>
-              
-              {/* Location */}
-              <div className="flex items-center text-white/90 text-xs md:text-sm mb-2">
-                <MapPin className="w-3 h-3 mr-1" />
-                <span className="line-clamp-1">{currentProperty.location}, {currentProperty.city}</span>
-              </div>
-              
-              {/* Price */}
-              <div className="text-white font-bold text-sm md:text-lg">
-                {formatPrice(currentProperty.price)}
-              </div>
-            </Link>
+    <div className="group relative overflow-hidden rounded-3xl border border-white/20 shadow-[0_24px_44px_rgba(15,23,42,0.35)]">
+      <img
+        src={currentProperty.image_url}
+        alt={currentProperty.title}
+        className="hero-carousel-image h-[320px] w-full object-cover md:h-[360px]"
+        loading="eager"
+      />
+
+      <div className="carousel-overlay absolute inset-0" />
+
+      <div className="absolute bottom-0 left-0 right-0 p-5">
+        <Link to={`/property/${currentProperty.id}`} className="block transition-transform hover:scale-[1.01]">
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            <span className="glass-chip">{getPropertyTypeLabel(currentProperty.property_type)}</span>
+            <span className="rounded-full border border-amber-300/60 bg-amber-400 px-2.5 py-1 text-xs font-semibold text-slate-900">
+              {currentProperty.transaction_type === "venda" ? "Venda" : "Aluguel"}
+            </span>
           </div>
-        </div>
-
-        {/* Navigation Arrows */}
-        {properties.length > 1 && (
-          <>
-            <button
-              onClick={goToPrevious}
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur rounded-full p-2 opacity-0 group-hover:opacity-100 transition-all duration-200"
-              aria-label="Imóvel anterior"
-            >
-              <ChevronLeft className="w-4 h-4 text-white" />
-            </button>
-            
-            <button
-              onClick={goToNext}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur rounded-full p-2 opacity-0 group-hover:opacity-100 transition-all duration-200"
-              aria-label="Próximo imóvel"
-            >
-              <ChevronRight className="w-4 h-4 text-white" />
-            </button>
-          </>
-        )}
-
-        {/* Indicators */}
-        {properties.length > 1 && (
-          <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-1.5">
-            {properties.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  setIsAutoPlaying(false);
-                  setCurrentIndex(index);
-                  setTimeout(() => setIsAutoPlaying(true), 8000);
-                }}
-                className={`w-2 h-2 rounded-full transition-all duration-200 ${
-                  index === currentIndex 
-                    ? "bg-white scale-110" 
-                    : "bg-white/50 hover:bg-white/75"
-                }`}
-                aria-label={`Ver imóvel ${index + 1}`}
-              />
-            ))}
-          </div>
-        )}
-
-
+          <h3 className="line-clamp-1 text-lg font-semibold text-white">{currentProperty.title}</h3>
+          <p className="mt-1 inline-flex items-center gap-1 text-sm text-white/85">
+            <MapPin className="h-4 w-4 text-amber-300" />
+            {currentProperty.location}, {currentProperty.city}
+          </p>
+          <p className="mt-2 text-2xl font-bold text-white">{formatPrice(currentProperty.price)}</p>
+        </Link>
       </div>
 
-      {/* Property counter */}
-      {properties.length > 1 && (
-        <div className="absolute top-3 left-3 bg-black/50 backdrop-blur text-white text-xs px-2 py-1 rounded-full">
-          {currentIndex + 1} de {properties.length}
-        </div>
-      )}
+      {properties.length > 1 ? (
+        <>
+          <button
+            onClick={goToPrevious}
+            className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full border border-white/30 bg-slate-950/35 p-2 text-white opacity-0 transition hover:bg-slate-950/50 group-hover:opacity-100"
+            aria-label="Imagem anterior"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+
+          <button
+            onClick={goToNext}
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full border border-white/30 bg-slate-950/35 p-2 text-white opacity-0 transition hover:bg-slate-950/50 group-hover:opacity-100"
+            aria-label="Proxima imagem"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+
+          <div className="absolute bottom-4 right-5 rounded-full border border-white/20 bg-slate-950/40 px-2.5 py-1 text-xs text-white/90">
+            {currentIndex + 1}/{properties.length}
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }

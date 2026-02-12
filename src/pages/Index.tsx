@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Clock, MapPin, Search, ShieldCheck, SlidersHorizontal } from "lucide-react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
 import HeroCarousel from "@/components/HeroCarousel";
 
@@ -312,10 +311,10 @@ const Index = () => {
   }) : [];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="page-shell">
       <Navbar />
       {/* Hero Section novo layout (sem sobreposição problemática) */}
-      <section className="relative bg-primary/95 text-white pt-16 pb-48 overflow-hidden">
+      <section className="relative mx-4 mt-8 overflow-hidden rounded-[32px] border border-white/15 bg-[linear-gradient(135deg,hsl(var(--hero-gradient-start))_0%,hsl(var(--hero-gradient-end))_65%,hsl(214_35%_18%)_100%)] pt-14 pb-44 text-white shadow-[0_26px_60px_rgba(15,23,42,0.3)] md:mx-6 lg:mx-10">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute right-0 top-0 w-[280px] h-[280px] md:w-[420px] md:h-[420px] bg-accent/10 rounded-bl-[120px] md:rounded-bl-[180px]" />
           <div className="absolute left-0 bottom-0 w-[240px] h-[240px] bg-white/5 rounded-tr-[140px]" />
@@ -366,9 +365,9 @@ const Index = () => {
           </div>
         </div>
       </section>
-      <div className="relative z-20 -mt-24 md:-mt-32 mb-8 md:mb-12">
+      <div className="relative z-20 -mt-16 mb-10 md:-mt-20 md:mb-14">
         <div className="container mx-auto px-4">
-          <div className="bg-white text-foreground rounded-xl shadow-xl border border-border overflow-hidden max-w-5xl mx-auto">
+          <div className="section-shell mx-auto max-w-5xl overflow-hidden border-white/60 bg-white/90">
             <div className="flex justify-center gap-6 md:gap-12 border-b border-border px-4 md:px-8 pt-4 md:pt-6">
               <button
                 type="button"
@@ -622,7 +621,7 @@ const Index = () => {
       {/* Destaques e novidades */}
       {!showList && (
       <>
-      <section className="container mx-auto px-4 py-10 md:py-14">
+      <section className="container mx-auto section-shell px-4 py-8 md:py-10">
         <div className="mb-6 md:mb-8">
           <div className="flex items-center justify-center gap-4 mb-3">
             <span className="h-px w-16 sm:w-24 md:w-32 bg-muted-foreground/40" />
@@ -687,7 +686,7 @@ const Index = () => {
         )}
       </section>
 
-      <section className="container mx-auto px-4 pb-8 md:pb-12">
+      <section className="container mx-auto mt-6 section-shell px-4 py-8 md:py-10">
         <div className="mb-6 md:mb-8">
           <div className="flex items-center justify-center gap-4 mb-3">
             <span className="h-px w-16 sm:w-24 md:w-32 bg-muted-foreground/40" />
@@ -753,7 +752,7 @@ const Index = () => {
       </section>
 
 
-      <section className="container mx-auto px-4 pb-8 md:pb-12">
+      <section className="container mx-auto mt-6 section-shell px-4 py-8 md:py-10">
         <div className="mb-6 md:mb-8">
           <div className="flex items-center justify-center gap-4 mb-3">
             <span className="h-px w-16 sm:w-24 md:w-32 bg-muted-foreground/40" />
@@ -821,11 +820,11 @@ const Index = () => {
       )}
 
       {showList && (
-      <section id="imoveis" className="container mx-auto px-4 py-8 md:py-16 flex-1">
+      <section id="imoveis" className="container mx-auto px-4 py-8 md:py-12 flex-1">
         <div className="flex flex-col lg:flex-row gap-6 md:gap-8">
           {/* Filtros Laterais - Desktop apenas */}
           <aside className="hidden lg:block lg:w-80 flex-shrink-0">
-            <div className="bg-card rounded-lg shadow-md p-4 md:p-6 lg:sticky lg:top-4">
+            <div className="surface-card border-slate-200/80 p-4 md:p-6 lg:sticky lg:top-4">
               <div className="flex items-center justify-between mb-4 md:mb-6">
                 <h3 className="text-lg md:text-xl font-bold text-foreground">Filtros</h3>
                 <Button
@@ -1054,8 +1053,8 @@ const Index = () => {
       )}
 
       {!showList && (
-        <section className="container mx-auto px-4 py-8 md:py-12">
-          <div className="rounded-3xl bg-[#2b2b2b] text-white p-6 md:p-10 shadow-xl">
+        <section className="container mx-auto px-4 py-8 md:py-10">
+          <div className="hero-surface p-6 md:p-10">
             <div className="flex items-center justify-between gap-4 mb-6">
               <h2 className="text-2xl md:text-3xl font-bold tracking-wide">
                 LANÇAMENTOS<span className="text-accent">.</span>

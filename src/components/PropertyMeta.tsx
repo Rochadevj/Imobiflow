@@ -1,4 +1,4 @@
-import { Home, Maximize, Bed, Bath, Car, Hash, DollarSign } from "lucide-react";
+import { Bath, Bed, Car, DollarSign, Hash, Home, Maximize } from "lucide-react";
 
 interface PropertyMetaProps {
   areaTotal: number;
@@ -25,52 +25,53 @@ export default function PropertyMeta({
   transactionType,
   showPrice = true,
 }: PropertyMetaProps) {
-  const formatPrice = (value: number, withCents: boolean) => {
-    return new Intl.NumberFormat("pt-BR", {
+  const formatPrice = (value: number, withCents: boolean) =>
+    new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
       minimumFractionDigits: withCents ? 2 : 0,
       maximumFractionDigits: withCents ? 2 : 0,
     }).format(value);
-  };
 
   const isRental = transactionType === "aluguel";
-  const priceValue = isRental
-    ? `${formatPrice(preco, true)} / mês`
-    : formatPrice(preco, false);
+  const priceValue = isRental ? `${formatPrice(preco, true)} / mes` : formatPrice(preco, false);
 
   const metaItems = [
-    { icon: Home, label: "Área Total", value: `${areaTotal}m²` },
-    { icon: Maximize, label: "Área Privativa", value: `${areaPrivativa}m²` },
+    { icon: Home, label: "Area total", value: `${areaTotal}m2` },
+    { icon: Maximize, label: "Area privativa", value: `${areaPrivativa}m2` },
     { icon: Bed, label: "Quartos", value: quartos },
-    ...(suites ? [{ icon: Bed, label: "Suítes", value: suites }] : []),
+    ...(suites ? [{ icon: Bed, label: "Suites", value: suites }] : []),
     { icon: Bath, label: "Banheiros", value: banheiros },
     { icon: Car, label: "Vagas", value: vagas },
-    { icon: Hash, label: "Código", value: codigo },
+    { icon: Hash, label: "Codigo", value: codigo },
     ...(showPrice
-      ? [{ icon: DollarSign, label: isRental ? "Valor aluguel" : "Preço", value: priceValue, highlight: true }]
+      ? [{ icon: DollarSign, label: isRental ? "Valor aluguel" : "Preco", value: priceValue, highlight: true }]
       : []),
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-6 border-y border-gray-200">
-      {metaItems.map((item, idx) => {
-        const Icon = item.icon;
-        return (
-          <div
-            key={idx}
-            className={`flex flex-col gap-2 hover:scale-110 transition-transform duration-200 ${item.highlight ? "col-span-2 md:col-span-1" : ""}`}
-          >
-            <div className="flex items-center gap-2 text-gray-600">
-              <Icon className="w-5 h-5 text-primary" />
-              <span className="text-sm font-medium">{item.label}</span>
+    <div className="surface-card border-slate-200/80 p-5">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        {metaItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <div
+              key={`${item.label}-${item.value}`}
+              className={`rounded-xl border border-slate-200/70 bg-white px-3 py-3 ${
+                item.highlight ? "col-span-2 md:col-span-1" : ""
+              }`}
+            >
+              <p className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                <Icon className="h-3.5 w-3.5 text-amber-500" />
+                {item.label}
+              </p>
+              <p className={`mt-2 text-lg font-semibold ${item.highlight ? "text-slate-900" : "text-slate-800"}`}>
+                {item.value}
+              </p>
             </div>
-            <div className={`text-lg font-semibold ${item.highlight ? "text-primary" : "text-gray-900"}`}>
-              {item.value}
-            </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }

@@ -1,10 +1,16 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Building2, LogOut, Home, LayoutDashboard, Menu, X, Heart } from "lucide-react";
+import { Heart, LayoutDashboard, LogOut, Menu, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
+
+const navItems = [
+  { label: "Comprar", href: "/imobiliaria?type=comprar" },
+  { label: "Alugar", href: "/imobiliaria?type=alugar" },
+  { label: "Sobre", href: "/sobre" },
+];
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -17,7 +23,9 @@ const Navbar = () => {
       setUser(session?.user ?? null);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_, session) => {
       setUser(session?.user ?? null);
     });
 
@@ -27,90 +35,80 @@ const Navbar = () => {
   useEffect(() => {
     const updateFavCount = () => {
       try {
-        const favs = JSON.parse(localStorage.getItem('favorites') || '[]') as string[];
+        const favs = JSON.parse(localStorage.getItem("favorites") || "[]") as string[];
         setFavoritesCount(favs.length);
       } catch {
         setFavoritesCount(0);
       }
     };
     updateFavCount();
-    window.addEventListener('favoritesChanged', updateFavCount);
-    window.addEventListener('storage', updateFavCount);
+    window.addEventListener("favoritesChanged", updateFavCount);
+    window.addEventListener("storage", updateFavCount);
     return () => {
-      window.removeEventListener('favoritesChanged', updateFavCount);
-      window.removeEventListener('storage', updateFavCount);
+      window.removeEventListener("favoritesChanged", updateFavCount);
+      window.removeEventListener("storage", updateFavCount);
     };
   }, []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate("/");
     setMobileMenuOpen(false);
+    navigate("/");
   };
 
   return (
-    <nav className="bg-primary text-primary-foreground shadow-lg">
+    <nav className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/88 backdrop-blur-xl shadow-[0_10px_28px_rgba(15,23,42,0.06)]">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-20">
-          <Link to="/imobiliaria" className="flex items-center gap-3 font-bold text-xl group">
-<svg
-  viewBox="0 0 360 80"
-  className="h-12 w-auto"
-  role="img"
-  aria-label="Imobiliaria Exemplo"
->
-  <title>Imobiliaria Exemplo</title>
-
-  <text
-    x="0"
-    y="46"
-    fontFamily="Montserrat, Arial, sans-serif"
-    fontSize="48"
-    fontWeight="700"
-    letterSpacing="0.8"
-    fill="currentColor"
-  >
-    ImobEx
-  </text>
-
-  <text
-    x="2"
-    y="72"
-    fontFamily="Inter, Arial, sans-serif"
-    fontSize="14"
-    fontWeight="500"
-    letterSpacing="3.5"
-    fill="currentColor"
-    opacity="0.85"
-  >
-    SOLUÇÕES IMOBILIÁRIAS
-  </text>
-</svg>
-
+        <div className="flex h-20 items-center justify-between gap-4">
+          <Link to="/imobiliaria" className="group inline-flex items-center gap-3">
+            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-300 via-amber-400 to-orange-400 text-slate-900 shadow-[0_10px_24px_rgba(251,146,60,0.35)] transition-transform duration-300 group-hover:-translate-y-0.5">
+              <Sparkles className="h-5 w-5" />
+            </span>
+            <div>
+              <p className="text-lg font-semibold leading-none text-slate-900">Imobiflow</p>
+              <p className="mt-1 text-[10px] uppercase tracking-[0.28em] text-slate-500">
+                Solucoes imobiliarias
+              </p>
+            </div>
           </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-4">
-            <Button variant="ghost" className="text-primary-foreground hover:text-accent hover:bg-primary/80 transition-colors duration-300" asChild>
-              <Link to="/imobiliaria?type=comprar">Comprar</Link>
-            </Button>
-            <Button variant="ghost" className="text-primary-foreground hover:text-accent hover:bg-primary/80 transition-colors duration-300" asChild>
-              <Link to="/imobiliaria?type=alugar">Alugar</Link>
+          <div className="hidden items-center gap-1 lg:flex">
+            {navItems.map((item) => (
+              <Button
+                key={item.href}
+                variant="ghost"
+                className="rounded-full px-4 text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                asChild
+              >
+                <Link to={item.href}>{item.label}</Link>
+              </Button>
+            ))}
+          </div>
+
+          <div className="hidden items-center gap-2 md:flex">
+            <Button
+              variant="ghost"
+              className="rounded-full px-4 text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+              asChild
+            >
+              <Link to="/favorites">
+                <Heart className="mr-2 h-4 w-4" />
+                Favoritos ({favoritesCount})
+              </Link>
             </Button>
 
-            <Button variant="ghost" className="text-primary-foreground hover:text-accent hover:bg-primary/80 transition-colors duration-300" asChild>
-              <Link to="/sobre">Sobre</Link>
-            </Button>
-
-            <Button className="bg-accent text-primary hover:bg-accent/90 px-6 py-2 rounded-full transition-all duration-300 hover:shadow-md" asChild>
+            <Button
+              className="rounded-full bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 px-5 text-slate-900 shadow-[0_10px_24px_rgba(251,146,60,0.32)] hover:from-amber-300 hover:via-orange-400 hover:to-amber-400"
+              asChild
+            >
               <Link to="/anunciar">Anunciar</Link>
             </Button>
 
             {user ? (
               <>
                 <Button
-                  variant="ghost"
-                  className="text-primary-foreground hover:text-accent hover:bg-primary/90"
+                  variant="outline"
+                  className="rounded-full border-slate-300 bg-white text-slate-700 hover:bg-slate-100"
                   asChild
                 >
                   <Link to="/admin">
@@ -119,8 +117,8 @@ const Navbar = () => {
                   </Link>
                 </Button>
                 <Button
-                  variant="outline"
-                  className="bg-transparent border-accent text-accent hover:bg-accent hover:text-primary"
+                  variant="ghost"
+                  className="rounded-full px-4 text-slate-600 hover:bg-red-50 hover:text-red-600"
                   onClick={handleLogout}
                 >
                   <LogOut className="mr-2 h-4 w-4" />
@@ -129,68 +127,68 @@ const Navbar = () => {
               </>
             ) : (
               <Button
-                className="bg-accent text-primary hover:bg-accent/90"
+                variant="outline"
+                className="rounded-full border-slate-300 bg-white text-slate-700 hover:bg-slate-100"
                 asChild
               >
                 <Link to="/auth">Entrar</Link>
               </Button>
             )}
-            <Button variant="ghost" className="text-primary-foreground hover:text-accent hover:bg-primary/90" asChild>
-              <Link to="/favorites">
-                <Heart className="mr-2 h-4 w-4" />
-                ({favoritesCount})
-              </Link>
-            </Button>
           </div>
 
-          {/* Mobile Menu */}
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="md:hidden text-primary-foreground hover:text-accent hover:bg-primary/90"
+                className="md:hidden rounded-full text-slate-700 hover:bg-slate-100 hover:text-slate-900"
               >
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Abrir menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] bg-primary text-primary-foreground">
-              <div className="flex flex-col gap-4 mt-8">
+            <SheetContent side="right" className="w-[320px] border-l border-slate-200 bg-white">
+              <div className="mt-6 space-y-2">
+                {navItems.map((item) => (
+                  <SheetClose asChild key={item.href}>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start rounded-xl text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                      asChild
+                    >
+                      <Link to={item.href}>{item.label}</Link>
+                    </Button>
+                  </SheetClose>
+                ))}
+
                 <SheetClose asChild>
-                  <Button variant="ghost" className="text-primary-foreground hover:text-accent hover:bg-primary/90 justify-start" asChild>
-                    <Link to="/imobiliaria?type=comprar">Comprar</Link>
-                  </Button>
-                </SheetClose>
-                <SheetClose asChild>
-                  <Button variant="ghost" className="text-primary-foreground hover:text-accent hover:bg-primary/90 justify-start" asChild>
-                    <Link to="/imobiliaria?type=alugar">Alugar</Link>
-                  </Button>
-                </SheetClose>
-                <SheetClose asChild>
-                  <Button variant="ghost" className="text-primary-foreground hover:text-accent hover:bg-primary/90 justify-start" asChild>
-                    <Link to="/sobre">Sobre</Link>
-                  </Button>
-                </SheetClose>
-                <SheetClose asChild>
-                  <Button className="bg-accent text-primary hover:bg-accent/95 justify-start" asChild>
-                    <Link to="/anunciar">Anunciar</Link>
-                  </Button>
-                </SheetClose>
-                <SheetClose asChild>
-                  <Button variant="ghost" className="text-primary-foreground hover:text-accent hover:bg-primary/90 justify-start" asChild>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start rounded-xl text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                    asChild
+                  >
                     <Link to="/favorites">
                       <Heart className="mr-2 h-4 w-4" />
                       Favoritos ({favoritesCount})
                     </Link>
                   </Button>
                 </SheetClose>
+
+                <SheetClose asChild>
+                  <Button
+                    className="mt-3 w-full justify-start rounded-xl bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 text-slate-900 hover:from-amber-300 hover:via-orange-400 hover:to-amber-400"
+                    asChild
+                  >
+                    <Link to="/anunciar">Anunciar</Link>
+                  </Button>
+                </SheetClose>
+
                 {user ? (
                   <>
                     <SheetClose asChild>
                       <Button
-                        variant="ghost"
-                        className="text-primary-foreground hover:text-accent hover:bg-primary/90 justify-start"
+                        variant="outline"
+                        className="w-full justify-start rounded-xl border-slate-300 bg-white text-slate-700 hover:bg-slate-100"
                         asChild
                       >
                         <Link to="/admin">
@@ -200,8 +198,8 @@ const Navbar = () => {
                       </Button>
                     </SheetClose>
                     <Button
-                      variant="outline"
-                      className="bg-transparent border-accent text-accent hover:bg-accent hover:text-primary justify-start"
+                      variant="ghost"
+                      className="w-full justify-start rounded-xl text-slate-600 hover:bg-red-50 hover:text-red-600"
                       onClick={handleLogout}
                     >
                       <LogOut className="mr-2 h-4 w-4" />
@@ -211,7 +209,8 @@ const Navbar = () => {
                 ) : (
                   <SheetClose asChild>
                     <Button
-                      className="bg-accent text-primary hover:bg-accent/90 justify-start"
+                      variant="outline"
+                      className="w-full justify-start rounded-xl border-slate-300 bg-white text-slate-700 hover:bg-slate-100"
                       asChild
                     >
                       <Link to="/auth">Entrar</Link>

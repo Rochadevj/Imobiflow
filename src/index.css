@@ -1,80 +1,76 @@
-@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Manrope:wght@500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 224 41% 11%;
+    --background: 220 31% 97%;
+    --foreground: 220 38% 14%;
 
     --card: 0 0% 100%;
-    --card-foreground: 224 41% 11%;
+    --card-foreground: 220 38% 14%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 224 41% 11%;
+    --popover-foreground: 220 38% 14%;
 
-    --primary: 224 41% 11%;
+    --primary: 220 43% 16%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 224 20% 96%;
-    --secondary-foreground: 224 41% 11%;
+    --secondary: 220 24% 93%;
+    --secondary-foreground: 220 38% 14%;
 
-    --muted: 224 12% 96%;
-    --muted-foreground: 224 10% 45%;
+    --muted: 220 22% 94%;
+    --muted-foreground: 220 12% 43%;
 
-    --accent: 32 92% 51%;
-    --accent-foreground: 224 41% 11%;
+    --accent: 32 97% 56%;
+    --accent-foreground: 220 43% 16%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 224 15% 90%;
-    --input: 224 15% 90%;
-    --ring: 32 92% 51%;
+    --border: 220 18% 86%;
+    --input: 220 18% 86%;
+    --ring: 32 97% 56%;
 
-    --radius: 0.5rem;
+    --radius: 0.8rem;
 
-    --hero-gradient-start: 224 41% 11%;
-    --hero-gradient-end: 224 32% 18%;
+    --hero-gradient-start: 221 44% 16%;
+    --hero-gradient-end: 218 38% 12%;
   }
 
   .dark {
-    --background: 224 41% 11%;
+    --background: 220 36% 10%;
     --foreground: 0 0% 100%;
 
-    --card: 224 32% 16%;
+    --card: 220 30% 14%;
     --card-foreground: 0 0% 100%;
 
-    --popover: 224 32% 16%;
+    --popover: 220 30% 14%;
     --popover-foreground: 0 0% 100%;
 
-    --primary: 32 92% 51%;
-    --primary-foreground: 224 41% 11%;
+    --primary: 32 97% 56%;
+    --primary-foreground: 220 43% 16%;
 
-    --secondary: 224 25% 20%;
+    --secondary: 220 24% 19%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 224 25% 20%;
-    --muted-foreground: 224 12% 75%;
+    --muted: 220 24% 19%;
+    --muted-foreground: 220 14% 74%;
 
-    --accent: 32 92% 51%;
-    --accent-foreground: 224 41% 11%;
+    --accent: 32 97% 56%;
+    --accent-foreground: 220 43% 16%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 224 25% 20%;
-    --input: 224 25% 20%;
-    --ring: 32 92% 51%;
+    --border: 220 24% 24%;
+    --input: 220 24% 24%;
+    --ring: 32 97% 56%;
 
-    --hero-gradient-start: 224 41% 11%;
-    --hero-gradient-end: 224 32% 18%;
+    --hero-gradient-start: 221 44% 16%;
+    --hero-gradient-end: 218 38% 12%;
   }
 }
 
@@ -84,16 +80,109 @@ All colors MUST be HSL.
   }
 
   html, body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
     overflow-x: hidden;
     max-width: 100vw;
+    font-family: "Manrope", sans-serif;
+    background-image:
+      radial-gradient(circle at 5% 0%, rgba(251, 191, 36, 0.24), transparent 34%),
+      radial-gradient(circle at 95% 0%, rgba(56, 189, 248, 0.18), transparent 35%),
+      linear-gradient(180deg, #f4f7fc 0%, #edf2f9 48%, #f6f8fb 100%);
+    background-attachment: fixed;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Space Grotesk", sans-serif;
+    letter-spacing: -0.01em;
+  }
+
+  #root {
+    min-height: 100vh;
   }
 }
 
 @layer components {
+  .page-shell {
+    @apply relative min-h-screen flex flex-col overflow-hidden;
+  }
+
+  .page-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.22;
+    background-image: radial-gradient(circle at center, rgba(15, 23, 42, 0.08) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .page-shell > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-shell {
+    @apply rounded-3xl border border-white/70 bg-white/80 shadow-[0_20px_50px_rgba(15,23,42,0.08)] backdrop-blur;
+  }
+
+  .surface-card {
+    @apply rounded-2xl border border-border/70 bg-white/95 shadow-[0_14px_30px_rgba(15,23,42,0.08)];
+  }
+
+  .surface-card-muted {
+    @apply rounded-2xl border border-border/60 bg-slate-50/90 shadow-sm;
+  }
+
+  .hero-surface {
+    @apply relative overflow-hidden rounded-[32px] border border-white/15 bg-[linear-gradient(135deg,hsl(var(--hero-gradient-start))_0%,hsl(var(--hero-gradient-end))_60%,hsl(214_35%_18%)_100%)] text-white shadow-[0_30px_70px_rgba(15,23,42,0.32)];
+  }
+
+  .hero-surface::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    pointer-events: none;
+    border-radius: inherit;
+    background:
+      radial-gradient(circle at 88% 8%, rgba(251, 191, 36, 0.25), transparent 34%),
+      radial-gradient(circle at 8% 92%, rgba(14, 165, 233, 0.2), transparent 35%);
+    opacity: 0.9;
+  }
+
+  .hero-surface > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-panel {
+    @apply rounded-2xl border border-white/20 bg-slate-950/55 p-5 shadow-[0_20px_42px_rgba(2,6,23,0.45)] backdrop-blur md:p-6;
+  }
+
+  .hero-step-card {
+    @apply rounded-xl border border-white/15 bg-white/[0.07] p-3 text-sm text-white/90;
+  }
+
+  .accent-chip {
+    @apply inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50/90 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-amber-800;
+  }
+
+  .glass-chip {
+    @apply inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-semibold text-white/85;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-slate-900 via-slate-700 to-amber-500 bg-clip-text text-transparent;
+  }
+
   /* Hero Carousel Animations */
   .hero-carousel-image {
-    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .hero-carousel-image:hover {
@@ -104,8 +193,8 @@ All colors MUST be HSL.
   .carousel-overlay {
     background: linear-gradient(
       to top,
-      rgba(0, 0, 0, 0.9) 0%,
-      rgba(0, 0, 0, 0.5) 50%,
+      rgba(2, 6, 23, 0.92) 0%,
+      rgba(2, 6, 23, 0.55) 45%,
       transparent 100%
     );
     backdrop-filter: blur(1px);
@@ -152,6 +241,18 @@ All colors MUST be HSL.
     }
   }
 
+  @keyframes pulse-soft {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.8;
+    }
+    50% {
+      transform: scale(1.04);
+      opacity: 1;
+    }
+  }
+
   .animate-fade-up {
     animation: fade-up 0.9s ease-out both;
   }
@@ -166,5 +267,9 @@ All colors MUST be HSL.
 
   .float-slow {
     animation: float-slow 9s ease-in-out infinite;
+  }
+
+  .pulse-soft {
+    animation: pulse-soft 3.5s ease-in-out infinite;
   }
 }
