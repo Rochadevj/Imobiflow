@@ -14,12 +14,12 @@ const Footer = () => {
               <div>
                 <p className="text-lg font-semibold text-slate-900">Imobiflow</p>
                 <p className="text-[10px] uppercase tracking-[0.28em] text-slate-500">
-                  Solucoes imobiliarias
+                  Soluções imobiliárias
                 </p>
               </div>
             </Link>
             <p className="text-sm text-slate-600">
-              Plataforma demo para apresentar captacao, atendimento e negociacao de imoveis em um unico fluxo.
+              Plataforma demo para apresentar captação, atendimento e negociação de imóveis em um único fluxo.
             </p>
             <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
               <ShieldCheck className="h-3.5 w-3.5" />
@@ -28,16 +28,16 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Navegacao</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Navegação</h3>
             <nav className="mt-4 space-y-2 text-sm">
               <Link to="/imobiliaria" className="block text-slate-700 transition hover:text-amber-600">
-                Inicio
+                Início
               </Link>
               <Link to="/sobre" className="block text-slate-700 transition hover:text-amber-600">
                 Sobre
               </Link>
               <Link to="/anunciar" className="block text-slate-700 transition hover:text-amber-600">
-                Anunciar imovel
+                Anunciar imóvel
               </Link>
               <Link to="/favorites" className="block text-slate-700 transition hover:text-amber-600">
                 Favoritos
@@ -59,7 +59,7 @@ const Footer = () => {
                 contato@imobiflow.com
               </a>
               <a
-                href="https://wa.me/5500000000000?text=Ola! Gostaria de mais informacoes sobre os imoveis."
+                href="https://wa.me/5500000000000?text=Ol%C3%A1!%20Gostaria%20de%20mais%20informa%C3%A7%C3%B5es%20sobre%20os%20im%C3%B3veis."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 transition hover:text-amber-600"
@@ -95,7 +95,7 @@ const Footer = () => {
               </a>
             </div>
             <p className="mt-4 text-sm text-slate-600">
-              Estrutura pronta para demonstrar operacao imobiliaria com visual profissional.
+              Estrutura pronta para demonstrar operação imobiliária com visual profissional.
             </p>
           </div>
         </div>
@@ -103,7 +103,7 @@ const Footer = () => {
         <div className="mt-10 flex flex-col gap-3 border-t border-slate-200 pt-6 text-sm text-slate-500 md:flex-row md:items-center md:justify-between">
           <p>Imobiflow | {new Date().getFullYear()} | Todos os direitos reservados</p>
           <Link to="/politica-privacidade" className="transition hover:text-amber-600">
-            Politica de Privacidade
+            Política de Privacidade
           </Link>
         </div>
       </div>
