@@ -67,7 +67,7 @@ const Navbar = () => {
             <div>
               <p className="text-lg font-semibold leading-none text-slate-900">Imobiflow</p>
               <p className="mt-1 text-[10px] uppercase tracking-[0.28em] text-slate-500">
-                Solucoes imobiliarias
+                Soluções imobiliárias
               </p>
             </div>
           </Link>

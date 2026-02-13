@@ -14,44 +14,44 @@ import {
 
 const values = [
   "Atendimento humano e consultivo",
-  "Processos claros do inicio ao fechamento",
-  "Seguranca juridica em cada etapa",
-  "Comunicacao transparente com cliente e proprietario",
+  "Processos claros do início ao fechamento",
+  "Segurança jurídica em cada etapa",
+  "Comunicação transparente com cliente e proprietário",
 ];
 
 const highlights = [
   {
     icon: Users2,
     title: "Atendimento consultivo",
-    text: "Equipe preparada para orientar compra, venda e locacao com foco em clareza e resultado.",
+    text: "Equipe preparada para orientar compra, venda e locação com foco em clareza e resultado.",
   },
   {
     icon: ShieldCheck,
-    title: "Operacao segura",
-    text: "Checklist documental e revisoes para reduzir risco e acelerar o fechamento.",
+    title: "Operação segura",
+    text: "Checklist documental e revisões para reduzir risco e acelerar o fechamento.",
   },
   {
     icon: Clock3,
     title: "Agilidade real",
-    text: "Fluxo organizado para retorno rapido e acompanhamentos consistentes.",
+    text: "Fluxo organizado para retorno rápido e acompanhamentos consistentes.",
   },
 ];
 
 const timeline = [
   {
     year: "2022",
-    title: "Inicio da operacao",
+    title: "Início da operação",
     text: "Nascimento da marca com foco em atendimento boutique para clientes residenciais.",
   },
   {
     year: "2024",
-    title: "Expansao da carteira",
-    text: "Novos bairros, mais corretores e padronizacao de processos comerciais.",
+    title: "Expansão da carteira",
+    text: "Novos bairros, mais corretores e padronização de processos comerciais.",
   },
   {
     year: "2026",
     title: "Modelo digital",
-    text: "Demo estruturada para apresentar captacao, vitrine e conversao em um unico sistema.",
+    text: "Demo estruturada para apresentar captação, vitrine e conversão em um único sistema.",
   },
 ];
 
@@ -67,11 +67,11 @@ const About = () => {
               <div className="space-y-5">
                 <span className="glass-chip">Sobre a empresa</span>
                 <h1 className="max-w-xl text-3xl font-semibold leading-tight md:text-5xl">
-                  Atendimento humano, agilidade e transparencia para negociar com seguranca.
+                  Atendimento humano, agilidade e transparência para negociar com segurança.
                 </h1>
                 <p className="max-w-xl text-sm text-white/80 md:text-base">
-                  A Imobiflow e uma marca demo criada para apresentar um modelo profissional de imobiliaria:
-                  processos organizados, comunicacao clara e experiencia completa para cliente e corretor.
+                  A Imobiflow é uma marca demo criada para apresentar um modelo profissional de imobiliária:
+                  processos organizados, comunicação clara e experiência completa para cliente e corretor.
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <a
@@ -86,7 +86,7 @@ const About = () => {
                     className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
                   >
                     <MessageCircle className="h-4 w-4" />
-                    Anunciar imovel
+                    Anunciar imóvel
                   </a>
                 </div>
                 <div className="flex flex-wrap gap-3 text-xs text-white/80">
@@ -116,7 +116,7 @@ const About = () => {
                   href="/imobiliaria?list=1"
                   className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-amber-300 transition hover:text-amber-200"
                 >
-                  Ver imoveis da demo
+                  Ver imóveis da demo
                   <ArrowRight className="h-4 w-4" />
                 </a>
               </div>
@@ -142,20 +142,20 @@ const About = () => {
           <div className="section-shell p-6 md:p-8">
             <div className="grid gap-10 lg:grid-cols-[1fr_1fr]">
               <div>
-                <p className="accent-chip">Nossa historia</p>
-                <h3 className="mt-4 text-3xl font-semibold text-slate-900">Uma marca demo com cara de operacao real</h3>
+                <p className="accent-chip">Nossa história</p>
+                <h3 className="mt-4 text-3xl font-semibold text-slate-900">Uma marca demo com cara de operação real</h3>
                 <p className="mt-4 text-sm leading-relaxed text-slate-600">
-                  Esta pagina representa uma imobiliaria ficticia para demonstracao comercial. O objetivo e
+                  Esta página representa uma imobiliária fictícia para demonstração comercial. O objetivo é
                   mostrar como o produto funciona com identidade profissional, linguagem clara e estrutura pronta
-                  para receber estoque, leads e negociacoes.
+                  para receber estoque, leads e negociações.
                 </p>
                 <div className="mt-6 grid gap-3 sm:grid-cols-2">
                   <div className="surface-card-muted p-4">
-                    <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Imoveis</p>
+                    <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Imóveis</p>
                     <p className="mt-1 text-2xl font-semibold text-slate-900">+350</p>
                   </div>
                   <div className="surface-card-muted p-4">
-                    <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Satisfacao</p>
+                    <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Satisfação</p>
                     <p className="mt-1 text-2xl font-semibold text-slate-900">4.9/5</p>
                   </div>
                 </div>
@@ -176,9 +176,9 @@ const About = () => {
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
                   <p className="text-xs uppercase tracking-[0.18em] text-white/60">Imobiflow</p>
-                  <p className="mt-2 text-xl font-semibold">Quer anunciar seu imovel na demo?</p>
+                  <p className="mt-2 text-xl font-semibold">Quer anunciar seu imóvel na demo?</p>
                   <p className="mt-1 text-sm text-white/75">
-                    Envie os dados do imovel e simulamos todo o fluxo de captacao e publicacao.
+                    Envie os dados do imóvel e simulamos todo o fluxo de captação e publicação.
                   </p>
                 </div>
                 <a

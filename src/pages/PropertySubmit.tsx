@@ -9,9 +9,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle2, ClipboardList, Clock3, MessageCircle, Phone, ShieldCheck } from "lucide-react";
 
 const steps = [
-  "Preencha os dados do imovel e proprietario",
-  "Nossa equipe revisa as informacoes",
-  "Publicacao e divulgacao em ate 24h (demo)",
+  "Preencha os dados do imóvel e proprietário",
+  "Nossa equipe revisa as informações",
+  "Publicação e divulgação em até 24h (demo)",
 ];
 
 const PropertySubmit = () => {
@@ -25,7 +25,7 @@ const PropertySubmit = () => {
     event.preventDefault();
     setLoading(true);
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    toast.success("Formulario enviado com sucesso! Entraremos em contato em breve.");
+    toast.success("Formulário enviado com sucesso! Entraremos em contato em breve.");
     (event.target as HTMLFormElement).reset();
     setLoading(false);
   };
@@ -39,13 +39,13 @@ const PropertySubmit = () => {
           <div className="hero-surface p-7 md:p-10">
             <div className="grid gap-10 lg:grid-cols-[1.12fr_0.88fr] lg:items-center">
               <div className="space-y-5">
-                <span className="glass-chip">Cadastro de imovel</span>
+                <span className="glass-chip">Cadastro de imóvel</span>
                 <h1 className="max-w-xl text-3xl font-semibold leading-tight md:text-5xl">
                   Anuncie de forma simples e profissional.
                 </h1>
                 <p className="max-w-xl text-sm text-white/80 md:text-base">
-                  Preencha o formulario com os dados do imovel. A equipe Imobiflow valida as informacoes e
-                  retorna com os proximos passos para publicacao.
+                  Preencha o formulário com os dados do imóvel. A equipe Imobiflow valida as informações e
+                  retorna com os próximos passos para publicação.
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <a
@@ -57,13 +57,13 @@ const PropertySubmit = () => {
                   </a>
                   <span className="glass-chip">
                     <Clock3 className="h-3.5 w-3.5" />
-                    Retorno em ate 24h (demo)
+                    Retorno em até 24h (demo)
                   </span>
                 </div>
               </div>
 
               <div className="hero-panel">
-                <p className="text-xs uppercase tracking-[0.18em] text-white/80">Fluxo de publicacao</p>
+                <p className="text-xs uppercase tracking-[0.18em] text-white/80">Fluxo de publicação</p>
                 <h2 className="mt-2 text-2xl font-semibold text-white">Como funciona</h2>
                 <div className="mt-5 space-y-3">
                   {steps.map((item, index) => (
@@ -110,11 +110,11 @@ const PropertySubmit = () => {
                     <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white">
                       2
                     </span>
-                    Dados do imovel
+                    Dados do imóvel
                   </h2>
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="md:col-span-2">
-                      <Label htmlFor="title">Titulo do anuncio</Label>
+                      <Label htmlFor="title">Título do anúncio</Label>
                       <Input
                         id="title"
                         required
@@ -139,7 +139,7 @@ const PropertySubmit = () => {
                       <Input id="city" required placeholder="Nome da cidade" className="mt-1 border-slate-200 bg-white" />
                     </div>
                     <div>
-                      <Label htmlFor="area">Area total (m2)</Label>
+                      <Label htmlFor="area">Área total (m²)</Label>
                       <Input id="area" type="number" placeholder="Ex: 80" className="mt-1 border-slate-200 bg-white" />
                     </div>
                     <div>
@@ -155,11 +155,11 @@ const PropertySubmit = () => {
                       <Input id="parking" type="number" placeholder="Ex: 1" className="mt-1 border-slate-200 bg-white" />
                     </div>
                     <div className="md:col-span-2">
-                      <Label htmlFor="description">Descricao</Label>
+                      <Label htmlFor="description">Descrição</Label>
                       <Textarea
                         id="description"
                         required
-                        placeholder="Descreva caracteristicas, diferenciais e observacoes importantes."
+                        placeholder="Descreva características, diferenciais e observações importantes."
                         rows={6}
                         className="mt-1 border-slate-200 bg-white"
                       />
@@ -186,15 +186,15 @@ const PropertySubmit = () => {
                 <div className="space-y-3 text-sm text-slate-600">
                   <p className="flex items-start gap-2">
                     <CheckCircle2 className="mt-0.5 h-4 w-4 text-amber-600" />
-                    Voce envia os dados principais do imovel.
+                    Você envia os dados principais do imóvel.
                   </p>
                   <p className="flex items-start gap-2">
                     <CheckCircle2 className="mt-0.5 h-4 w-4 text-amber-600" />
-                    O time valida informacoes e orienta os proximos passos.
+                    O time valida informações e orienta os próximos passos.
                   </p>
                   <p className="flex items-start gap-2">
                     <CheckCircle2 className="mt-0.5 h-4 w-4 text-amber-600" />
-                    Publicacao simulada com visual profissional da plataforma.
+                    Publicação simulada com visual profissional da plataforma.
                   </p>
                 </div>
               </div>
@@ -207,15 +207,15 @@ const PropertySubmit = () => {
                 <div className="space-y-3 text-sm text-slate-600">
                   <p className="flex items-start gap-2">
                     <CheckCircle2 className="mt-0.5 h-4 w-4 text-amber-600" />
-                    Endereco completo, area e tipologia.
+                    Endereço completo, área e tipologia.
                   </p>
                   <p className="flex items-start gap-2">
                     <CheckCircle2 className="mt-0.5 h-4 w-4 text-amber-600" />
-                    Informacoes de quartos, banheiros e vagas.
+                    Informações de quartos, banheiros e vagas.
                   </p>
                   <p className="flex items-start gap-2">
                     <CheckCircle2 className="mt-0.5 h-4 w-4 text-amber-600" />
-                    Preco desejado e diferenciais do imovel.
+                    Preço desejado e diferenciais do imóvel.
                   </p>
                 </div>
               </div>
@@ -223,7 +223,7 @@ const PropertySubmit = () => {
               <div className="surface-card border-slate-900 bg-slate-900 p-5 text-white">
                 <p className="text-xs uppercase tracking-[0.16em] text-white/65">Atendimento direto</p>
                 <p className="mt-2 text-sm text-white/85">
-                  Precisa de ajuda para preencher? Fale com um corretor e montamos o anuncio com voce.
+                  Precisa de ajuda para preencher? Fale com um corretor e montamos o anúncio com você.
                 </p>
                 <a
                   href="https://wa.me/5500000000000"

@@ -34,17 +34,17 @@ export default function RealtorCard({
     const types: Record<string, string> = {
       apartamento: "Apartamento",
       casa: "Casa",
-      casa_condominio: "Casa em condominio",
+      casa_condominio: "Casa em condomínio",
       cobertura: "Cobertura",
       sala_comercial: "Sala comercial",
       sobrado: "Sobrado",
-      sobrado_condominio: "Sobrado em condominio",
+      sobrado_condominio: "Sobrado em condomínio",
       terreno: "Terreno",
       comercial: "Comercial",
-      galpao: "Galpao",
-      chacara: "Chacara",
-      sitio: "Sitio",
-      lancamento: "Lancamento",
+      galpao: "Galpão",
+      chacara: "Chácara",
+      sitio: "Sítio",
+      lancamento: "Lançamento",
     };
     return types[type] || type.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
   };
@@ -52,11 +52,11 @@ export default function RealtorCard({
   const getTransactionLabel = (type?: string) => {
     if (type === "aluguel") return "para alugar";
     if (type === "venda") return "para comprar";
-    if (type === "lancamento") return "sobre o lancamento";
+    if (type === "lancamento") return "sobre o lançamento";
     return "para comprar";
   };
 
-  const areaSuffix = area && !propertyTitle.includes("m2") ? ` com ${area}m2` : "";
+  const areaSuffix = area && !propertyTitle.includes("m²") ? ` com ${area}m²` : "";
   const locationText = location ? ` no bairro ${location}` : "";
   const cityText = city ? ` em ${city}` : "";
   const propertyName = propertyTitle || getPropertyTypeLabel(propertyType);
@@ -65,16 +65,16 @@ export default function RealtorCard({
     nome: "",
     email: "",
     telefone: "",
-    mensagem: `Gostaria de mais informacoes sobre o codigo ${propertyCode} - ${propertyName}${areaSuffix}${locationText}${cityText} ${getTransactionLabel(transactionType)}.`,
+    mensagem: `Gostaria de mais informações sobre o código ${propertyCode} - ${propertyName}${areaSuffix}${locationText}${cityText} ${getTransactionLabel(transactionType)}.`,
   });
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    toast.success("Solicitacao enviada! Em breve entraremos em contato.");
+    toast.success("Solicitação enviada! Em breve entraremos em contato.");
   };
 
   const whatsappMessage = encodeURIComponent(
-    `Ola ${name}, tenho interesse no imovel ${propertyTitle} (codigo ${propertyCode}).`
+    `Olá ${name}, tenho interesse no imóvel ${propertyTitle} (código ${propertyCode}).`
   );
   const whatsappLink = `https://api.whatsapp.com/send?phone=${phone.replace(/\D/g, "")}&text=${whatsappMessage}`;
 
@@ -94,14 +94,14 @@ export default function RealtorCard({
         <div className="mt-4 rounded-xl border border-white/20 bg-white/10 p-3">
           <p className="inline-flex items-center gap-2 text-xs text-white/80">
             <Building2 className="h-4 w-4 text-amber-300" />
-            Atendimento humano para compra, venda e locacao.
+            Atendimento humano para compra, venda e locação.
           </p>
         </div>
       </div>
 
       <div>
         <p className="mb-4 text-sm text-slate-600">
-          Preencha os campos abaixo com seus dados e retornaremos o mais rapido possivel.
+          Preencha os campos abaixo com seus dados e retornaremos o mais rápido possível.
         </p>
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
@@ -161,7 +161,7 @@ export default function RealtorCard({
             type="submit"
             className="w-full rounded-xl bg-slate-900 text-white hover:bg-slate-800"
           >
-            Enviar solicitacao
+            Enviar solicitação
           </Button>
         </form>
       </div>

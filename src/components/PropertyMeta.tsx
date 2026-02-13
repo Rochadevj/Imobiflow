@@ -34,18 +34,18 @@ export default function PropertyMeta({
     }).format(value);
 
   const isRental = transactionType === "aluguel";
-  const priceValue = isRental ? `${formatPrice(preco, true)} / mes` : formatPrice(preco, false);
+  const priceValue = isRental ? `${formatPrice(preco, true)} / mês` : formatPrice(preco, false);
 
   const metaItems = [
-    { icon: Home, label: "Area total", value: `${areaTotal}m2` },
-    { icon: Maximize, label: "Area privativa", value: `${areaPrivativa}m2` },
+    { icon: Home, label: "Área total", value: `${areaTotal}m²` },
+    { icon: Maximize, label: "Área privativa", value: `${areaPrivativa}m²` },
     { icon: Bed, label: "Quartos", value: quartos },
-    ...(suites ? [{ icon: Bed, label: "Suites", value: suites }] : []),
+    ...(suites ? [{ icon: Bed, label: "Suítes", value: suites }] : []),
     { icon: Bath, label: "Banheiros", value: banheiros },
     { icon: Car, label: "Vagas", value: vagas },
-    { icon: Hash, label: "Codigo", value: codigo },
+    { icon: Hash, label: "Código", value: codigo },
     ...(showPrice
-      ? [{ icon: DollarSign, label: isRental ? "Valor aluguel" : "Preco", value: priceValue, highlight: true }]
+      ? [{ icon: DollarSign, label: isRental ? "Valor do aluguel" : "Preço", value: priceValue, highlight: true }]
       : []),
   ];
 

@@ -3,32 +3,32 @@ import Navbar from "@/components/Navbar";
 
 const sections = [
   {
-    title: "1. Informacoes coletadas",
-    body: "Coletamos dados fornecidos por voce em formularios (nome, email, telefone) e dados tecnicos de navegacao para funcionamento da plataforma.",
+    title: "1. Informações coletadas",
+    body: "Coletamos dados fornecidos por você em formulários (nome, email, telefone) e dados técnicos de navegação para funcionamento da plataforma.",
   },
   {
     title: "2. Finalidade de uso",
-    body: "Utilizamos esses dados para responder contatos, organizar atendimento imobiliario, melhorar a experiencia do site e cumprir obrigacoes legais.",
+    body: "Utilizamos esses dados para responder contatos, organizar atendimento imobiliário, melhorar a experiência do site e cumprir obrigações legais.",
   },
   {
     title: "3. Compartilhamento",
-    body: "Nao vendemos seus dados. O compartilhamento ocorre apenas com fornecedores necessarios para operacao ou quando houver exigencia legal.",
+    body: "Não vendemos seus dados. O compartilhamento ocorre apenas com fornecedores necessários para operação ou quando houver exigência legal.",
   },
   {
     title: "4. Cookies",
-    body: "Utilizamos cookies para lembrar preferencias, medir desempenho e melhorar navegacao. O usuario pode ajustar cookies no navegador.",
+    body: "Utilizamos cookies para lembrar preferências, medir desempenho e melhorar navegação. O usuário pode ajustar cookies no navegador.",
   },
   {
-    title: "5. Seguranca",
-    body: "Aplicamos controles tecnicos e organizacionais para proteger as informacoes, incluindo autenticacao, controle de acesso e monitoramento.",
+    title: "5. Segurança",
+    body: "Aplicamos controles técnicos e organizacionais para proteger as informações, incluindo autenticação, controle de acesso e monitoramento.",
   },
   {
     title: "6. Direitos LGPD",
-    body: "Voce pode solicitar acesso, correcao, exclusao, portabilidade ou revogacao de consentimento conforme a Lei 13.709/2018.",
+    body: "Você pode solicitar acesso, correção, exclusão, portabilidade ou revogação de consentimento conforme a Lei 13.709/2018.",
   },
   {
-    title: "7. Atualizacoes",
-    body: "Esta politica pode ser atualizada periodicamente. Sempre que houver mudancas relevantes, publicaremos a nova versao nesta pagina.",
+    title: "7. Atualizações",
+    body: "Esta política pode ser atualizada periodicamente. Sempre que houver mudanças relevantes, publicaremos a nova versão nesta página.",
   },
 ];
 
@@ -40,13 +40,13 @@ const PrivacyPolicy = () => {
       <main className="flex-1">
         <section className="container mx-auto px-4 pt-10 md:pt-14">
           <div className="hero-surface p-7 md:p-10">
-            <h1 className="text-3xl font-semibold text-white md:text-5xl">Politica de Privacidade</h1>
+            <h1 className="text-3xl font-semibold text-white md:text-5xl">Política de Privacidade</h1>
             <p className="mt-3 text-sm text-white/80 md:text-base">
-              Ultima atualizacao: {new Date().toLocaleDateString("pt-BR")}
+              Última atualização: {new Date().toLocaleDateString("pt-BR")}
             </p>
             <p className="mt-4 max-w-3xl text-sm text-white/85">
               Este documento explica como a Imobiflow (demo) trata dados pessoais no contexto da plataforma
-              imobiliaria apresentada neste projeto.
+              imobiliária apresentada neste projeto.
             </p>
           </div>
         </section>
