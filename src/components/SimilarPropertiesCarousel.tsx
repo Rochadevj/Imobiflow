@@ -2,22 +2,24 @@ import { ChevronLeft, ChevronRight, MapPin, Home, Bed, Car } from "lucide-react"
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-interface Property {
+interface SimilarProperty {
   id: string;
   codigo?: string;
   title: string;
   property_type: string;
   city: string;
-  neighborhood: string;
+  neighborhood?: string;
+  location?: string;
   price: number;
-  area: number;
-  bedrooms: number;
-  parking_spaces: number;
-  images: string[];
+  area?: number;
+  bedrooms?: number;
+  parking_spaces?: number;
+  images?: string[];
+  property_images?: { image_url: string; is_primary?: boolean }[];
 }
 
 interface SimilarPropertiesCarouselProps {
-  properties: Property[];
+  properties: SimilarProperty[];
 }
 
 export default function SimilarPropertiesCarousel({ properties }: SimilarPropertiesCarouselProps) {
@@ -46,83 +48,79 @@ export default function SimilarPropertiesCarousel({ properties }: SimilarPropert
 
   return (
     <div className="py-12">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">
-        Você também pode se interessar
-      </h2>
+      <h2 className="mb-6 text-2xl font-bold text-gray-900">Você também pode se interessar</h2>
 
       <div className="relative">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {visibleProperties.map((property) => (
-            <Link
-              key={property.id}
-              to={`/property/${property.codigo || property.id}`}
-              className="group border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
-            >
-              {/* Image */}
-              <div className="relative aspect-[4/3] overflow-hidden">
-                <img
-                  src={property.images[0] || "/placeholder.jpg"}
-                  alt={property.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          {visibleProperties.map((property) => {
+            const primaryImage = property.property_images?.find((img) => img.is_primary)?.image_url;
+            const fallbackImage = property.property_images?.[0]?.image_url;
+            const imageUrl = property.images?.[0] || primaryImage || fallbackImage || "/placeholder.jpg";
+            const region = property.neighborhood || property.location || "Região";
 
-              {/* Content */}
-              <div className="p-4 space-y-3">
-                {/* Type */}
-                <div className="text-sm font-semibold text-primary">
-                  {property.property_type}
+            return (
+              <Link
+                key={property.id}
+                to={`/property/${property.codigo || property.id}`}
+                className="group overflow-hidden rounded-lg border border-gray-200 transition-shadow hover:shadow-lg"
+              >
+                <div className="relative aspect-[4/3] overflow-hidden">
+                  <img
+                    src={imageUrl}
+                    alt={property.title}
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
                 </div>
 
-                {/* Location */}
-                <div className="flex items-center gap-1 text-sm text-gray-600">
-                  <MapPin className="w-4 h-4" />
-                  <span>{property.neighborhood} | {property.city}</span>
-                </div>
+                <div className="space-y-3 p-4">
+                  <div className="text-sm font-semibold text-primary">{property.property_type}</div>
 
-                {/* Meta */}
-                <div className="flex items-center gap-4 text-sm text-gray-700">
-                  <div className="flex items-center gap-1">
-                    <Home className="w-4 h-4" />
-                    <span>{property.area}m²</span>
+                  <div className="flex items-center gap-1 text-sm text-gray-600">
+                    <MapPin className="h-4 w-4" />
+                    <span>
+                      {region} | {property.city}
+                    </span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Bed className="w-4 h-4" />
-                    <span>{property.bedrooms} Quartos</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Car className="w-4 h-4" />
-                    <span>{property.parking_spaces} Vagas</span>
-                  </div>
-                </div>
 
-                {/* Price */}
-                <div className="text-lg font-bold text-gray-900 pt-2 border-t">
-                  {formatPrice(property.price)}
+                  <div className="flex items-center gap-4 text-sm text-gray-700">
+                    <div className="flex items-center gap-1">
+                      <Home className="h-4 w-4" />
+                      <span>{property.area ? `${property.area}m²` : "-"}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Bed className="h-4 w-4" />
+                      <span>{property.bedrooms ? `${property.bedrooms} Quartos` : "-"}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Car className="h-4 w-4" />
+                      <span>{property.parking_spaces ? `${property.parking_spaces} Vagas` : "-"}</span>
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-2 text-lg font-bold text-gray-900">{formatPrice(property.price)}</div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
 
-        {/* Navigation Arrows */}
         {currentIndex > 0 && (
           <button
             onClick={goToPrevious}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white hover:bg-gray-50 rounded-full p-3 shadow-lg transition-all z-10"
+            className="absolute left-0 top-1/2 z-10 -translate-x-4 -translate-y-1/2 rounded-full bg-white p-3 shadow-lg transition-all hover:bg-gray-50"
             aria-label="Anterior"
           >
-            <ChevronLeft className="w-6 h-6 text-primary" />
+            <ChevronLeft className="h-6 w-6 text-primary" />
           </button>
         )}
 
         {currentIndex < maxIndex && (
           <button
             onClick={goToNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white hover:bg-gray-50 rounded-full p-3 shadow-lg transition-all z-10"
+            className="absolute right-0 top-1/2 z-10 translate-x-4 -translate-y-1/2 rounded-full bg-white p-3 shadow-lg transition-all hover:bg-gray-50"
             aria-label="Próximo"
           >
-            <ChevronRight className="w-6 h-6 text-primary" />
+            <ChevronRight className="h-6 w-6 text-primary" />
           </button>
         )}
       </div>
