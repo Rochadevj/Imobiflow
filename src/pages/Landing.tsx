@@ -223,7 +223,7 @@ const trustSignals = [
 
 const Landing = () => {
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#e8edf7_0%,#eef2f9_34%,#f1f5fd_68%,#f7f1e8_100%)] text-slate-900 font-['Manrope']">
+    <div className="min-h-screen bg-[linear-gradient(180deg,#e8eef9_0%,#e1e9f6_30%,#d4deef_56%,#0b1220_100%)] text-slate-900 font-['Manrope']">
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10">
           <div className="absolute -top-32 right-0 h-[380px] w-[380px] rounded-full bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.55),_transparent_70%)] blur-3xl float-slow" />
@@ -396,8 +396,8 @@ const Landing = () => {
         </section>
       </div>
 
-      <section className="container mx-auto px-4 py-10 animate-fade-up">
-        <p className="text-xs uppercase tracking-[0.4em] text-slate-500">
+      <section className="container mx-auto px-4 py-10 animate-fade-up rounded-[28px] border border-slate-700/75 bg-[linear-gradient(130deg,#0f172a_0%,#111c33_52%,#0b1220_100%)] shadow-[0_25px_60px_rgba(2,6,23,0.45)]">
+        <p className="text-xs uppercase tracking-[0.4em] text-slate-300">
           Confiado por operações digitais em todo o Brasil
         </p>
         <div className="mt-6 grid grid-cols-2 gap-4 text-sm uppercase tracking-[0.35em] text-slate-400 sm:grid-cols-4 lg:grid-cols-6">
@@ -411,7 +411,7 @@ const Landing = () => {
           ].map((brand) => (
             <span
               key={brand}
-              className="rounded-full border border-slate-200 bg-white/80 px-3 py-2 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-amber-300 hover:text-slate-800 hover:shadow-md"
+              className="rounded-full border border-slate-500/70 bg-slate-900/45 px-3 py-2 text-center text-slate-100 shadow-sm transition hover:-translate-y-0.5 hover:border-amber-300 hover:text-white hover:shadow-md"
             >
               {brand}
             </span>
@@ -420,14 +420,14 @@ const Landing = () => {
       </section>
 
       <section id="diferenciais" className="container mx-auto px-4 py-20 animate-fade-up">
-        <div className="rounded-[32px] border border-slate-200/80 bg-gradient-to-br from-white/92 via-slate-50/85 to-sky-50/80 p-6 shadow-sm backdrop-blur sm:p-8">
+        <div className="rounded-[32px] border border-slate-700/70 bg-[linear-gradient(140deg,#0f172a_0%,#111c31_52%,#1f2937_100%)] p-6 text-white shadow-[0_24px_58px_rgba(2,6,23,0.46)] backdrop-blur sm:p-8">
           <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr]">
             <div className="space-y-6">
-              <p className="text-xs uppercase tracking-[0.4em] text-amber-700">Diferenciais de produto</p>
+              <p className="text-xs uppercase tracking-[0.4em] text-amber-300">Diferenciais de produto</p>
               <h2 className="text-3xl font-['Space Grotesk'] font-semibold sm:text-4xl">
                 Design de software pensado para equipes comerciais de alta performance.
               </h2>
-              <p className="text-slate-600">
+              <p className="text-slate-300">
                 A estrutura combina velocidade operacional, gestão centralizada e visão executiva de funil.
                 O resultado é mais eficiência no dia a dia e melhor previsibilidade de receita.
               </p>
@@ -435,13 +435,13 @@ const Landing = () => {
                 {pillars.map((pillar) => (
                   <div
                     key={pillar.title}
-                    className="group rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                    className="group rounded-2xl border border-white/15 bg-white/5 p-5 shadow-sm transition hover:-translate-y-1 hover:bg-white/10 hover:shadow-lg"
                   >
-                    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-100 to-sky-100 text-amber-600">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-200/30 to-sky-200/30 text-amber-200">
                       <pillar.icon className="h-5 w-5" />
                     </span>
-                    <h3 className="mt-4 text-base font-semibold">{pillar.title}</h3>
-                    <p className="mt-2 text-sm text-slate-600">{pillar.text}</p>
+                    <h3 className="mt-4 text-base font-semibold text-white">{pillar.title}</h3>
+                    <p className="mt-2 text-sm text-slate-300">{pillar.text}</p>
                   </div>
                 ))}
               </div>
@@ -453,23 +453,23 @@ const Landing = () => {
                   key={column.title}
                   className={`rounded-2xl border p-6 shadow-sm ${
                     index === 0
-                      ? "border-slate-200 bg-slate-50"
-                      : "border-emerald-200 bg-gradient-to-br from-emerald-50 to-white"
+                      ? "border-slate-500/70 bg-slate-900/55"
+                      : "border-emerald-400/35 bg-emerald-500/10"
                   }`}
                 >
                   <div className="flex items-center gap-2">
                     {index === 0 ? (
-                      <TimerReset className="h-4 w-4 text-slate-500" />
+                      <TimerReset className="h-4 w-4 text-slate-300" />
                     ) : (
-                      <BadgeCheck className="h-4 w-4 text-emerald-600" />
+                      <BadgeCheck className="h-4 w-4 text-emerald-300" />
                     )}
-                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-600">
+                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">
                       {column.title}
                     </p>
                   </div>
                   <div className="mt-4 space-y-3">
                     {column.points.map((point) => (
-                      <p key={point} className="flex items-start gap-2 text-sm text-slate-600">
+                      <p key={point} className="flex items-start gap-2 text-sm text-slate-200">
                         <CheckCircle2 className="mt-0.5 h-4 w-4 text-amber-500" />
                         {point}
                       </p>
@@ -477,14 +477,14 @@ const Landing = () => {
                   </div>
                 </div>
               ))}
-              <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-6 shadow-sm">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-600">
+              <div className="rounded-2xl border border-white/15 bg-white/5 p-6 shadow-sm">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">
                   Camada de confiança
                 </p>
                 <div className="mt-4 grid gap-3">
                   {trustSignals.map((signal) => (
-                    <p key={signal} className="flex items-start gap-2 text-sm text-slate-600">
-                      <ShieldCheck className="mt-0.5 h-4 w-4 text-emerald-600" />
+                    <p key={signal} className="flex items-start gap-2 text-sm text-slate-200">
+                      <ShieldCheck className="mt-0.5 h-4 w-4 text-emerald-300" />
                       {signal}
                     </p>
                   ))}
@@ -535,10 +535,10 @@ const Landing = () => {
       </section>
 
       <section id="como-funciona" className="container mx-auto px-4 py-20 animate-fade-up">
-        <div className="rounded-[32px] border border-slate-200/70 bg-gradient-to-br from-white/90 via-slate-50/80 to-sky-50/80 p-6 shadow-sm backdrop-blur sm:p-8">
+        <div className="rounded-[32px] border border-slate-700/70 bg-[linear-gradient(140deg,#0f172a_0%,#18243a_55%,#1e293b_100%)] p-6 text-white shadow-[0_24px_58px_rgba(2,6,23,0.46)] backdrop-blur sm:p-8">
           <div className="flex flex-col gap-10">
             <div className="flex flex-col gap-4">
-              <p className="text-xs uppercase tracking-[0.4em] text-amber-700">Como funciona</p>
+              <p className="text-xs uppercase tracking-[0.4em] text-amber-300">Como funciona</p>
               <h2 className="text-3xl font-['Space Grotesk'] font-semibold sm:text-4xl">
                 Um processo simples para escalar sem estresse.
               </h2>
@@ -548,13 +548,13 @@ const Landing = () => {
               {steps.map((step) => (
                 <div
                   key={step.step}
-                  className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                  className="group relative overflow-hidden rounded-2xl border border-white/15 bg-white/5 p-6 shadow-sm transition hover:-translate-y-1 hover:bg-white/10 hover:shadow-lg"
                 >
                   <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-amber-400 to-sky-400 opacity-70" />
                   <div className="relative">
-                    <span className="text-sm text-amber-700">{step.step}</span>
+                    <span className="text-sm text-amber-300">{step.step}</span>
                     <h3 className="mt-3 text-xl font-semibold">{step.title}</h3>
-                    <p className="mt-2 text-sm text-slate-600">{step.text}</p>
+                    <p className="mt-2 text-sm text-slate-300">{step.text}</p>
                   </div>
                 </div>
               ))}
@@ -747,23 +747,23 @@ const Landing = () => {
       </section>
 
       <section className="container mx-auto px-4 pb-20 animate-fade-up">
-        <div className="relative overflow-hidden rounded-[32px] border border-slate-200 bg-gradient-to-br from-amber-50 via-white to-sky-50 p-10 shadow-lg">
-          <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-amber-200/60 blur-3xl" />
-          <div className="absolute bottom-0 left-10 h-40 w-40 rounded-full bg-sky-200/50 blur-3xl" />
+        <div className="relative overflow-hidden rounded-[32px] border border-slate-700/80 bg-[linear-gradient(140deg,#0f172a_0%,#111c33_52%,#0b1220_100%)] p-10 text-white shadow-[0_25px_60px_rgba(2,6,23,0.5)]">
+          <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-amber-300/30 blur-3xl" />
+          <div className="absolute bottom-0 left-10 h-40 w-40 rounded-full bg-sky-300/25 blur-3xl" />
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-4">
-              <p className="text-xs uppercase tracking-[0.4em] text-amber-700">Pronto para crescer?</p>
+              <p className="text-xs uppercase tracking-[0.4em] text-amber-300">Pronto para crescer?</p>
               <h2 className="text-3xl font-['Space Grotesk'] font-semibold sm:text-4xl">
                 Transforme sua operação em um negócio previsível.
               </h2>
-              <p className="text-slate-600 max-w-xl">
+              <p className="text-slate-300 max-w-xl">
                 Um único painel para marketing, vendas, estoque e relacionamento com clientes.
               </p>
               <div className="flex flex-wrap gap-2">
                 {["CRM + Site + BI", "Onboarding assistido", "Escalável para múltiplas equipes"].map((item) => (
                   <span
                     key={item}
-                    className="rounded-full border border-slate-200 bg-white/85 px-3 py-1 text-xs text-slate-600 shadow-sm"
+                    className="rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs text-slate-100 shadow-sm"
                   >
                     {item}
                   </span>
@@ -781,7 +781,7 @@ const Landing = () => {
               <Button
                 variant="outline"
                 size="lg"
-                className="rounded-full border-slate-300 bg-white text-slate-700 transition-transform hover:-translate-y-0.5 hover:border-amber-300 hover:bg-white"
+                className="rounded-full border-white/35 bg-white/10 text-white transition-transform hover:-translate-y-0.5 hover:border-amber-300 hover:bg-white/20"
                 asChild
               >
                 <Link to="/imobiliaria">Explorar demo</Link>
