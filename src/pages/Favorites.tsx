@@ -88,9 +88,9 @@ const Favorites = () => {
                   <Heart className="h-3.5 w-3.5" />
                   Lista pessoal
                 </span>
-                <h1 className="mt-4 text-3xl font-semibold text-white md:text-5xl">Seus imoveis favoritos</h1>
+                <h1 className="mt-4 text-3xl font-semibold text-white md:text-5xl">Seus imóveis favoritos</h1>
                 <p className="mt-2 max-w-xl text-sm text-white/80 md:text-base">
-                  Aqui ficam os imoveis salvos para comparar opcoes e decidir com mais seguranca.
+                  Aqui ficam os imóveis salvos para comparar opções e decidir com mais segurança.
                 </p>
               </div>
               <a
@@ -98,7 +98,7 @@ const Favorites = () => {
                 className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
               >
                 <HousePlus className="h-4 w-4" />
-                Buscar mais imoveis
+                Buscar mais imóveis
               </a>
             </div>
           </div>
@@ -112,13 +112,13 @@ const Favorites = () => {
               </div>
               <h2 className="mt-4 text-2xl font-semibold text-slate-900">Nenhum favorito salvo ainda</h2>
               <p className="mt-2 text-sm text-slate-600">
-                Explore os imoveis da demo e clique no icone de coracao para salvar suas opcoes.
+                Explore os imóveis da demo e clique no ícone de coração para salvar suas opções.
               </p>
               <Link
                 to="/imobiliaria?list=1"
                 className="mt-6 inline-flex items-center rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
               >
-                Ver imoveis
+                Ver imóveis
               </Link>
             </div>
           ) : (

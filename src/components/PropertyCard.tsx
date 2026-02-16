@@ -25,11 +25,11 @@ const getPropertyTypeLabel = (type: string) => {
   const types: Record<string, string> = {
     apartamento: "Apartamento",
     casa: "Casa",
-    casa_condominio: "Casa em condominio",
+    casa_condominio: "Casa em condomínio",
     cobertura: "Cobertura",
     sala_comercial: "Sala comercial",
     sobrado: "Sobrado",
-    sobrado_condominio: "Sobrado em condominio",
+    sobrado_condominio: "Sobrado em condomínio",
     terreno: "Terreno",
   };
   return types[type] || type.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
@@ -115,7 +115,7 @@ const PropertyCard = ({
 
         <button
           onClick={toggleFavorite}
-          aria-label="Favoritar imovel"
+          aria-label="Favoritar imóvel"
           className="absolute right-3 top-3 z-10 rounded-full border border-white/40 bg-white/90 p-2 text-slate-600 shadow-md transition-all hover:scale-105 hover:bg-white"
         >
           <Heart className={`h-4 w-4 ${isFavorited ? "fill-rose-500 text-rose-500" : ""}`} />
@@ -136,7 +136,7 @@ const PropertyCard = ({
           {(areaPrivativa || area) && (
             <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1">
               <Ruler className="h-3.5 w-3.5 text-amber-500" />
-              {(areaPrivativa || area).toLocaleString("pt-BR")}m2
+              {(areaPrivativa || area).toLocaleString("pt-BR")}m²
             </span>
           )}
           {bedrooms ? (
@@ -165,7 +165,7 @@ const PropertyCard = ({
             <p className="text-2xl font-bold text-slate-900">
               R$ {price.toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
               {transactionType === "aluguel" ? (
-                <span className="ml-2 text-xs font-semibold text-slate-500">/ mes</span>
+                <span className="ml-2 text-xs font-semibold text-slate-500">/ mês</span>
               ) : null}
             </p>
           </div>

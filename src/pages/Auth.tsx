@@ -10,13 +10,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const emailSchema = z.string().email({ message: "Email invalido" });
+const emailSchema = z.string().email({ message: "E-mail inválido" });
 const passwordSchema = z.string().min(6, { message: "A senha deve ter pelo menos 6 caracteres" });
 
 const benefits = [
-  "Gerenciamento completo de imoveis",
+  "Gerenciamento completo de imóveis",
   "Fluxo de atendimento e cadastro",
-  "Demo pronta para apresentacao comercial",
+  "Demo pronta para apresentação comercial",
 ];
 
 const Auth = () => {
@@ -76,7 +76,7 @@ const Auth = () => {
     if (error) {
       toast.error(error.message);
     } else {
-      toast.success("Conta criada com sucesso. Voce ja pode fazer login.");
+      toast.success("Conta criada com sucesso. Você já pode fazer login.");
     }
     setLoading(false);
   };
@@ -92,8 +92,8 @@ const Auth = () => {
             Acesse o painel da <span className="text-amber-300">Imobiflow</span>
           </h1>
           <p className="mt-3 max-w-xl text-sm text-white/80 md:text-base">
-            Ambiente administrativo para cadastro de imoveis, organizacao de estoque e demonstracao
-            profissional do seu produto imobiliario.
+            Ambiente administrativo para cadastro de imóveis, organização de estoque e demonstração
+            profissional do seu produto imobiliário.
           </p>
 
           <div className="mt-7 space-y-3">
@@ -111,14 +111,14 @@ const Auth = () => {
                 <ShieldCheck className="h-3.5 w-3.5 text-amber-300" />
                 Segurança
               </p>
-              <p className="mt-2 text-sm text-white/85">Autenticacao via Supabase com controle de sessao.</p>
+              <p className="mt-2 text-sm text-white/85">Autenticação via Supabase com controle de sessão.</p>
             </div>
             <div className="rounded-2xl border border-white/20 bg-white/10 p-4">
               <p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-white/65">
                 <Lock className="h-3.5 w-3.5 text-amber-300" />
                 Demo pronta
               </p>
-              <p className="mt-2 text-sm text-white/85">Acesse e gerencie o conteudo para demonstracoes.</p>
+              <p className="mt-2 text-sm text-white/85">Acesse e gerencie o conteúdo para demonstrações.</p>
             </div>
           </div>
         </section>
@@ -127,7 +127,7 @@ const Auth = () => {
           <CardHeader>
             <CardTitle className="text-2xl text-white">Bem-vindo</CardTitle>
             <CardDescription className="text-white/75">
-              Entre com sua conta ou crie um novo acesso para a area administrativa.
+              Entre com sua conta ou crie um novo acesso para a área administrativa.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -151,7 +151,7 @@ const Auth = () => {
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="login-email" className="text-white/85">
-                      Email
+                      E-mail
                     </Label>
                     <Input
                       id="login-email"
@@ -191,7 +191,7 @@ const Auth = () => {
                 <form onSubmit={handleSignup} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="signup-email" className="text-white/85">
-                      Email
+                      E-mail
                     </Label>
                     <Input
                       id="signup-email"

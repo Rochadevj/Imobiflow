@@ -26,9 +26,9 @@ const getPropertyTypeLabel = (type: string) => {
     industrial: "Industrial",
     sala_comercial: "Sala comercial",
     loja: "Loja",
-    galpao: "Galpao",
-    chacara: "Chacara",
-    sitio: "Sitio",
+    galpao: "Galpão",
+    chacara: "Chácara",
+    sitio: "Sítio",
   };
   return types[type] || type.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 };
@@ -76,15 +76,15 @@ export default function HeroCarousel({ properties }: HeroCarouselProps) {
       <div className="relative overflow-hidden rounded-3xl border border-white/20 shadow-[0_20px_40px_rgba(15,23,42,0.3)]">
         <img
           src="https://images.unsplash.com/photo-1502005097973-6a7082348e28?q=80&w=1200&auto=format&fit=crop"
-          alt="Imovel em destaque"
+          alt="Imóvel em destaque"
           className="h-[320px] w-full object-cover md:h-[360px]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/45 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-          <p className="text-xs uppercase tracking-[0.2em] text-white/70">Demo imobiliaria</p>
-          <h3 className="mt-2 text-2xl font-semibold">Encontre seu imovel ideal</h3>
+          <p className="text-xs uppercase tracking-[0.2em] text-white/70">Demo imobiliária</p>
+          <h3 className="mt-2 text-2xl font-semibold">Encontre seu imóvel ideal</h3>
           <p className="mt-1 text-sm text-white/80">
-            Use os filtros para visualizar opcoes de compra, locacao e lancamentos.
+            Use os filtros para visualizar opções de compra, locação e lançamentos.
           </p>
         </div>
       </div>
@@ -134,7 +134,7 @@ export default function HeroCarousel({ properties }: HeroCarouselProps) {
           <button
             onClick={goToNext}
             className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full border border-white/30 bg-slate-950/35 p-2 text-white opacity-0 transition hover:bg-slate-950/50 group-hover:opacity-100"
-            aria-label="Proxima imagem"
+            aria-label="Próxima imagem"
           >
             <ChevronRight className="h-4 w-4" />
           </button>

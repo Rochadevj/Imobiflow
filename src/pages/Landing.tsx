@@ -223,19 +223,19 @@ const trustSignals = [
 
 const Landing = () => {
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#e8eef9_0%,#e1e9f6_30%,#d4deef_56%,#0b1220_100%)] text-slate-900 font-['Manrope']">
+    <div className="min-h-screen bg-[linear-gradient(180deg,#15263d_0%,#1c3250_34%,#223d5f_68%,#162b46_100%)] text-white font-['Manrope']">
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10">
-          <div className="absolute -top-32 right-0 h-[380px] w-[380px] rounded-full bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.55),_transparent_70%)] blur-3xl float-slow" />
-          <div className="absolute top-16 -left-32 h-[440px] w-[440px] rounded-full bg-[radial-gradient(circle,_rgba(56,189,248,0.4),_transparent_70%)] blur-3xl float-slow" />
-          <div className="absolute bottom-10 right-24 h-[280px] w-[280px] rounded-full bg-[radial-gradient(circle,_rgba(244,114,182,0.35),_transparent_70%)] blur-3xl float-slow" />
-          <div className="absolute inset-0 bg-[linear-gradient(120deg,_rgba(255,255,255,0.85)_0%,_transparent_35%,_transparent_65%,_rgba(255,255,255,0.8)_100%)]" />
-          <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_center,_rgba(15,23,42,0.12)_1px,_transparent_1px)] [background-size:22px_22px]" />
+          <div className="absolute -top-32 right-0 h-[380px] w-[380px] rounded-full bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.32),_transparent_70%)] blur-3xl float-slow" />
+          <div className="absolute top-16 -left-32 h-[440px] w-[440px] rounded-full bg-[radial-gradient(circle,_rgba(56,189,248,0.28),_transparent_70%)] blur-3xl float-slow" />
+          <div className="absolute bottom-10 right-24 h-[280px] w-[280px] rounded-full bg-[radial-gradient(circle,_rgba(16,185,129,0.2),_transparent_70%)] blur-3xl float-slow" />
+          <div className="absolute inset-0 bg-[linear-gradient(120deg,_rgba(15,23,42,0.55)_0%,_transparent_35%,_transparent_65%,_rgba(15,23,42,0.5)_100%)]" />
+          <div className="absolute inset-0 opacity-35 bg-[radial-gradient(circle_at_center,_rgba(226,232,240,0.14)_1px,_transparent_1px)] [background-size:22px_22px]" />
         </div>
         <div className="absolute top-0 left-0 h-1 w-full bg-gradient-to-r from-amber-400 via-orange-400 to-sky-400 opacity-80" />
 
         <header className="container mx-auto px-4 pt-8">
-          <div className="flex items-center justify-between gap-6 rounded-2xl border border-white/50 bg-white/75 px-4 py-3 shadow-[0_12px_30px_rgba(15,23,42,0.08)] backdrop-blur sm:px-6">
+          <div className="flex items-center justify-between gap-6 rounded-2xl border border-white/20 bg-slate-800/55 px-4 py-3 shadow-[0_16px_32px_rgba(2,6,23,0.45)] backdrop-blur sm:px-6">
             <Link to="/" className="flex items-center gap-3">
               <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-400 text-slate-900 shadow-[0_10px_25px_rgba(251,146,60,0.35)]">
                 <Sparkles className="h-5 w-5" />
@@ -244,22 +244,22 @@ const Landing = () => {
                 <p className="text-lg font-['Space Grotesk'] font-semibold tracking-tight">
                   Imobiflow
                 </p>
-                <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Sistema de Gestão</p>
+                <p className="text-xs uppercase tracking-[0.3em] text-slate-300">Sistema de Gestão</p>
               </div>
             </Link>
 
-            <nav className="hidden lg:flex items-center gap-6 text-sm text-slate-600">
-              <a href="#diferenciais" className="hover:text-amber-600 transition">Diferenciais</a>
-              <a href="#recursos" className="hover:text-amber-600 transition">Recursos</a>
-              <a href="#como-funciona" className="hover:text-amber-600 transition">Como funciona</a>
-              <a href="#planos" className="hover:text-amber-600 transition">Planos</a>
-              <a href="#faq" className="hover:text-amber-600 transition">FAQ</a>
+            <nav className="hidden lg:flex items-center gap-6 text-sm text-slate-300">
+              <a href="#diferenciais" className="hover:text-amber-300 transition">Diferenciais</a>
+              <a href="#recursos" className="hover:text-amber-300 transition">Recursos</a>
+              <a href="#como-funciona" className="hover:text-amber-300 transition">Como funciona</a>
+              <a href="#planos" className="hover:text-amber-300 transition">Planos</a>
+              <a href="#faq" className="hover:text-amber-300 transition">FAQ</a>
             </nav>
 
             <div className="flex items-center gap-3">
               <Button
                 variant="ghost"
-                className="hidden sm:inline-flex text-slate-700 hover:text-slate-900"
+                className="hidden sm:inline-flex text-slate-200 hover:text-white"
                 asChild
               >
                 <Link to="/auth">Entrar</Link>
@@ -280,17 +280,17 @@ const Landing = () => {
         <section className="container mx-auto px-4 pb-20 pt-16">
           <div className="grid gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div className="space-y-8 animate-fade-up">
-              <div className="inline-flex items-center gap-2 rounded-full border border-amber-200/70 bg-white/80 px-4 py-2 text-xs uppercase tracking-[0.25em] text-amber-700 shadow-[0_8px_24px_rgba(251,191,36,0.25)] backdrop-blur">
+              <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/55 bg-slate-800/45 px-4 py-2 text-xs uppercase tracking-[0.25em] text-amber-200 shadow-[0_8px_24px_rgba(251,191,36,0.2)] backdrop-blur">
                 Software completo para operações modernas
               </div>
               <div className="space-y-6">
                 <h1 className="text-4xl font-['Space Grotesk'] font-semibold leading-tight sm:text-5xl lg:text-6xl">
                   Sua operação imobiliária operando em
-                  <span className="block bg-gradient-to-r from-slate-900 via-slate-700 to-amber-500 text-transparent bg-clip-text">
+                  <span className="block bg-gradient-to-r from-white via-slate-200 to-amber-300 text-transparent bg-clip-text">
                     modo produto.
                   </span>
                 </h1>
-                <p className="text-lg text-slate-600 max-w-xl">
+                <p className="text-lg text-slate-300 max-w-xl">
                   Sites rápidos, CRM inteligente, automações e relatórios que transformam leads em contratos.
                   Tudo pronto para sua equipe vender mais, com previsibilidade.
                 </p>
@@ -306,7 +306,7 @@ const Landing = () => {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="rounded-full border-slate-300 bg-white/70 text-slate-700 transition-transform hover:-translate-y-0.5 hover:border-amber-300 hover:bg-white"
+                  className="rounded-full border-white/30 bg-white/10 text-white transition-transform hover:-translate-y-0.5 hover:border-amber-300 hover:bg-white/20"
                   asChild
                 >
                   <Link to="/imobiliaria">Ver site demo</Link>
@@ -316,21 +316,21 @@ const Landing = () => {
                 {stats.map((item) => (
                   <div
                     key={item.label}
-                    className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white/90 px-4 py-4 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                    className="group relative overflow-hidden rounded-2xl border border-white/15 bg-white/5 px-4 py-4 shadow-sm transition hover:-translate-y-1 hover:bg-white/10 hover:shadow-lg"
                   >
                     <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 via-orange-400 to-sky-400 opacity-70" />
-                    <p className="text-2xl font-semibold text-slate-900">{item.value}</p>
-                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{item.label}</p>
+                    <p className="text-2xl font-semibold text-white">{item.value}</p>
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-300">{item.label}</p>
                   </div>
                 ))}
               </div>
-              <div className="flex flex-wrap gap-3 text-sm text-slate-600">
+              <div className="flex flex-wrap gap-3 text-sm text-slate-300">
                 {[
                   "Implantação em 7 dias",
                   "Suporte humano",
                   "Sem cartão de crédito",
                 ].map((item) => (
-                  <span key={item} className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1.5 shadow-sm">
+                  <span key={item} className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 shadow-sm">
                     <BadgeCheck className="h-4 w-4 text-emerald-500" />
                     {item}
                   </span>
@@ -340,13 +340,13 @@ const Landing = () => {
 
             <div className="relative animate-fade-up-delay-1">
               <div className="absolute -inset-6 rounded-[32px] bg-gradient-to-tr from-amber-200/40 via-transparent to-sky-200/40 blur-2xl" />
-              <div className="relative overflow-hidden rounded-[32px] border border-slate-200 bg-white/90 p-6 shadow-2xl transition hover:-translate-y-1 hover:shadow-[0_30px_60px_rgba(15,23,42,0.18)]">
-                <div className="absolute -right-10 top-12 h-40 w-40 rounded-full bg-amber-200/40 blur-2xl" />
-                <div className="absolute -left-16 bottom-0 h-40 w-40 rounded-full bg-sky-200/40 blur-2xl" />
+              <div className="relative overflow-hidden rounded-[32px] border border-white/20 bg-slate-800/58 p-6 shadow-2xl transition hover:-translate-y-1 hover:shadow-[0_30px_60px_rgba(2,6,23,0.5)]">
+                <div className="absolute -right-10 top-12 h-40 w-40 rounded-full bg-amber-300/25 blur-2xl" />
+                <div className="absolute -left-16 bottom-0 h-40 w-40 rounded-full bg-sky-300/25 blur-2xl" />
                 <div className="relative">
-                  <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-slate-500">
+                  <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-slate-300">
                     <span>Painel ao vivo</span>
-                    <span className="text-amber-600">Hoje</span>
+                    <span className="text-amber-300">Hoje</span>
                   </div>
                   <div className="mt-6 grid gap-4 sm:grid-cols-2">
                     {[
@@ -355,37 +355,37 @@ const Landing = () => {
                     ].map((item) => (
                       <div
                         key={item.label}
-                        className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+                        className="rounded-2xl border border-white/15 bg-white/5 p-4 shadow-sm"
                       >
-                        <p className="text-xs text-slate-500">{item.label}</p>
-                        <p className="text-2xl font-semibold">{item.value}</p>
+                        <p className="text-xs text-slate-300">{item.label}</p>
+                        <p className="text-2xl font-semibold text-white">{item.value}</p>
                         <p className="text-xs text-emerald-600">+12% esta semana</p>
                       </div>
                     ))}
                   </div>
-                  <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
-                    <div className="flex items-center justify-between text-xs text-slate-500">
+                  <div className="mt-4 rounded-2xl border border-white/15 bg-white/5 p-4">
+                    <div className="flex items-center justify-between text-xs text-slate-300">
                       <span>Pipeline de vendas</span>
                       <span>72%</span>
                     </div>
                     <div className="mt-3 h-2 rounded-full bg-slate-100">
                       <div className="h-2 w-[72%] rounded-full bg-gradient-to-r from-amber-400 to-orange-400" />
                     </div>
-                    <div className="mt-4 grid grid-cols-3 gap-2 text-[11px] text-slate-500">
+                    <div className="mt-4 grid grid-cols-3 gap-2 text-[11px] text-slate-300">
                       <span>Contato</span>
                       <span>Visita</span>
                       <span>Proposta</span>
                     </div>
                   </div>
                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-2xl border border-slate-200 bg-white p-3">
-                      <p className="text-xs text-slate-500">Melhor corretor</p>
-                      <p className="text-lg font-semibold">Fernanda</p>
+                    <div className="rounded-2xl border border-white/15 bg-white/5 p-3">
+                      <p className="text-xs text-slate-300">Melhor corretor</p>
+                      <p className="text-lg font-semibold text-white">Fernanda</p>
                       <p className="text-xs text-emerald-600">14 contratos</p>
                     </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white p-3">
-                      <p className="text-xs text-slate-500">Receita projetada</p>
-                      <p className="text-lg font-semibold">R$ 1.2M</p>
+                    <div className="rounded-2xl border border-white/15 bg-white/5 p-3">
+                      <p className="text-xs text-slate-300">Receita projetada</p>
+                      <p className="text-lg font-semibold text-white">R$ 1.2M</p>
                       <p className="text-xs text-emerald-600">+18% mês</p>
                     </div>
                   </div>
@@ -396,7 +396,7 @@ const Landing = () => {
         </section>
       </div>
 
-      <section className="container mx-auto px-4 py-10 animate-fade-up rounded-[28px] border border-slate-700/75 bg-[linear-gradient(130deg,#0f172a_0%,#111c33_52%,#0b1220_100%)] shadow-[0_25px_60px_rgba(2,6,23,0.45)]">
+      <section className="container mx-auto px-4 py-10 animate-fade-up rounded-[28px] border border-slate-700/75 bg-[linear-gradient(130deg,#1a304a_0%,#223b58_52%,#1a2f48_100%)] shadow-[0_25px_60px_rgba(2,6,23,0.45)]">
         <p className="text-xs uppercase tracking-[0.4em] text-slate-300">
           Confiado por operações digitais em todo o Brasil
         </p>
@@ -411,7 +411,7 @@ const Landing = () => {
           ].map((brand) => (
             <span
               key={brand}
-              className="rounded-full border border-slate-500/70 bg-slate-900/45 px-3 py-2 text-center text-slate-100 shadow-sm transition hover:-translate-y-0.5 hover:border-amber-300 hover:text-white hover:shadow-md"
+              className="rounded-full border border-slate-400/70 bg-slate-800/45 px-3 py-2 text-center text-slate-100 shadow-sm transition hover:-translate-y-0.5 hover:border-amber-300 hover:text-white hover:shadow-md"
             >
               {brand}
             </span>
@@ -420,7 +420,7 @@ const Landing = () => {
       </section>
 
       <section id="diferenciais" className="container mx-auto px-4 py-20 animate-fade-up">
-        <div className="rounded-[32px] border border-slate-700/70 bg-[linear-gradient(140deg,#0f172a_0%,#111c31_52%,#1f2937_100%)] p-6 text-white shadow-[0_24px_58px_rgba(2,6,23,0.46)] backdrop-blur sm:p-8">
+        <div className="rounded-[32px] border border-slate-700/70 bg-[linear-gradient(140deg,#1a3049_0%,#213853_52%,#2b435e_100%)] p-6 text-white shadow-[0_24px_58px_rgba(2,6,23,0.46)] backdrop-blur sm:p-8">
           <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr]">
             <div className="space-y-6">
               <p className="text-xs uppercase tracking-[0.4em] text-amber-300">Diferenciais de produto</p>
@@ -453,7 +453,7 @@ const Landing = () => {
                   key={column.title}
                   className={`rounded-2xl border p-6 shadow-sm ${
                     index === 0
-                      ? "border-slate-500/70 bg-slate-900/55"
+                      ? "border-slate-400/70 bg-slate-800/45"
                       : "border-emerald-400/35 bg-emerald-500/10"
                   }`}
                 >
@@ -496,20 +496,20 @@ const Landing = () => {
       </section>
 
       <section id="recursos" className="container mx-auto px-4 py-20 animate-fade-up">
-        <div className="rounded-[32px] border border-slate-200/70 bg-gradient-to-br from-slate-50/90 via-white/90 to-amber-50/80 p-6 shadow-sm backdrop-blur sm:p-8">
+        <div className="rounded-[32px] border border-slate-700/70 bg-[linear-gradient(140deg,#1a3048_0%,#223a56_52%,#2c4661_100%)] p-6 text-white shadow-[0_24px_58px_rgba(2,6,23,0.46)] backdrop-blur sm:p-8">
           <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
             <div className="space-y-6">
-              <p className="text-xs uppercase tracking-[0.4em] text-amber-700">Recursos principais</p>
+              <p className="text-xs uppercase tracking-[0.4em] text-amber-300">Recursos principais</p>
               <h2 className="text-3xl font-['Space Grotesk'] font-semibold sm:text-4xl">
                 Tudo que sua operação precisa para vender com método.
               </h2>
               <div className="h-1 w-16 rounded-full bg-gradient-to-r from-amber-400 to-sky-400" />
-              <p className="text-slate-600">
+              <p className="text-slate-300">
                 Centralize dados, processos e pessoas em uma única plataforma. Sem planilhas, sem
                 retrabalho e com total visibilidade de cada etapa.
               </p>
-              <div className="flex items-center gap-3 text-sm text-slate-500">
-                <Zap className="h-4 w-4 text-sky-500" />
+              <div className="flex items-center gap-3 text-sm text-slate-300">
+                <Zap className="h-4 w-4 text-sky-300" />
                 Ative novos módulos em minutos.
               </div>
             </div>
@@ -517,15 +517,15 @@ const Landing = () => {
               {features.map((feature) => (
                 <div
                   key={feature.title}
-                  className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-6 shadow-sm transition hover:-translate-y-1 hover:border-amber-200 hover:shadow-xl"
+                  className="group relative overflow-hidden rounded-2xl border border-white/15 bg-white/5 p-6 shadow-sm transition hover:-translate-y-1 hover:border-amber-300/60 hover:bg-white/10 hover:shadow-xl"
                 >
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.22),_transparent_55%)] opacity-0 transition group-hover:opacity-100" />
                   <div className="relative">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-600 shadow-sm">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-200/25 text-amber-300 shadow-sm">
                       <feature.icon className="h-5 w-5" />
                     </span>
-                    <h3 className="mt-4 text-lg font-semibold">{feature.title}</h3>
-                    <p className="mt-2 text-sm text-slate-600">{feature.text}</p>
+                    <h3 className="mt-4 text-lg font-semibold text-white">{feature.title}</h3>
+                    <p className="mt-2 text-sm text-slate-300">{feature.text}</p>
                   </div>
                 </div>
               ))}
@@ -535,7 +535,7 @@ const Landing = () => {
       </section>
 
       <section id="como-funciona" className="container mx-auto px-4 py-20 animate-fade-up">
-        <div className="rounded-[32px] border border-slate-700/70 bg-[linear-gradient(140deg,#0f172a_0%,#18243a_55%,#1e293b_100%)] p-6 text-white shadow-[0_24px_58px_rgba(2,6,23,0.46)] backdrop-blur sm:p-8">
+        <div className="rounded-[32px] border border-slate-700/70 bg-[linear-gradient(140deg,#1b314a_0%,#243d59_55%,#2d4866_100%)] p-6 text-white shadow-[0_24px_58px_rgba(2,6,23,0.46)] backdrop-blur sm:p-8">
           <div className="flex flex-col gap-10">
             <div className="flex flex-col gap-4">
               <p className="text-xs uppercase tracking-[0.4em] text-amber-300">Como funciona</p>
@@ -564,7 +564,7 @@ const Landing = () => {
       </section>
 
       <section className="container mx-auto px-4 py-20 animate-fade-up">
-        <div className="relative overflow-hidden rounded-[32px] border border-slate-800 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-10 text-white shadow-2xl">
+        <div className="relative overflow-hidden rounded-[32px] border border-slate-600/70 bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800 p-10 text-white shadow-2xl">
           <div className="absolute -top-20 right-0 h-60 w-60 rounded-full bg-amber-400/25 blur-3xl" />
           <div className="absolute bottom-0 left-0 h-52 w-52 rounded-full bg-sky-400/20 blur-3xl" />
           <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
@@ -607,15 +607,15 @@ const Landing = () => {
       </section>
 
       <section className="container mx-auto px-4 py-20 animate-fade-up">
-        <div className="rounded-[32px] border border-slate-200/70 bg-gradient-to-br from-white/90 via-slate-50/85 to-indigo-50/70 p-6 shadow-sm backdrop-blur sm:p-8">
+        <div className="rounded-[32px] border border-slate-700/70 bg-[linear-gradient(140deg,#1a3049_0%,#233c58_55%,#2d4967_100%)] p-6 text-white shadow-[0_24px_58px_rgba(2,6,23,0.46)] backdrop-blur sm:p-8">
           <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
             <div className="space-y-6">
-              <p className="text-xs uppercase tracking-[0.4em] text-amber-700">Resultados reais</p>
+              <p className="text-xs uppercase tracking-[0.4em] text-amber-300">Resultados reais</p>
               <h2 className="text-3xl font-['Space Grotesk'] font-semibold sm:text-4xl">
                 Times comerciais com clareza total do funil.
               </h2>
               <div className="h-1 w-16 rounded-full bg-gradient-to-r from-amber-400 to-sky-400" />
-              <p className="text-slate-600">
+              <p className="text-slate-300">
                 Saia do modo reativo. Entenda quais campanhas convertem, quais corretores precisam de apoio
                 e onde estão os melhores negócios.
               </p>
@@ -626,7 +626,7 @@ const Landing = () => {
                   "Relatórios financeiros",
                   "Integrações com WhatsApp",
                 ].map((item) => (
-                  <div key={item} className="flex items-center gap-2 text-sm text-slate-600">
+                  <div key={item} className="flex items-center gap-2 text-sm text-slate-300">
                     <CheckCircle2 className="h-4 w-4 text-amber-500" />
                     {item}
                   </div>
@@ -637,12 +637,12 @@ const Landing = () => {
               {testimonials.map((testimonial) => (
                 <div
                   key={testimonial.name}
-                  className="relative overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                  className="relative overflow-hidden rounded-2xl border border-white/15 bg-white/5 p-6 shadow-sm transition hover:-translate-y-1 hover:bg-white/10 hover:shadow-lg"
                 >
                   <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 via-orange-400 to-sky-400 opacity-70" />
-                  <p className="text-slate-700">“{testimonial.quote}”</p>
-                  <p className="mt-4 text-sm font-semibold">{testimonial.name}</p>
-                  <p className="text-xs text-slate-500">{testimonial.role}</p>
+                  <p className="text-slate-100">“{testimonial.quote}”</p>
+                  <p className="mt-4 text-sm font-semibold text-white">{testimonial.name}</p>
+                  <p className="text-xs text-slate-300">{testimonial.role}</p>
                 </div>
               ))}
             </div>
@@ -651,16 +651,16 @@ const Landing = () => {
       </section>
 
       <section id="planos" className="container mx-auto px-4 py-20 animate-fade-up">
-        <div className="relative overflow-hidden rounded-[32px] border border-slate-200/70 bg-gradient-to-br from-slate-50/95 via-white/92 to-amber-50/82 p-6 shadow-sm backdrop-blur sm:p-8">
-          <div className="absolute -right-24 top-10 h-52 w-52 rounded-full bg-amber-200/40 blur-3xl" />
-          <div className="absolute -left-16 bottom-0 h-40 w-40 rounded-full bg-sky-200/35 blur-3xl" />
+        <div className="relative overflow-hidden rounded-[32px] border border-slate-700/70 bg-[linear-gradient(140deg,#1a3049_0%,#233c58_52%,#2c4662_100%)] p-6 text-white shadow-[0_24px_58px_rgba(2,6,23,0.46)] backdrop-blur sm:p-8">
+          <div className="absolute -right-24 top-10 h-52 w-52 rounded-full bg-amber-300/30 blur-3xl" />
+          <div className="absolute -left-16 bottom-0 h-40 w-40 rounded-full bg-sky-300/25 blur-3xl" />
           <div className="text-center">
-            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-emerald-300/35 bg-emerald-500/12 px-3 py-1 text-xs font-medium text-emerald-200">
               <BadgeCheck className="h-3.5 w-3.5" />
               Sem fidelidade e sem setup oculto
             </div>
-            <div className="mx-auto mt-4 inline-flex items-center gap-2 rounded-full border border-amber-300 bg-gradient-to-r from-amber-100 via-orange-100 to-amber-100 px-5 py-2.5 text-base font-semibold text-amber-800 shadow-sm">
-              <Sparkles className="h-4 w-4 text-amber-600" />
+            <div className="mx-auto mt-4 inline-flex items-center gap-2 rounded-full border border-amber-300/55 bg-amber-400/12 px-5 py-2.5 text-base font-semibold text-amber-200 shadow-sm">
+              <Sparkles className="h-4 w-4 text-amber-300" />
               Planos
             </div>
             <h2 className="mt-4 text-4xl font-['Space Grotesk'] font-semibold sm:text-5xl">
@@ -674,24 +674,24 @@ const Landing = () => {
                 key={plan.name}
                 className={`relative overflow-hidden rounded-3xl border p-8 transition hover:-translate-y-1 hover:shadow-xl ${
                   plan.highlight
-                    ? "border-amber-300 bg-gradient-to-br from-amber-50 via-white to-amber-100 shadow-lg ring-2 ring-amber-300/40"
-                    : "border-slate-200 bg-white shadow-sm"
+                    ? "border-amber-300/70 bg-gradient-to-br from-amber-400/20 via-slate-800/64 to-amber-300/18 shadow-lg ring-2 ring-amber-300/40"
+                    : "border-white/15 bg-slate-800/48 shadow-sm"
                 }`}
               >
                 {plan.highlight && (
                   <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500" />
                 )}
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-semibold">{plan.name}</h3>
+                  <h3 className="text-xl font-semibold text-white">{plan.name}</h3>
                   {plan.highlight && (
                     <span className="rounded-full bg-gradient-to-r from-amber-400 to-orange-400 px-3 py-1 text-xs uppercase tracking-widest text-slate-900 shadow-sm">
                       Popular
                     </span>
                   )}
                 </div>
-                <p className="mt-4 text-3xl font-semibold">{plan.price}</p>
-                <p className="mt-2 text-sm text-slate-600">{plan.description}</p>
-                <ul className="mt-6 space-y-3 text-sm text-slate-600">
+                <p className="mt-4 text-3xl font-semibold text-white">{plan.price}</p>
+                <p className="mt-2 text-sm text-slate-300">{plan.description}</p>
+                <ul className="mt-6 space-y-3 text-sm text-slate-300">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex items-center gap-2">
                       <CheckCircle2 className="h-4 w-4 text-amber-500" />
@@ -703,7 +703,7 @@ const Landing = () => {
                   className={`mt-6 w-full rounded-full transition-transform hover:-translate-y-0.5 ${
                     plan.highlight
                       ? "bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 text-slate-900 hover:from-amber-300 hover:via-orange-400 hover:to-amber-400"
-                      : "bg-slate-100 text-slate-800 hover:bg-slate-200"
+                      : "bg-white/12 text-white hover:bg-white/20"
                   }`}
                   asChild
                 >
@@ -716,15 +716,15 @@ const Landing = () => {
       </section>
 
       <section id="faq" className="container mx-auto px-4 py-20 animate-fade-up">
-        <div className="rounded-[32px] border border-slate-200/70 bg-gradient-to-br from-slate-50/90 via-white/90 to-sky-50/70 p-6 shadow-sm backdrop-blur sm:p-8">
+        <div className="rounded-[32px] border border-slate-700/70 bg-[linear-gradient(140deg,#1a3049_0%,#243d59_54%,#2c4866_100%)] p-6 text-white shadow-[0_24px_58px_rgba(2,6,23,0.46)] backdrop-blur sm:p-8">
           <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
             <div>
-              <p className="text-xs uppercase tracking-[0.4em] text-amber-700">FAQ</p>
+              <p className="text-xs uppercase tracking-[0.4em] text-amber-300">FAQ</p>
               <h2 className="mt-4 text-3xl font-['Space Grotesk'] font-semibold sm:text-4xl">
                 Tudo claro antes de começar.
               </h2>
               <div className="mt-4 h-1 w-16 rounded-full bg-gradient-to-r from-amber-400 to-sky-400" />
-              <p className="mt-4 text-slate-600">
+              <p className="mt-4 text-slate-300">
                 Se precisar de uma resposta personalizada, nosso time responde em até 1 dia útil.
               </p>
             </div>
@@ -732,13 +732,13 @@ const Landing = () => {
               {faqs.map((faq) => (
                 <details
                   key={faq.question}
-                  className="group rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
+                  className="group rounded-2xl border border-white/15 bg-white/5 p-5 shadow-sm transition hover:-translate-y-0.5 hover:bg-white/10 hover:shadow-lg"
                 >
-                  <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-semibold">
+                  <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-semibold text-white">
                     {faq.question}
                     <span className="text-amber-500 transition-transform group-open:rotate-45">+</span>
                   </summary>
-                  <p className="mt-3 text-sm text-slate-600">{faq.answer}</p>
+                  <p className="mt-3 text-sm text-slate-300">{faq.answer}</p>
                 </details>
               ))}
             </div>
@@ -747,7 +747,7 @@ const Landing = () => {
       </section>
 
       <section className="container mx-auto px-4 pb-20 animate-fade-up">
-        <div className="relative overflow-hidden rounded-[32px] border border-slate-700/80 bg-[linear-gradient(140deg,#0f172a_0%,#111c33_52%,#0b1220_100%)] p-10 text-white shadow-[0_25px_60px_rgba(2,6,23,0.5)]">
+        <div className="relative overflow-hidden rounded-[32px] border border-slate-700/80 bg-[linear-gradient(140deg,#1a3049_0%,#243d59_52%,#1a3049_100%)] p-10 text-white shadow-[0_25px_60px_rgba(2,6,23,0.5)]">
           <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-amber-300/30 blur-3xl" />
           <div className="absolute bottom-0 left-10 h-40 w-40 rounded-full bg-sky-300/25 blur-3xl" />
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
@@ -791,16 +791,16 @@ const Landing = () => {
         </div>
       </section>
 
-      <footer id="contato" className="border-t border-slate-200">
+      <footer id="contato" className="border-t border-slate-500/55 bg-[#182f4a]/92">
         <div className="container mx-auto px-4 py-10">
           <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
             <div className="space-y-2">
               <p className="text-lg font-['Space Grotesk'] font-semibold">Imobiflow</p>
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-slate-300">
                 Software de gestão para negócios imobiliários.
               </p>
             </div>
-            <div className="flex flex-wrap gap-3 text-sm text-slate-600">
+            <div className="flex flex-wrap gap-3 text-sm text-slate-300">
               <span className="inline-flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4 text-amber-500" />
                 Suporte humano
@@ -813,7 +813,7 @@ const Landing = () => {
             <div className="flex gap-3">
               <Button
                 variant="outline"
-                className="rounded-full border-slate-300 bg-white text-slate-700 hover:bg-slate-100"
+                className="rounded-full border-white/30 bg-white/10 text-white hover:bg-white/20"
                 asChild
               >
                 <a href="mailto:contato@imobiflow.com">Falar com vendas</a>

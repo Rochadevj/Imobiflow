@@ -73,7 +73,7 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
             className={`rounded-full ${viewMode === "video" ? "bg-slate-900 text-white hover:bg-slate-800" : ""}`}
           >
             <Video className="mr-2 h-4 w-4" />
-            Video ({videos.length})
+            Vídeo ({videos.length})
           </Button>
         ) : null}
 
@@ -146,7 +146,7 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
               <button
                 onClick={() => setCurrentIndex((previous) => Math.min(maxIndex, previous + 1))}
                 className="absolute -right-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/35 bg-slate-950/55 p-2 text-white shadow-lg transition hover:bg-slate-950/75"
-                aria-label="Proximo"
+                aria-label="Próximo"
               >
                 <ChevronRight className="h-5 w-5" />
               </button>
@@ -162,13 +162,13 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
 
       {viewMode === "photos" && photos.length === 0 ? (
         <div className="surface-card border-slate-200/80 py-16 text-center text-sm text-slate-500">
-          Nenhuma foto disponivel.
+          Nenhuma foto disponível.
         </div>
       ) : null}
 
       {viewMode === "video" && videos.length === 0 ? (
         <div className="surface-card border-slate-200/80 py-16 text-center text-sm text-slate-500">
-          Nenhum video disponivel.
+          Nenhum vídeo disponível.
         </div>
       ) : null}
 
@@ -186,12 +186,12 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
                 src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(
                   [location, city, state || "RS", "Brasil"].filter(Boolean).join(", ")
                 )}`}
-                title="Localizacao do imovel"
+                title="Localização do imóvel"
               />
             </div>
           ) : (
             <div className="flex h-[460px] items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 text-sm text-slate-500">
-              Endereco indisponivel para exibir no mapa.
+              Endereço indisponível para exibir no mapa.
             </div>
           )}
         </div>
