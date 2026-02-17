@@ -83,6 +83,7 @@
     @apply bg-background text-foreground antialiased;
     overflow-x: hidden;
     max-width: 100vw;
+    scroll-behavior: smooth;
     font-family: "Manrope", sans-serif;
     background-image:
       radial-gradient(circle at 5% 0%, rgba(251, 191, 36, 0.24), transparent 34%),

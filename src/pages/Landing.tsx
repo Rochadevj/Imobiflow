@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -222,20 +223,28 @@ const trustSignals = [
 ];
 
 const Landing = () => {
+  const [headerOffset, setHeaderOffset] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const nextOffset = Math.min((window.scrollY || 0) * 0.12, 24);
+      setHeaderOffset(nextOffset);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#15263d_0%,#1c3250_34%,#223d5f_68%,#162b46_100%)] text-white font-['Manrope']">
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute -top-32 right-0 h-[380px] w-[380px] rounded-full bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.32),_transparent_70%)] blur-3xl float-slow" />
-          <div className="absolute top-16 -left-32 h-[440px] w-[440px] rounded-full bg-[radial-gradient(circle,_rgba(56,189,248,0.28),_transparent_70%)] blur-3xl float-slow" />
-          <div className="absolute bottom-10 right-24 h-[280px] w-[280px] rounded-full bg-[radial-gradient(circle,_rgba(16,185,129,0.2),_transparent_70%)] blur-3xl float-slow" />
-          <div className="absolute inset-0 bg-[linear-gradient(120deg,_rgba(15,23,42,0.55)_0%,_transparent_35%,_transparent_65%,_rgba(15,23,42,0.5)_100%)]" />
-          <div className="absolute inset-0 opacity-35 bg-[radial-gradient(circle_at_center,_rgba(226,232,240,0.14)_1px,_transparent_1px)] [background-size:22px_22px]" />
-        </div>
-        <div className="absolute top-0 left-0 h-1 w-full bg-gradient-to-r from-amber-400 via-orange-400 to-sky-400 opacity-80" />
-
-        <header className="container mx-auto px-4 pt-8">
-          <div className="flex items-center justify-between gap-6 rounded-2xl border border-white/20 bg-slate-800/55 px-4 py-3 shadow-[0_16px_32px_rgba(2,6,23,0.45)] backdrop-blur sm:px-6">
+      <header
+        className="fixed inset-x-0 top-0 z-50 pointer-events-none transition-transform duration-300 ease-out"
+        style={{ transform: `translateY(${headerOffset}px)` }}
+      >
+        <div className="container mx-auto px-4 py-4">
+          <div className="pointer-events-auto relative flex items-center justify-between gap-6 overflow-hidden rounded-2xl border border-white/20 bg-slate-800/65 px-4 py-3 shadow-[0_16px_32px_rgba(2,6,23,0.45)] backdrop-blur sm:px-6">
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 via-orange-400 to-sky-400 opacity-80" />
             <Link to="/" className="flex items-center gap-3">
               <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-400 text-slate-900 shadow-[0_10px_25px_rgba(251,146,60,0.35)]">
                 <Sparkles className="h-5 w-5" />
@@ -275,8 +284,17 @@ const Landing = () => {
               </Button>
             </div>
           </div>
-        </header>
+        </div>
+      </header>
 
+      <div className="relative overflow-hidden pt-24 md:pt-28">
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute -top-32 right-0 h-[380px] w-[380px] rounded-full bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.32),_transparent_70%)] blur-3xl float-slow" />
+          <div className="absolute top-16 -left-32 h-[440px] w-[440px] rounded-full bg-[radial-gradient(circle,_rgba(56,189,248,0.28),_transparent_70%)] blur-3xl float-slow" />
+          <div className="absolute bottom-10 right-24 h-[280px] w-[280px] rounded-full bg-[radial-gradient(circle,_rgba(16,185,129,0.2),_transparent_70%)] blur-3xl float-slow" />
+          <div className="absolute inset-0 bg-[linear-gradient(120deg,_rgba(15,23,42,0.55)_0%,_transparent_35%,_transparent_65%,_rgba(15,23,42,0.5)_100%)]" />
+          <div className="absolute inset-0 opacity-35 bg-[radial-gradient(circle_at_center,_rgba(226,232,240,0.14)_1px,_transparent_1px)] [background-size:22px_22px]" />
+        </div>
         <section className="container mx-auto px-4 pb-20 pt-16">
           <div className="grid gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div className="space-y-8 animate-fade-up">
@@ -419,7 +437,7 @@ const Landing = () => {
         </div>
       </section>
 
-      <section id="diferenciais" className="container mx-auto px-4 py-20 animate-fade-up">
+      <section id="diferenciais" className="scroll-mt-32 container mx-auto px-4 py-20 animate-fade-up">
         <div className="rounded-[32px] border border-slate-700/70 bg-[linear-gradient(140deg,#1a3049_0%,#213853_52%,#2b435e_100%)] p-6 text-white shadow-[0_24px_58px_rgba(2,6,23,0.46)] backdrop-blur sm:p-8">
           <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr]">
             <div className="space-y-6">
@@ -495,7 +513,7 @@ const Landing = () => {
         </div>
       </section>
 
-      <section id="recursos" className="container mx-auto px-4 py-20 animate-fade-up">
+      <section id="recursos" className="scroll-mt-32 container mx-auto px-4 py-20 animate-fade-up">
         <div className="rounded-[32px] border border-slate-700/70 bg-[linear-gradient(140deg,#1a3048_0%,#223a56_52%,#2c4661_100%)] p-6 text-white shadow-[0_24px_58px_rgba(2,6,23,0.46)] backdrop-blur sm:p-8">
           <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
             <div className="space-y-6">
@@ -534,7 +552,7 @@ const Landing = () => {
         </div>
       </section>
 
-      <section id="como-funciona" className="container mx-auto px-4 py-20 animate-fade-up">
+      <section id="como-funciona" className="scroll-mt-32 container mx-auto px-4 py-20 animate-fade-up">
         <div className="rounded-[32px] border border-slate-700/70 bg-[linear-gradient(140deg,#1b314a_0%,#243d59_55%,#2d4866_100%)] p-6 text-white shadow-[0_24px_58px_rgba(2,6,23,0.46)] backdrop-blur sm:p-8">
           <div className="flex flex-col gap-10">
             <div className="flex flex-col gap-4">
@@ -650,7 +668,7 @@ const Landing = () => {
         </div>
       </section>
 
-      <section id="planos" className="container mx-auto px-4 py-20 animate-fade-up">
+      <section id="planos" className="scroll-mt-32 container mx-auto px-4 py-20 animate-fade-up">
         <div className="relative overflow-hidden rounded-[32px] border border-slate-700/70 bg-[linear-gradient(140deg,#1a3049_0%,#233c58_52%,#2c4662_100%)] p-6 text-white shadow-[0_24px_58px_rgba(2,6,23,0.46)] backdrop-blur sm:p-8">
           <div className="absolute -right-24 top-10 h-52 w-52 rounded-full bg-amber-300/30 blur-3xl" />
           <div className="absolute -left-16 bottom-0 h-40 w-40 rounded-full bg-sky-300/25 blur-3xl" />
@@ -715,7 +733,7 @@ const Landing = () => {
         </div>
       </section>
 
-      <section id="faq" className="container mx-auto px-4 py-20 animate-fade-up">
+      <section id="faq" className="scroll-mt-32 container mx-auto px-4 py-20 animate-fade-up">
         <div className="rounded-[32px] border border-slate-700/70 bg-[linear-gradient(140deg,#1a3049_0%,#243d59_54%,#2c4866_100%)] p-6 text-white shadow-[0_24px_58px_rgba(2,6,23,0.46)] backdrop-blur sm:p-8">
           <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
             <div>
