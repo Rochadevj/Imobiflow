@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Clock, MapPin, Search, ShieldCheck, SlidersHorizontal } from "lucide-react";
+import { Clock, MapPin, Search, ShieldCheck, SlidersHorizontal, X } from "lucide-react";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
 import HeroCarousel from "@/components/HeroCarousel";
 
@@ -50,6 +50,7 @@ const Index = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [showList, setShowList] = useState(false);
+  const [showQuickHint, setShowQuickHint] = useState(true);
   const [featuredImperdiveis, setFeaturedImperdiveis] = useState<Property[]>([]);
   const [featuredVenda, setFeaturedVenda] = useState<Property[]>([]);
   const [featuredLocacao, setFeaturedLocacao] = useState<Property[]>([]);
@@ -87,6 +88,7 @@ const Index = () => {
 
   useEffect(() => {
     if (showList) {
+      setShowQuickHint(true);
       setLoading(true);
       fetchProperties();
     } else {
@@ -314,53 +316,96 @@ const Index = () => {
     <div className="page-shell">
       <Navbar />
       {/* Hero Section novo layout (sem sobreposição problemática) */}
-      <section className="relative mx-4 mt-8 overflow-hidden rounded-[32px] border border-white/15 bg-[linear-gradient(135deg,hsl(var(--hero-gradient-start))_0%,hsl(var(--hero-gradient-end))_65%,hsl(214_35%_18%)_100%)] pt-14 pb-44 text-white shadow-[0_26px_60px_rgba(15,23,42,0.3)] md:mx-6 lg:mx-10">
+      <section className={`relative mx-4 mt-8 overflow-hidden rounded-[34px] border border-white/15 bg-[linear-gradient(135deg,hsl(var(--hero-gradient-start))_0%,hsl(var(--hero-gradient-end))_62%,hsl(214_35%_20%)_100%)] pt-12 text-white shadow-[0_26px_60px_rgba(15,23,42,0.3)] md:mx-6 lg:mx-10 ${showList ? "pb-48 md:pb-52" : "pb-24 md:pb-28"}`}>
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute right-0 top-0 w-[280px] h-[280px] md:w-[420px] md:h-[420px] bg-accent/10 rounded-bl-[120px] md:rounded-bl-[180px]" />
-          <div className="absolute left-0 bottom-0 w-[240px] h-[240px] bg-white/5 rounded-tr-[140px]" />
+          <div className="absolute right-0 top-0 h-[280px] w-[280px] rounded-bl-[120px] bg-accent/12 md:h-[420px] md:w-[420px] md:rounded-bl-[180px]" />
+          <div className="absolute left-0 bottom-0 h-[240px] w-[240px] rounded-tr-[140px] bg-white/5" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(251,191,36,0.18),_transparent_40%)]" />
         </div>
-        <div className="container mx-auto px-4 relative">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
-            <div>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-4 md:mb-6 max-w-xl">
-                Compre e alugue
-                <br />
-                <span className="text-accent">com quem entende</span>
-              </h1>
-              <p className="text-base sm:text-lg md:text-xl text-white/80 max-w-md mb-6 md:mb-8">
-                Experiência, transparência e tecnologia para você encontrar ou anunciar seu imóvel.
-              </p>
-              <div className="flex flex-wrap gap-3 mb-6">
-                <a
-                  href="#imoveis"
-                  className="inline-flex items-center gap-2 rounded-full bg-white text-primary px-5 py-2 text-sm font-semibold shadow hover:bg-white/90 transition"
+        <div className="container relative mx-auto px-4">
+          <div className="grid grid-cols-1 items-start gap-10 md:grid-cols-2 md:gap-12">
+            <div className="space-y-7">
+              <span className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-white/85">
+                Plataforma imobiliária completa
+              </span>
+
+              <div>
+                <h1 className="max-w-xl text-3xl font-bold leading-tight sm:text-4xl md:text-5xl">
+                  Compre e alugue
+                  <br />
+                  <span className="bg-gradient-to-r from-amber-300 via-amber-400 to-orange-300 bg-clip-text text-transparent">
+                    com quem entende
+                  </span>
+                </h1>
+                <p className="mt-4 max-w-lg text-base text-white/80 sm:text-lg md:text-xl">
+                  Experiência, transparência e tecnologia para você encontrar ou anunciar seu imóvel com segurança.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  to="/imobiliaria?list=1"
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-primary shadow-[0_10px_24px_rgba(255,255,255,0.2)] transition hover:-translate-y-0.5 hover:bg-white/90"
                 >
+                  <Search className="h-4 w-4" />
                   Ver imóveis
-                </a>
+                </Link>
                 <Link
                   to="/anunciar"
-                  className="inline-flex items-center gap-2 rounded-full bg-accent text-white px-5 py-2 text-sm font-semibold shadow hover:bg-accent/90 transition"
+                  className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(251,146,60,0.28)] transition hover:-translate-y-0.5 hover:bg-accent/90"
                 >
                   Anunciar imóvel
                 </Link>
               </div>
-              <div className="flex flex-wrap gap-4 text-sm text-white/85">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-accent" />
-                  Atendimento nacional
+
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div className="rounded-xl border border-white/15 bg-white/10 px-4 py-3">
+                  <p className="inline-flex items-center gap-2 text-xs text-white/75">
+                    <MapPin className="h-3.5 w-3.5 text-accent" />
+                    Atendimento
+                  </p>
+                  <p className="mt-1 text-sm font-semibold">Nacional</p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4 text-accent" />
-                  Negociação segura
+                <div className="rounded-xl border border-white/15 bg-white/10 px-4 py-3">
+                  <p className="inline-flex items-center gap-2 text-xs text-white/75">
+                    <ShieldCheck className="h-3.5 w-3.5 text-accent" />
+                    Segurança
+                  </p>
+                  <p className="mt-1 text-sm font-semibold">Negociação guiada</p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-accent" />
-                  Resposta rápida
+                <div className="rounded-xl border border-white/15 bg-white/10 px-4 py-3">
+                  <p className="inline-flex items-center gap-2 text-xs text-white/75">
+                    <Clock className="h-3.5 w-3.5 text-accent" />
+                    Retorno
+                  </p>
+                  <p className="mt-1 text-sm font-semibold">Atendimento rápido</p>
                 </div>
               </div>
             </div>
+
             <div className="relative">
-              <HeroCarousel properties={featuredProperties} />
+              <div className="absolute -inset-3 rounded-[28px] bg-gradient-to-tr from-amber-300/20 via-transparent to-sky-300/20 blur-2xl" />
+              <div className="relative rounded-[28px] border border-white/20 bg-white/5 p-3 backdrop-blur">
+                <HeroCarousel properties={featuredProperties} />
+              </div>
+              {showList && showQuickHint && (
+                <div className="animate-fade-up absolute -bottom-7 left-4 right-4 rounded-2xl border border-white/20 bg-slate-950/65 p-4 backdrop-blur md:left-auto md:right-6 md:w-[280px]">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-xs uppercase tracking-[0.16em] text-white/65">Atalho rápido</p>
+                    <button
+                      type="button"
+                      onClick={() => setShowQuickHint(false)}
+                      aria-label="Fechar aviso"
+                      className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-white/15 text-white/75 transition hover:bg-white/10 hover:text-white"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                  <p className="mt-2 text-sm text-white/90">
+                    Use os filtros abaixo para ver opções por bairro, faixa de preço e tipo de imóvel.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
