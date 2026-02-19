@@ -92,11 +92,11 @@ const About = () => {
                 <div className="flex flex-wrap gap-3 text-xs text-white/80">
                   <span className="glass-chip">
                     <MapPin className="h-3.5 w-3.5" />
-                    Atendimento nacional
+                    Porto alegre, RS
                   </span>
                   <span className="glass-chip">
                     <ShieldCheck className="h-3.5 w-3.5" />
-                    CRECI 000000-XX (demo)
+                    CRECI 000000-XX
                   </span>
                 </div>
               </div>
