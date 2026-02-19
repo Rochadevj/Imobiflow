@@ -69,7 +69,7 @@ const Footer = () => {
               </a>
               <span className="flex items-center gap-2 text-slate-600">
                 <MapPin className="h-4 w-4 text-amber-500" />
-                Atendimento nacional
+                Porto alegre, RS
               </span>
             </div>
           </div>
