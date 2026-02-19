@@ -1,19 +1,21 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Heart, LayoutDashboard, LogOut, Menu, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
 
 const navItems = [
-  { label: "Comprar", href: "/imobiliaria?type=comprar" },
-  { label: "Alugar", href: "/imobiliaria?type=alugar" },
-  { label: "Sobre", href: "/sobre" },
+  { key: "comprar", label: "Comprar", href: "/imobiliaria?type=comprar" },
+  { key: "alugar", label: "Alugar", href: "/imobiliaria?type=alugar" },
+  { key: "sobre", label: "Sobre", href: "/sobre" },
 ];
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState<User | null>(null);
   const [favoritesCount, setFavoritesCount] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -56,6 +58,20 @@ const Navbar = () => {
     navigate("/");
   };
 
+  const isNavItemActive = (itemKey: string) => {
+    const search = new URLSearchParams(location.search);
+    if (itemKey === "comprar") {
+      return location.pathname === "/imobiliaria" && search.get("type") === "comprar";
+    }
+    if (itemKey === "alugar") {
+      return location.pathname === "/imobiliaria" && search.get("type") === "alugar";
+    }
+    if (itemKey === "sobre") {
+      return location.pathname.startsWith("/sobre");
+    }
+    return false;
+  };
+
   return (
     <nav className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/88 backdrop-blur-xl shadow-[0_10px_28px_rgba(15,23,42,0.06)]">
       <div className="container mx-auto px-4">
@@ -72,17 +88,24 @@ const Navbar = () => {
             </div>
           </Link>
 
-          <div className="hidden items-center gap-1 lg:flex">
-            {navItems.map((item) => (
-              <Button
-                key={item.href}
-                variant="ghost"
-                className="rounded-full px-4 text-slate-700 hover:bg-slate-100 hover:text-slate-900"
-                asChild
-              >
-                <Link to={item.href}>{item.label}</Link>
-              </Button>
-            ))}
+          <div className="hidden lg:flex items-center rounded-2xl border border-amber-200/80 bg-gradient-to-r from-amber-50/85 via-white to-orange-50/80 p-1 shadow-[0_8px_18px_rgba(251,146,60,0.16)]">
+            {navItems.map((item) => {
+              const active = isNavItemActive(item.key);
+              return (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  className={cn(
+                    "rounded-xl px-5 py-2 text-sm font-semibold transition-all duration-200",
+                    active
+                      ? "bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 text-slate-900 shadow-[0_10px_20px_rgba(251,146,60,0.34)]"
+                      : "text-slate-700 hover:bg-amber-100/80 hover:text-amber-900",
+                  )}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </div>
 
           <div className="hidden items-center gap-2 md:flex">
@@ -153,7 +176,12 @@ const Navbar = () => {
                   <SheetClose asChild key={item.href}>
                     <Button
                       variant="ghost"
-                      className="w-full justify-start rounded-xl text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                      className={cn(
+                        "w-full justify-start rounded-xl font-semibold",
+                        isNavItemActive(item.key)
+                          ? "bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 text-slate-900 hover:from-amber-300 hover:via-orange-400 hover:to-amber-400"
+                          : "text-slate-700 hover:bg-amber-100/75 hover:text-amber-900",
+                      )}
                       asChild
                     >
                       <Link to={item.href}>{item.label}</Link>
