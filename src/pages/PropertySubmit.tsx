@@ -11,7 +11,7 @@ import { CheckCircle2, ClipboardList, Clock3, MessageCircle, Phone, ShieldCheck 
 const steps = [
   "Preencha os dados do imóvel e proprietário",
   "Nossa equipe revisa as informações",
-  "Publicação e divulgação em até 24h (demo)",
+  "Publicação e divulgação em até 24h",
 ];
 
 const PropertySubmit = () => {
@@ -57,7 +57,7 @@ const PropertySubmit = () => {
                   </a>
                   <span className="glass-chip">
                     <Clock3 className="h-3.5 w-3.5" />
-                    Retorno em até 24h (demo)
+                    Retorno em até 24h
                   </span>
                 </div>
               </div>
