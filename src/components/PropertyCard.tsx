@@ -94,21 +94,35 @@ const PropertyCard = ({
           </div>
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/72 via-slate-950/18 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/78 via-slate-950/28 to-slate-950/12" />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/46 via-transparent to-transparent" />
 
         <div className="absolute left-3 top-3 flex flex-wrap gap-2">
-          <Badge className="border border-white/25 bg-white/18 px-3 text-white backdrop-blur">
+          <Badge
+            variant="outline"
+            className="border border-white/45 bg-slate-950/72 px-3 py-1 text-white shadow-[0_6px_14px_rgba(2,6,23,0.45)] backdrop-blur-sm"
+          >
             {getPropertyTypeLabel(propertyType)}
           </Badge>
           {transactionType && (
-            <Badge className="border border-amber-300/40 bg-amber-400/92 px-3 text-slate-900">
+            <Badge
+              variant="outline"
+              className={`px-3 py-1 font-semibold shadow-[0_6px_14px_rgba(2,6,23,0.35)] backdrop-blur-sm ${
+                transactionType === "venda"
+                  ? "border-amber-300/70 bg-amber-400/96 text-slate-950"
+                  : "border-sky-200/70 bg-sky-400/94 text-slate-950"
+              }`}
+            >
               {transactionType === "venda" ? "Venda" : "Aluguel"}
             </Badge>
           )}
         </div>
 
         {featured && (
-          <Badge className="absolute bottom-3 left-3 border border-emerald-200/50 bg-emerald-400/92 px-3 text-slate-900 shadow-md">
+          <Badge
+            variant="outline"
+            className="absolute bottom-3 left-3 border border-emerald-200/80 bg-emerald-500/95 px-3 py-1 text-white shadow-[0_8px_16px_rgba(5,46,22,0.45)] backdrop-blur-sm"
+          >
             Destaque
           </Badge>
         )}
