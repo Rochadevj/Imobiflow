@@ -183,22 +183,22 @@
 
   /* Hero Carousel Animations */
   .hero-carousel-image {
-    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: filter 0.45s ease;
   }
 
   .hero-carousel-image:hover {
-    transform: scale(1.05);
+    filter: brightness(1.05) saturate(1.06);
   }
 
   /* Smooth fade in for carousel content */
   .carousel-overlay {
     background: linear-gradient(
       to top,
-      rgba(2, 6, 23, 0.92) 0%,
-      rgba(2, 6, 23, 0.55) 45%,
+      rgba(2, 6, 23, 0.72) 0%,
+      rgba(2, 6, 23, 0.38) 42%,
+      rgba(2, 6, 23, 0.12) 70%,
       transparent 100%
     );
-    backdrop-filter: blur(1px);
   }
 
   /* Custom scrollbar for mobile */
