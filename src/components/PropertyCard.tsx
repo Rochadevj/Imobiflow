@@ -100,18 +100,14 @@ const PropertyCard = ({
         <div className="absolute left-3 top-3 flex flex-wrap gap-2">
           <Badge
             variant="outline"
-            className="border border-white/45 bg-slate-950/72 px-3 py-1 text-white shadow-[0_6px_14px_rgba(2,6,23,0.45)] backdrop-blur-sm"
+            className="border border-white/35 bg-slate-950/90 px-3 py-1 text-sm font-semibold text-white shadow-[0_8px_16px_rgba(2,6,23,0.5)] [text-shadow:0_1px_2px_rgba(0,0,0,0.65)] backdrop-blur-sm"
           >
             {getPropertyTypeLabel(propertyType)}
           </Badge>
           {transactionType && (
             <Badge
               variant="outline"
-              className={`px-3 py-1 font-semibold shadow-[0_6px_14px_rgba(2,6,23,0.35)] backdrop-blur-sm ${
-                transactionType === "venda"
-                  ? "border-amber-300/70 bg-amber-400/96 text-slate-950"
-                  : "border-sky-200/70 bg-sky-400/94 text-slate-950"
-              }`}
+              className="border border-white/55 bg-white/88 px-3 py-1 font-semibold text-slate-900 shadow-[0_8px_16px_rgba(2,6,23,0.35)] backdrop-blur-sm"
             >
               {transactionType === "venda" ? "Venda" : "Aluguel"}
             </Badge>
