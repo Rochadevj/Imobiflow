@@ -43,7 +43,9 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
     bedrooms: "",
     bathrooms: "",
     parkingSpaces: "",
-    featured: false,
+    featuredImperdiveis: false,
+    featuredVenda: false,
+    featuredLocacao: false,
     condominio: "",
     iptu: "",
     isLaunch: false,
@@ -120,8 +122,11 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
           parking_spaces: formData.parkingSpaces ? parseInt(formData.parkingSpaces) : null,
           features: features.length > 0 ? features : null,
           user_id: user.id,
-        featured: formData.featured,
-        is_launch: formData.isLaunch,
+          featured: formData.featuredImperdiveis || formData.featuredVenda || formData.featuredLocacao,
+          featured_imperdiveis: formData.featuredImperdiveis,
+          featured_venda: formData.featuredVenda,
+          featured_locacao: formData.featuredLocacao,
+          is_launch: formData.isLaunch,
         condominio: formData.transactionType === "aluguel" && formData.condominio
           && !formData.isLaunch
           ? parseFloat(formData.condominio)
@@ -206,7 +211,9 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
         bedrooms: "",
         bathrooms: "",
         parkingSpaces: "",
-        featured: false,
+        featuredImperdiveis: false,
+        featuredVenda: false,
+        featuredLocacao: false,
         condominio: "",
         iptu: "",
         isLaunch: false,
@@ -276,17 +283,18 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
 
             <div className="space-y-2">
               <Label htmlFor="transactionType">Categoria *</Label>
-          <Select
+              <Select
                 value={formData.transactionType}
                 onValueChange={(value) =>
-                  setFormData({
-                    ...formData,
+                  setFormData((prev) => ({
+                    ...prev,
                     transactionType: value,
-                    isLaunch: value === "lancamento",
-                    price: value === "lancamento" ? "" : formData.price,
-                    condominio: value === "lancamento" ? "" : formData.condominio,
-                    iptu: value === "lancamento" ? "" : formData.iptu,
-                  })
+                    // Lançamento passa a ser independente da seção de destaque.
+                    isLaunch: value === "lancamento" ? true : prev.isLaunch,
+                    price: value === "lancamento" ? "" : prev.price,
+                    condominio: value === "lancamento" ? "" : prev.condominio,
+                    iptu: value === "lancamento" ? "" : prev.iptu,
+                  }))
                 }
               >
                 <SelectTrigger>
@@ -465,14 +473,42 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
           <div className="flex items-center gap-2">
             <input
               type="checkbox"
-              id="featured"
-              name="featured"
-              checked={formData.featured}
-              onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
+              id="featuredImperdiveis"
+              name="featuredImperdiveis"
+              checked={formData.featuredImperdiveis}
+              onChange={(e) => setFormData({ ...formData, featuredImperdiveis: e.target.checked })}
               className="w-4 h-4"
             />
-            <Label htmlFor="featured" className="cursor-pointer">
+            <Label htmlFor="featuredImperdiveis" className="cursor-pointer">
               Exibir em Imóveis imperdíveis
+            </Label>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="featuredVenda"
+              name="featuredVenda"
+              checked={formData.featuredVenda}
+              onChange={(e) => setFormData({ ...formData, featuredVenda: e.target.checked })}
+              className="w-4 h-4"
+            />
+            <Label htmlFor="featuredVenda" className="cursor-pointer">
+              Exibir em Destaques de venda
+            </Label>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="featuredLocacao"
+              name="featuredLocacao"
+              checked={formData.featuredLocacao}
+              onChange={(e) => setFormData({ ...formData, featuredLocacao: e.target.checked })}
+              className="w-4 h-4"
+            />
+            <Label htmlFor="featuredLocacao" className="cursor-pointer">
+              Exibir em Destaques de locação
             </Label>
           </div>
 
@@ -483,14 +519,18 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
               name="isLaunch"
               checked={formData.isLaunch}
               onChange={(e) =>
-                setFormData({
-                  ...formData,
+                setFormData((prev) => ({
+                  ...prev,
                   isLaunch: e.target.checked,
-                  transactionType: e.target.checked ? "lancamento" : "venda",
-                  price: e.target.checked ? "" : formData.price,
-                  condominio: e.target.checked ? "" : formData.condominio,
-                  iptu: e.target.checked ? "" : formData.iptu,
-                })
+                  // Só troca categoria se a categoria atual for "lancamento".
+                  transactionType:
+                    !e.target.checked && prev.transactionType === "lancamento"
+                      ? "venda"
+                      : prev.transactionType,
+                  price: e.target.checked ? "" : prev.price,
+                  condominio: e.target.checked ? "" : prev.condominio,
+                  iptu: e.target.checked ? "" : prev.iptu,
+                }))
               }
               className="w-4 h-4"
             />

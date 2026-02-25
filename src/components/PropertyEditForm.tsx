@@ -45,7 +45,9 @@ export default function PropertyEditForm({
     cidade: "",
     estado: "",
     cep: "",
-    destaque: false,
+    destaqueImperdiveis: false,
+    destaqueVenda: false,
+    destaqueLocacao: false,
     status: "disponivel",
     condominio: "",
     iptu: "",
@@ -109,9 +111,15 @@ export default function PropertyEditForm({
           vagas: property.parking_spaces?.toString() || "",
           endereco: property.location || "",
           cidade: property.city || "",
-            estado: property.state || "",
-            cep: property.zipcode || "",
-          destaque: property.featured || false,
+          estado: property.state || "",
+          cep: property.zipcode || "",
+          destaqueImperdiveis: property.featured_imperdiveis ?? property.featured ?? false,
+          destaqueVenda:
+            property.featured_venda ??
+            ((property.featured ?? false) && property.transaction_type === "venda"),
+          destaqueLocacao:
+            property.featured_locacao ??
+            ((property.featured ?? false) && property.transaction_type === "aluguel"),
           status: statusMap[property.status || "available"] || "disponivel",
           condominio: property.condominio !== null && property.condominio !== undefined ? String(property.condominio) : "",
           iptu: property.iptu !== null && property.iptu !== undefined ? String(property.iptu) : "",
@@ -164,7 +172,7 @@ export default function PropertyEditForm({
       setFormData((prev) => ({
         ...prev,
         tipo: value,
-        isLaunch: value === "lancamento",
+        isLaunch: value === "lancamento" ? true : prev.isLaunch,
         preco: value === "lancamento" ? "" : prev.preco,
         condominio: value === "lancamento" ? "" : prev.condominio,
         iptu: value === "lancamento" ? "" : prev.iptu,
@@ -261,9 +269,15 @@ export default function PropertyEditForm({
           parking_spaces: parseInt(formData.vagas),
           location: formData.endereco,
           city: formData.cidade,
-            state: formData.estado || null,
-            zipcode: formData.cep || null,
-          featured: formData.destaque,
+          state: formData.estado || null,
+          zipcode: formData.cep || null,
+          featured:
+            formData.destaqueImperdiveis ||
+            formData.destaqueVenda ||
+            formData.destaqueLocacao,
+          featured_imperdiveis: formData.destaqueImperdiveis,
+          featured_venda: formData.destaqueVenda,
+          featured_locacao: formData.destaqueLocacao,
           status: statusMap[formData.status] || formData.status,
           features: features.length > 0 ? features : null,
           condominio: formData.tipo === "aluguel" && !formData.isLaunch && formData.condominio ? parseFloat(formData.condominio) : null,
@@ -517,14 +531,42 @@ export default function PropertyEditForm({
           <div className="flex items-center gap-2">
             <input
               type="checkbox"
-              id="destaque"
-              name="destaque"
-              checked={formData.destaque}
+              id="destaqueImperdiveis"
+              name="destaqueImperdiveis"
+              checked={formData.destaqueImperdiveis}
               onChange={handleInputChange}
               className="w-4 h-4"
             />
-            <Label htmlFor="destaque" className="cursor-pointer">
+            <Label htmlFor="destaqueImperdiveis" className="cursor-pointer">
               Exibir em Imóveis imperdíveis
+            </Label>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="destaqueVenda"
+              name="destaqueVenda"
+              checked={formData.destaqueVenda}
+              onChange={handleInputChange}
+              className="w-4 h-4"
+            />
+            <Label htmlFor="destaqueVenda" className="cursor-pointer">
+              Exibir em Destaques de venda
+            </Label>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="destaqueLocacao"
+              name="destaqueLocacao"
+              checked={formData.destaqueLocacao}
+              onChange={handleInputChange}
+              className="w-4 h-4"
+            />
+            <Label htmlFor="destaqueLocacao" className="cursor-pointer">
+              Exibir em Destaques de locação
             </Label>
           </div>
 
@@ -535,14 +577,17 @@ export default function PropertyEditForm({
               name="isLaunch"
               checked={formData.isLaunch}
               onChange={(e) =>
-                setFormData({
-                  ...formData,
+                setFormData((prev) => ({
+                  ...prev,
                   isLaunch: e.target.checked,
-                  tipo: e.target.checked ? "lancamento" : "venda",
-                  preco: e.target.checked ? "" : formData.preco,
-                  condominio: e.target.checked ? "" : formData.condominio,
-                  iptu: e.target.checked ? "" : formData.iptu,
-                })
+                  tipo:
+                    !e.target.checked && prev.tipo === "lancamento"
+                      ? "venda"
+                      : prev.tipo,
+                  preco: e.target.checked ? "" : prev.preco,
+                  condominio: e.target.checked ? "" : prev.condominio,
+                  iptu: e.target.checked ? "" : prev.iptu,
+                }))
               }
               className="w-4 h-4"
             />

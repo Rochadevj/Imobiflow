@@ -25,7 +25,10 @@ interface Property {
   bedrooms?: number;
   bathrooms?: number;
   parking_spaces?: number;
-  featured: boolean;
+  featured: boolean | null;
+  featured_imperdiveis?: boolean;
+  featured_venda?: boolean;
+  featured_locacao?: boolean;
   is_launch?: boolean;
   property_images: { image_url: string; is_primary: boolean }[];
 }
@@ -40,6 +43,14 @@ interface HeroProperty {
   transaction_type: string;
   image_url: string;
 }
+
+const isPropertyHighlighted = (property: Property) =>
+  Boolean(
+    property.featured ||
+      property.featured_imperdiveis ||
+      property.featured_venda ||
+      property.featured_locacao
+  );
 
 const Index = () => {
   const [searchParams] = useSearchParams();
@@ -119,6 +130,9 @@ const Index = () => {
           bathrooms,
           parking_spaces,
           featured,
+          featured_imperdiveis,
+          featured_venda,
+          featured_locacao,
           is_launch,
           property_images(image_url, is_primary)
         `)
@@ -151,7 +165,7 @@ const Index = () => {
           property_images!inner(image_url, is_primary)
         `)
         .eq("status", "available")
-        .eq("featured", true)
+        .or("featured.eq.true,featured_imperdiveis.eq.true,featured_venda.eq.true,featured_locacao.eq.true")
         .neq("is_launch", true)
         .not("property_images", "is", null)
         .limit(8)
@@ -236,6 +250,9 @@ const Index = () => {
         bathrooms,
         parking_spaces,
         featured,
+        featured_imperdiveis,
+        featured_venda,
+        featured_locacao,
         is_launch,
         property_images(image_url, is_primary)
       `;
@@ -244,8 +261,7 @@ const Index = () => {
         .from("properties")
         .select(baseSelect)
         .eq("status", "available")
-        .eq("featured", true)
-        .neq("is_launch", true)
+        .eq("featured_imperdiveis", true)
         .order("created_at", { ascending: false })
         .limit(6);
 
@@ -253,9 +269,7 @@ const Index = () => {
         .from("properties")
         .select(baseSelect)
         .eq("status", "available")
-        .eq("featured", true)
-        .eq("transaction_type", "venda")
-        .neq("is_launch", true)
+        .eq("featured_venda", true)
         .order("created_at", { ascending: false })
         .limit(6);
 
@@ -263,9 +277,7 @@ const Index = () => {
         .from("properties")
         .select(baseSelect)
         .eq("status", "available")
-        .eq("featured", true)
-        .eq("transaction_type", "aluguel")
-        .neq("is_launch", true)
+        .eq("featured_locacao", true)
         .order("created_at", { ascending: false })
         .limit(6);
 
@@ -721,7 +733,7 @@ const Index = () => {
                     bathrooms={property.bathrooms}
                     parkingSpaces={property.parking_spaces}
                     imageUrl={imageUrl}
-                    featured={property.featured}
+                    featured={isPropertyHighlighted(property)}
                     isLaunch={property.is_launch}
                   />
                 </Link>
@@ -786,7 +798,7 @@ const Index = () => {
                     bathrooms={property.bathrooms}
                     parkingSpaces={property.parking_spaces}
                     imageUrl={imageUrl}
-                    featured={property.featured}
+                    featured={isPropertyHighlighted(property)}
                     isLaunch={property.is_launch}
                   />
                 </Link>
@@ -852,7 +864,7 @@ const Index = () => {
                     bathrooms={property.bathrooms}
                     parkingSpaces={property.parking_spaces}
                     imageUrl={imageUrl}
-                    featured={property.featured}
+                    featured={isPropertyHighlighted(property)}
                     isLaunch={property.is_launch}
                   />
                 </Link>
@@ -1084,7 +1096,7 @@ const Index = () => {
                         bathrooms={property.bathrooms}
                         parkingSpaces={property.parking_spaces}
                         imageUrl={imageUrl}
-                        featured={property.featured}
+                        featured={isPropertyHighlighted(property)}
                         isLaunch={property.is_launch}
                       />
                     </Link>

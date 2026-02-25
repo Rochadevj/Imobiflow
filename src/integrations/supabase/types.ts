@@ -55,6 +55,9 @@ export type Database = {
           created_at: string | null
           description: string
           featured: boolean | null
+          featured_imperdiveis: boolean
+          featured_locacao: boolean
+          featured_venda: boolean
           features: string[] | null
           id: string
           is_launch: boolean | null
@@ -83,6 +86,9 @@ export type Database = {
           created_at?: string | null
           description: string
           featured?: boolean | null
+          featured_imperdiveis?: boolean
+          featured_locacao?: boolean
+          featured_venda?: boolean
           features?: string[] | null
           id?: string
           is_launch?: boolean | null
@@ -111,6 +117,9 @@ export type Database = {
           created_at?: string | null
           description?: string
           featured?: boolean | null
+          featured_imperdiveis?: boolean
+          featured_locacao?: boolean
+          featured_venda?: boolean
           features?: string[] | null
           id?: string
           is_launch?: boolean | null
