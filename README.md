@@ -4,9 +4,9 @@
   <p>Sistema completo e moderno para gerenciamento de imobiliárias</p>
   
   ![React](https://img.shields.io/badge/React-18.3.1-blue?logo=react)
-  ![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue?logo=typescript)
-  ![Vite](https://img.shields.io/badge/Vite-5.4.19-646CFF?logo=vite)
-  ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4.17-38B2AC?logo=tailwind-css)
+  ![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-blue?logo=typescript)
+  ![Vite](https://img.shields.io/badge/Vite-5.4.21-646CFF?logo=vite)
+  ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4.18-38B2AC?logo=tailwind-css)
   ![Supabase](https://img.shields.io/badge/Supabase-2.83.0-3ECF8E?logo=supabase)
 </div>
 
@@ -14,7 +14,7 @@
 
 ## 📋 Sobre o Projeto
 
-O **Imobiflow** é uma plataforma completa de gestão imobiliária desenvolvida com as tecnologias mais modernas do mercado. O sistema permite o cadastro, edição e remoção de imóveis disponíveis para **compra, aluguel e lançamentos**, oferecendo uma experiência intuitiva tanto para administradores quanto para usuários finais.
+O **Imobiflow** é uma plataforma de gestão imobiliária com página de apresentação do software (landing), vitrine pública de imóveis e painel administrativo. O sistema permite cadastro, edição e remoção de imóveis para **venda, aluguel e lançamentos**, oferecendo uma experiência intuitiva para operação interna e atendimento ao cliente.
 
 ### 🎯 Principais Características
 
@@ -23,9 +23,11 @@ O **Imobiflow** é uma plataforma completa de gestão imobiliária desenvolvida 
 - 📱 Design mobile-first
 - ⚡ Performance otimizada com Vite
 - 🎨 Componentes elegantes com shadcn/ui
-- 💾 Banco de dados em tempo real com Supabase
+- 💾 Banco de dados PostgreSQL + storage com Supabase
 - 🔍 Sistema de busca e filtros avançados
 - ❤️ Sistema de favoritos
+- ⭐ Destaques separados por seção (imperdíveis, venda e locação)
+- 🎬 Upload de fotos e vídeos para imóveis
 - 💬 Integração com WhatsApp para contato direto
 
 ---
@@ -33,12 +35,13 @@ O **Imobiflow** é uma plataforma completa de gestão imobiliária desenvolvida 
 ## ✨ Funcionalidades
 
 ### Para Usuários
+- 🖥️ **Landing Page do Software**: Página inicial de apresentação antes do acesso à área da imobiliária
 - 🏘️ **Navegação de Imóveis**: Visualize todos os imóveis disponíveis organizados por categorias
 - 🔎 **Busca Avançada**: Filtre imóveis por tipo, preço, localização e mais
 - ❤️ **Lista de Favoritos**: Salve seus imóveis preferidos para consulta posterior
 - 📄 **Detalhes Completos**: Visualize informações detalhadas, fotos e características de cada imóvel
 - 💬 **Contato Direto**: Entre em contato via WhatsApp com apenas um clique
-- 📱 **Anunciar Imóvel**: Usuários podem submeter seus próprios imóveis para venda/aluguel
+- 📱 **Captação de Imóvel**: Formulário de anúncio para pré-cadastro e contato comercial
 
 ### Para Administradores
 - 🔐 **Painel Administrativo**: Acesso exclusivo para gerenciar todo o sistema
@@ -46,6 +49,8 @@ O **Imobiflow** é uma plataforma completa de gestão imobiliária desenvolvida 
 - ✏️ **Edição**: Atualize informações de imóveis existentes
 - 🗑️ **Remoção**: Remova imóveis do sistema
 - 📊 **Gerenciamento**: Visualize e gerencie todas as propriedades cadastradas
+- ⭐ **Destaques Personalizados**: Escolha separadamente onde exibir cada imóvel (imperdíveis, venda e locação)
+- 🚀 **Lançamentos**: Marcação de lançamento sem preço e listagem dedicada na vitrine
 - 👤 **Autenticação**: Sistema seguro de login e gerenciamento de sessões
 
 ---
@@ -54,26 +59,25 @@ O **Imobiflow** é uma plataforma completa de gestão imobiliária desenvolvida 
 
 ### Frontend
 - **[React](https://react.dev/)** `18.3.1` - Biblioteca JavaScript para construção de interfaces
-- **[TypeScript](https://www.typescriptlang.org/)** `5.8.3` - Superset JavaScript com tipagem estática
-- **[Vite](https://vitejs.dev/)** `5.4.19` - Build tool moderna e rápida
-- **[React Router](https://reactrouter.com/)** `6.30.1` - Roteamento para aplicações React
-- **[TanStack Query](https://tanstack.com/query/latest)** `5.83.0` - Gerenciamento de estado assíncrono
+- **[TypeScript](https://www.typescriptlang.org/)** `5.9.3` - Superset JavaScript com tipagem estática
+- **[Vite](https://vitejs.dev/)** `5.4.21` - Build tool moderna e rápida
+- **[React Router](https://reactrouter.com/)** `6.30.2` - Roteamento para aplicações React
+- **[TanStack Query](https://tanstack.com/query/latest)** `5.90.10` - Gerenciamento de estado assíncrono
 
 ### Estilização
-- **[Tailwind CSS](https://tailwindcss.com/)** `3.4.17` - Framework CSS utility-first
+- **[Tailwind CSS](https://tailwindcss.com/)** `3.4.18` - Framework CSS utility-first
 - **[shadcn/ui](https://ui.shadcn.com/)** - Componentes React reutilizáveis e acessíveis
 - **[Radix UI](https://www.radix-ui.com/)** - Componentes primitivos não estilizados
-- **[Lucide React](https://lucide.dev/)** - Ícones modernos e personalizáveis
+- **[Lucide React](https://lucide.dev/)** `0.462.0` - Ícones modernos e personalizáveis
 
 ### Backend e Autenticação
 - **[Supabase](https://supabase.com/)** `2.83.0` - Backend como serviço (BaaS)
   - Autenticação de usuários
   - Banco de dados PostgreSQL
-  - Storage para imagens
-  - Real-time subscriptions
+  - Storage para imagens e vídeos
 
 ### Formulários e Validação
-- **[React Hook Form](https://react-hook-form.com/)** `7.61.1` - Gerenciamento de formulários
+- **[React Hook Form](https://react-hook-form.com/)** `7.66.1` - Gerenciamento de formulários
 - **[Zod](https://zod.dev/)** `3.25.76` - Validação de schemas TypeScript-first
 
 ---
@@ -94,7 +98,7 @@ Antes de começar, certifique-se de ter instalado em sua máquina:
 
 ```bash
 git clone https://github.com/seu-usuario/imobiflow-demo.git
-cd imobiflow
+cd <nome-do-repositorio>
 ```
 
 ### 2️⃣ Instale as dependências
@@ -131,7 +135,14 @@ VITE_SUPABASE_URL=https://seu-projeto.supabase.co
 
 ### 4️⃣ Configure o banco de dados
 
-Execute os scripts SQL disponíveis na pasta `supabase/` para criar as tabelas necessárias no seu projeto Supabase.
+Com Supabase CLI:
+
+```bash
+npx supabase link --project-ref <seu_project_id>
+npx supabase db push
+```
+
+Se preferir, também é possível executar manualmente os SQLs da pasta `supabase/migrations` no editor SQL do Supabase.
 
 ### 5️⃣ Execute o servidor de desenvolvimento
 
@@ -169,13 +180,15 @@ imobiflow/
 │   ├── integrations/   # Integrações com serviços externos
 │   ├── lib/            # Utilitários e configurações
 │   ├── pages/          # Páginas da aplicação
-│   │   ├── Index.tsx       # Página inicial
+│   │   ├── Landing.tsx     # Página inicial (apresentação do software)
+│   │   ├── Index.tsx       # Vitrine de imóveis (/imobiliaria)
 │   │   ├── Admin.tsx       # Painel administrativo
 │   │   ├── Auth.tsx        # Autenticação
 │   │   ├── PropertyDetail.tsx  # Detalhes do imóvel
 │   │   ├── PropertySubmit.tsx  # Anunciar imóvel
 │   │   ├── Favorites.tsx   # Imóveis favoritos
 │   │   ├── About.tsx       # Sobre
+│   │   ├── PrivacyPolicy.tsx # Política de privacidade
 │   │   └── ...
 │   ├── App.tsx         # Componente principal
 │   └── main.tsx        # Ponto de entrada
@@ -242,7 +255,8 @@ Contribuições são sempre bem-vindas! Para contribuir:
 
 ## 📝 Licença
 
-Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
+Este repositório **não possui arquivo `LICENSE`** no momento.  
+Se você pretende publicar como open source, defina uma licença antes (ex.: MIT).
 
 ---
 
@@ -250,7 +264,7 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 Para dúvidas ou sugestões, entre em contato:
 
-- 📱 WhatsApp: +55 00 00000-0000
+- 📩 E-mail: [henriquerocha1357@gmail.com](mailto:henriquerocha1357@gmail.com)
 - 💼 GitHub: [@Rochadevj](https://github.com/Rochadevj)
 
 ---
@@ -260,10 +274,6 @@ Para dúvidas ou sugestões, entre em contato:
 **Desenvolvido com ❤️ por [Rochadevj](https://github.com/Rochadevj)**
 
 Este projeto foi criado utilizando as melhores práticas de desenvolvimento web moderno, com foco em performance, acessibilidade e experiência do usuário.
-
-### 💼 Sobre o Desenvolvedor
-
-**Rochadevj** é um desenvolvedor apaixonado por criar soluções web inovadoras e eficientes, com experiência em tecnologias modernas como React, TypeScript, e arquitetura de aplicações escaláveis.
 
 ---
 
