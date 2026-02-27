@@ -13,6 +13,7 @@ import PropertySubmit from "./pages/PropertySubmit";
 import PropertyDetail from "./pages/PropertyDetail";
 import Favorites from "./pages/Favorites";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Launches from "./pages/Launches";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/imobiliaria" element={<Index />} />
+          <Route path="/lancamentos" element={<Launches />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/sobre" element={<About />} />

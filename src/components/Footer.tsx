@@ -36,6 +36,9 @@ const Footer = () => {
               <Link to="/sobre" className="block text-slate-700 transition hover:text-amber-600">
                 Sobre
               </Link>
+              <Link to="/lancamentos" className="block text-slate-700 transition hover:text-amber-600">
+                Lançamentos
+              </Link>
               <Link to="/anunciar" className="block text-slate-700 transition hover:text-amber-600">
                 Anunciar imóvel
               </Link>

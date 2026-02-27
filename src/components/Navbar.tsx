@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { key: "comprar", label: "Comprar", href: "/imobiliaria?type=comprar" },
   { key: "alugar", label: "Alugar", href: "/imobiliaria?type=alugar" },
+  { key: "lancamentos", label: "Lançamentos", href: "/lancamentos" },
   { key: "sobre", label: "Sobre", href: "/sobre" },
 ];
 
@@ -68,6 +69,9 @@ const Navbar = () => {
     }
     if (itemKey === "sobre") {
       return location.pathname.startsWith("/sobre");
+    }
+    if (itemKey === "lancamentos") {
+      return location.pathname.startsWith("/lancamentos");
     }
     return false;
   };
