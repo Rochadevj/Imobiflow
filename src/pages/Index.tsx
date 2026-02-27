@@ -1116,6 +1116,12 @@ const Index = () => {
               <h2 className="text-2xl md:text-3xl font-bold tracking-wide">
                 LANÇAMENTOS<span className="text-accent">.</span>
               </h2>
+              <Link
+                to="/lancamentos"
+                className="inline-flex items-center justify-center rounded-full border border-accent px-4 py-2 text-sm font-semibold text-accent transition hover:bg-accent hover:text-primary"
+              >
+                Ver todos os lançamentos
+              </Link>
             </div>
             {loadingSections ? (
               <div className="text-center py-8 text-white/70">Carregando lançamentos...</div>
