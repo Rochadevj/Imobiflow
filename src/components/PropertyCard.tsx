@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
+﻿import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Bath, Bed, Car, Heart, MapPin, Ruler } from "lucide-react";
 import { useEffect, useState, type MouseEvent } from "react";
@@ -104,7 +104,7 @@ const PropertyCard = ({
           >
             {getPropertyTypeLabel(propertyType)}
           </Badge>
-          {transactionType && (
+          {transactionType && !isLaunch && (
             <Badge
               variant="outline"
               className="border border-white/55 bg-white/88 px-3 py-1 font-semibold text-slate-900 shadow-[0_8px_16px_rgba(2,6,23,0.35)] backdrop-blur-sm"
