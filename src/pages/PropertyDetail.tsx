@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Heart, MapPin } from "lucide-react";
+﻿import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { ArrowLeft, Heart, MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,6 +53,7 @@ const formatCurrency = (value: number, withCents = false) =>
 
 const PropertyDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [property, setProperty] = useState<Property | null>(null);
   const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
@@ -107,7 +108,7 @@ const PropertyDetail = () => {
         }
 
         setProperty(data as unknown as Property);
-        trackPropertyView(data.id).catch((err) => console.error("Erro ao rastrear visualização:", err));
+        trackPropertyView(data.id).catch((err) => console.error("Erro ao rastrear visualizaÃ§Ã£o:", err));
 
         const { data: similar } = await supabase
           .from("properties")
@@ -119,7 +120,7 @@ const PropertyDetail = () => {
 
         if (similar) setSimilarProperties(similar as unknown as Property[]);
       } catch (error) {
-        console.error("Erro ao carregar imóvel:", error);
+        console.error("Erro ao carregar imÃ³vel:", error);
         setProperty(null);
       } finally {
         setLoading(false);
@@ -158,6 +159,15 @@ const PropertyDetail = () => {
     window.dispatchEvent(new Event("favoritesChanged"));
   };
 
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    navigate("/imobiliaria?list=1");
+  };
+
   if (loading) {
     return (
       <div className="page-shell">
@@ -172,7 +182,7 @@ const PropertyDetail = () => {
     return (
       <div className="page-shell">
         <Navbar />
-        <div className="container mx-auto px-4 py-24 text-center text-slate-600">Imóvel não encontrado.</div>
+        <div className="container mx-auto px-4 py-24 text-center text-slate-600">ImÃ³vel nÃ£o encontrado.</div>
         <Footer />
       </div>
     );
@@ -190,6 +200,18 @@ const PropertyDetail = () => {
 
       <main className="flex-1">
         <section className="container mx-auto px-4 pt-8 md:pt-10">
+          <div className="mb-4 flex justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleBack}
+              className="rounded-full border-slate-200 bg-white/85 text-slate-700 shadow-sm hover:bg-white hover:text-slate-900"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Voltar
+            </Button>
+          </div>
+
           <div className="hero-surface p-6 md:p-8">
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <div>
@@ -204,7 +226,7 @@ const PropertyDetail = () => {
                 <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">{property.title}</h1>
                 <p className="mt-2 inline-flex items-center gap-1 text-sm text-white/80">
                   <MapPin className="h-4 w-4 text-amber-300" />
-                  {property.location || "Endereço indisponível"}, {property.city}
+                  {property.location || "EndereÃ§o indisponÃ­vel"}, {property.city}
                 </p>
               </div>
               <Button
@@ -235,12 +257,12 @@ const PropertyDetail = () => {
                   <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div>
                       <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
-                        {property.transaction_type === "aluguel" ? "Valor do aluguel" : "Preço"}
+                        {property.transaction_type === "aluguel" ? "Valor do aluguel" : "PreÃ§o"}
                       </p>
                       <p className="mt-1 text-3xl font-bold text-slate-900">
                         {formatCurrency(property.price, property.transaction_type === "aluguel")}
                         {property.transaction_type === "aluguel" ? (
-                          <span className="ml-2 text-sm font-semibold text-slate-500">/ mês</span>
+                          <span className="ml-2 text-sm font-semibold text-slate-500">/ mÃªs</span>
                         ) : null}
                       </p>
                     </div>
@@ -248,7 +270,7 @@ const PropertyDetail = () => {
                       <div className="grid grid-cols-2 gap-3 text-sm">
                         {property.condominio ? (
                           <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
-                            <p className="text-slate-500">Condomínio</p>
+                            <p className="text-slate-500">CondomÃ­nio</p>
                             <p className="font-semibold text-slate-900">{formatCurrency(property.condominio, true)}</p>
                           </div>
                         ) : null}
@@ -279,10 +301,10 @@ const PropertyDetail = () => {
 
               <div className="section-shell p-6">
                 <h2 className="text-2xl font-semibold text-slate-900">
-                  {property.is_launch ? "Descrição do empreendimento" : "Sobre o imóvel"}
+                  {property.is_launch ? "DescriÃ§Ã£o do empreendimento" : "Sobre o imÃ³vel"}
                 </h2>
                 <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-slate-600 md:text-base">
-                  {property.description || "Descrição não disponível."}
+                  {property.description || "DescriÃ§Ã£o nÃ£o disponÃ­vel."}
                 </p>
               </div>
 
@@ -311,7 +333,7 @@ const PropertyDetail = () => {
                     Plantas
                   </AccordionTrigger>
                   <AccordionContent className="pb-5 text-sm text-slate-600">
-                    As plantas deste imóvel estarão disponíveis em breve.
+                    As plantas deste imÃ³vel estarÃ£o disponÃ­veis em breve.
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
@@ -343,3 +365,6 @@ const PropertyDetail = () => {
 };
 
 export default PropertyDetail;
+
+
+
