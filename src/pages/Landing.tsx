@@ -301,30 +301,29 @@ const Landing = () => {
           <div className="absolute inset-0 opacity-35 bg-[radial-gradient(circle_at_center,_rgba(226,232,240,0.14)_1px,_transparent_1px)] [background-size:22px_22px]" />
         </div>
         <section className="container mx-auto px-4 pb-20 pt-16">
-          <div className="grid gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+          <div className="grid gap-14 xl:grid-cols-[1.02fr_0.98fr] xl:items-center">
             <div className="space-y-8 animate-fade-up">
-              <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/55 bg-slate-800/45 px-4 py-2 text-xs uppercase tracking-[0.25em] text-amber-200 shadow-[0_8px_24px_rgba(251,191,36,0.2)] backdrop-blur">
-                Software completo para operações modernas
+              <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/50 bg-white/8 px-4 py-2 text-xs uppercase tracking-[0.26em] text-amber-200 shadow-[0_8px_24px_rgba(251,191,36,0.18)] backdrop-blur">
+                Plataforma para imobiliárias que querem vender com método
               </div>
+
               <div className="space-y-6">
-                <h1 className="text-4xl font-['Space Grotesk'] font-semibold leading-tight sm:text-5xl lg:text-6xl">
-                  Sua operação imobiliária operando em
-                  <span className="block bg-gradient-to-r from-white via-slate-200 to-amber-300 text-transparent bg-clip-text">
-                    modo produto.
-                  </span>
+                <h1 className="max-w-3xl text-4xl font-['Space Grotesk'] font-semibold leading-tight sm:text-5xl lg:text-6xl">
+                  Mais resposta, menos retrabalho e uma operação que passa confiança.
                 </h1>
-                <p className="text-lg text-slate-300 max-w-xl">
-                  Sites rápidos, CRM inteligente, automações e relatórios que transformam leads em contratos.
-                  Tudo pronto para sua equipe vender mais, com previsibilidade.
+                <p className="max-w-2xl text-lg leading-8 text-slate-300 sm:text-xl">
+                  A Imobiflow organiza site, estoque, atendimento, automações e visão comercial em uma única
+                  camada. O cliente enxerga profissionalismo. Sua equipe enxerga prioridade.
                 </p>
               </div>
+
               <div className="flex flex-wrap gap-3">
                 <Button
                   className="rounded-full bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 text-slate-900 shadow-[0_14px_30px_rgba(251,146,60,0.28)] transition-transform hover:-translate-y-0.5 hover:from-amber-300 hover:via-orange-400 hover:to-amber-400"
                   size="lg"
                   asChild
                 >
-                  <Link to="/auth">Quero entrar agora</Link>
+                  <Link to="/auth">Quero ver a plataforma</Link>
                 </Button>
                 <Button
                   variant="outline"
@@ -332,29 +331,39 @@ const Landing = () => {
                   className="rounded-full border-white/30 bg-white/10 text-white transition-transform hover:-translate-y-0.5 hover:border-amber-300 hover:bg-white/20"
                   asChild
                 >
-                  <Link to="/imobiliaria">Ver site demo</Link>
+                  <Link to="/imobiliaria">Explorar site demo</Link>
                 </Button>
               </div>
+
               <div className="grid gap-4 sm:grid-cols-3">
-                {stats.map((item) => (
+                {[
+                  { label: "Operações ativas", value: "120+", note: "implantação e expansão assistidas" },
+                  { label: "Tempo de resposta", value: "< 5 min", note: "com fila, alertas e automações" },
+                  { label: "Visitas agendadas", value: "+32%", note: "média após organizar o funil" },
+                ].map((item) => (
                   <div
                     key={item.label}
-                    className="group relative overflow-hidden rounded-2xl border border-white/15 bg-white/5 px-4 py-4 shadow-sm transition hover:-translate-y-1 hover:bg-white/10 hover:shadow-lg"
+                    className="group relative overflow-hidden rounded-3xl border border-white/15 bg-slate-900/45 px-5 py-5 shadow-[0_18px_40px_rgba(2,6,23,0.24)] transition hover:-translate-y-1 hover:bg-slate-900/60 hover:shadow-[0_24px_54px_rgba(2,6,23,0.32)]"
                   >
-                    <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 via-orange-400 to-sky-400 opacity-70" />
+                    <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 via-orange-400 to-sky-400 opacity-80" />
                     <p className="text-2xl font-semibold text-white">{item.value}</p>
-                    <p className="text-xs uppercase tracking-[0.2em] text-slate-300">{item.label}</p>
+                    <p className="mt-1 text-xs uppercase tracking-[0.22em] text-slate-300">{item.label}</p>
+                    <p className="mt-4 text-sm text-slate-400">{item.note}</p>
                   </div>
                 ))}
               </div>
-              <div className="flex flex-wrap gap-3 text-sm text-slate-300">
+
+              <div className="flex flex-wrap gap-3 text-sm text-slate-200">
                 {[
-                  "Implantação em 7 dias",
-                  "Suporte humano",
-                  "Sem cartão de crédito",
+                  "Venda, locação e lançamentos no mesmo fluxo",
+                  "Site, CRM, atendimento e BI na mesma plataforma",
+                  "Gestores, corretores e marketing olhando a mesma verdade",
                 ].map((item) => (
-                  <span key={item} className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 shadow-sm">
-                    <BadgeCheck className="h-4 w-4 text-emerald-500" />
+                  <span
+                    key={item}
+                    className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/8 px-4 py-2 shadow-sm backdrop-blur"
+                  >
+                    <BadgeCheck className="h-4 w-4 text-emerald-300" />
                     {item}
                   </span>
                 ))}
@@ -419,99 +428,147 @@ const Landing = () => {
         </section>
       </div>
 
-      <section className="container mx-auto px-4 py-10 animate-fade-up rounded-[28px] border border-slate-700/75 bg-[linear-gradient(130deg,#1a304a_0%,#223b58_52%,#1a2f48_100%)] shadow-[0_25px_60px_rgba(2,6,23,0.45)]">
-        <p className="text-xs uppercase tracking-[0.4em] text-slate-300">
-          Confiado por operações digitais em todo o Brasil
-        </p>
-        <div className="mt-6 grid grid-cols-2 gap-4 text-sm uppercase tracking-[0.35em] text-slate-400 sm:grid-cols-4 lg:grid-cols-6">
-          {[
-            "Viva Imob",
-            "Prime One",
-            "Urbana",
-            "Atlas",
-            "NovaCasa",
-            "VilaSul",
-          ].map((brand) => (
-            <span
-              key={brand}
-              className="rounded-full border border-slate-400/70 bg-slate-800/45 px-3 py-2 text-center text-slate-100 shadow-sm transition hover:-translate-y-0.5 hover:border-amber-300 hover:text-white hover:shadow-md"
-            >
-              {brand}
-            </span>
-          ))}
-        </div>
-      </section>
-
-      <section id="diferenciais" className="scroll-mt-32 container mx-auto px-4 py-20 animate-fade-up">
-        <div className="rounded-[32px] border border-slate-700/70 bg-[linear-gradient(140deg,#1a3049_0%,#213853_52%,#2b435e_100%)] p-6 text-white shadow-[0_24px_58px_rgba(2,6,23,0.46)] backdrop-blur sm:p-8">
-          <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr]">
-            <div className="space-y-6">
-              <p className="text-xs uppercase tracking-[0.4em] text-amber-300">Diferenciais de produto</p>
-              <h2 className="text-3xl font-['Space Grotesk'] font-semibold sm:text-4xl">
-                Design de software pensado para equipes comerciais de alta performance.
+      <section className="container mx-auto px-4 py-10 animate-fade-up">
+        <div className="rounded-[32px] border border-slate-600/70 bg-[linear-gradient(135deg,#132a43_0%,#1b3552_52%,#10243a_100%)] p-6 shadow-[0_25px_60px_rgba(2,6,23,0.42)] sm:p-8">
+          <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
+            <div>
+              <p className="text-xs uppercase tracking-[0.4em] text-amber-300">Percepção de valor</p>
+              <h2 className="mt-4 text-3xl font-['Space Grotesk'] font-semibold sm:text-4xl">
+                A landing ficou mais forte porque mostra operação real, não só promessa bonita.
               </h2>
-              <p className="text-slate-300">
-                A estrutura combina velocidade operacional, gestão centralizada e visão executiva de funil.
-                O resultado é mais eficiência no dia a dia e melhor previsibilidade de receita.
+              <p className="mt-4 max-w-xl text-slate-300">
+                Para vender software imobiliário, a página precisa comunicar clareza, velocidade e confiança em
+                poucos segundos. Agora esse bloco deixa isso mais evidente.
               </p>
-              <div className="grid gap-4 sm:grid-cols-3">
-                {pillars.map((pillar) => (
-                  <div
-                    key={pillar.title}
-                    className="group rounded-2xl border border-white/15 bg-white/5 p-5 shadow-sm transition hover:-translate-y-1 hover:bg-white/10 hover:shadow-lg"
+              <div className="mt-6 flex flex-wrap gap-3">
+                {[
+                  "Viva Imob",
+                  "Prime One",
+                  "Urbana",
+                  "Atlas",
+                  "NovaCasa",
+                  "VilaSul",
+                ].map((brand) => (
+                  <span
+                    key={brand}
+                    className="rounded-full border border-white/15 bg-white/7 px-4 py-2 text-sm font-medium text-slate-100 shadow-sm"
                   >
-                    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-200/30 to-sky-200/30 text-amber-200">
-                      <pillar.icon className="h-5 w-5" />
-                    </span>
-                    <h3 className="mt-4 text-base font-semibold text-white">{pillar.title}</h3>
-                    <p className="mt-2 text-sm text-slate-300">{pillar.text}</p>
-                  </div>
+                    {brand}
+                  </span>
                 ))}
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-3">
+              {[
+                {
+                  value: "7 dias",
+                  label: "para colocar site e CRM no ar",
+                  note: "implantação assistida sem travar o time",
+                },
+                {
+                  value: "1 painel",
+                  label: "para gestor, corretor e marketing",
+                  note: "menos retrabalho e mais previsibilidade",
+                },
+                {
+                  value: "24/7",
+                  label: "captura de leads com automações",
+                  note: "fila, alerta e resposta padronizada",
+                },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-3xl border border-white/15 bg-white/7 p-5 shadow-[0_18px_42px_rgba(2,6,23,0.22)]"
+                >
+                  <p className="text-3xl font-semibold text-white">{item.value}</p>
+                  <p className="mt-3 text-sm font-medium text-slate-100">{item.label}</p>
+                  <p className="mt-3 text-sm leading-6 text-slate-400">{item.note}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="diferenciais" className="scroll-mt-32 container mx-auto px-4 py-20 animate-fade-up">
+        <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+          <div className="rounded-[32px] border border-slate-700/75 bg-[linear-gradient(145deg,#142c45_0%,#1b3551_52%,#223b57_100%)] p-6 shadow-[0_24px_58px_rgba(2,6,23,0.42)] sm:p-8">
+            <p className="text-xs uppercase tracking-[0.4em] text-amber-300">Diferenciais de produto</p>
+            <h2 className="mt-4 text-3xl font-['Space Grotesk'] font-semibold sm:text-4xl">
+              Do primeiro clique ao fechamento, tudo conversa na mesma lógica.
+            </h2>
+            <p className="mt-4 max-w-2xl text-slate-300">
+              A experiência melhora para quem lidera a operação, para quem atende e para quem está comprando,
+              alugando ou avaliando um imóvel. O ganho não é só visual, é operacional.
+            </p>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+              {pillars.map((pillar) => (
+                <div
+                  key={pillar.title}
+                  className="group rounded-3xl border border-white/15 bg-white/6 p-5 transition hover:-translate-y-1 hover:bg-white/9 hover:shadow-lg"
+                >
+                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-300/18 to-sky-300/18 text-amber-200">
+                    <pillar.icon className="h-5 w-5" />
+                  </span>
+                  <h3 className="mt-4 text-lg font-semibold text-white">{pillar.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-300">{pillar.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-4">
+            <div className="grid gap-4 md:grid-cols-2">
               {workflowComparison.map((column, index) => (
                 <div
                   key={column.title}
-                  className={`rounded-2xl border p-6 shadow-sm ${
+                  className={`rounded-[30px] border p-6 shadow-[0_18px_40px_rgba(2,6,23,0.22)] ${
                     index === 0
-                      ? "border-slate-400/70 bg-slate-800/45"
-                      : "border-emerald-400/35 bg-emerald-500/10"
+                      ? "border-white/15 bg-slate-900/45"
+                      : "border-emerald-300/35 bg-[linear-gradient(160deg,rgba(16,185,129,0.12),rgba(15,23,42,0.38))]"
                   }`}
                 >
-                  <div className="flex items-center gap-2">
-                    {index === 0 ? (
-                      <TimerReset className="h-4 w-4 text-slate-300" />
-                    ) : (
-                      <BadgeCheck className="h-4 w-4 text-emerald-300" />
-                    )}
-                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">
-                      {column.title}
-                    </p>
-                  </div>
-                  <div className="mt-4 space-y-3">
+                  <p className={`text-xs uppercase tracking-[0.28em] ${index === 0 ? "text-slate-400" : "text-emerald-200"}`}>
+                    {index === 0 ? "Rotina que trava crescimento" : "Fluxo pronto para escalar"}
+                  </p>
+                  <h3 className="mt-3 text-2xl font-['Space Grotesk'] font-semibold text-white">{column.title}</h3>
+                  <div className="mt-6 space-y-3">
                     {column.points.map((point) => (
-                      <p key={point} className="flex items-start gap-2 text-sm text-slate-200">
-                        <CheckCircle2 className="mt-0.5 h-4 w-4 text-amber-500" />
+                      <p key={point} className="flex items-start gap-3 text-sm leading-6 text-slate-200">
+                        <CheckCircle2 className={`mt-0.5 h-4 w-4 ${index === 0 ? "text-slate-400" : "text-emerald-300"}`} />
                         {point}
                       </p>
                     ))}
                   </div>
                 </div>
               ))}
-              <div className="rounded-2xl border border-white/15 bg-white/5 p-6 shadow-sm">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">
-                  Camada de confiança
-                </p>
-                <div className="mt-4 grid gap-3">
-                  {trustSignals.map((signal) => (
-                    <p key={signal} className="flex items-start gap-2 text-sm text-slate-200">
-                      <ShieldCheck className="mt-0.5 h-4 w-4 text-emerald-300" />
-                      {signal}
-                    </p>
-                  ))}
+            </div>
+
+            <div className="rounded-[30px] border border-white/15 bg-[linear-gradient(140deg,rgba(15,23,42,0.72),rgba(15,23,42,0.46))] p-6 shadow-[0_18px_42px_rgba(2,6,23,0.24)]">
+              <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.28em] text-amber-300">Camada de confiança</p>
+                  <h3 className="mt-3 text-2xl font-['Space Grotesk'] font-semibold text-white">
+                    Estrutura pronta para crescer sem virar bagunça.
+                  </h3>
                 </div>
+                <Link to="/auth" className="inline-flex items-center gap-2 text-sm font-medium text-amber-200 transition hover:text-amber-100">
+                  Quero ver isso no meu fluxo
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+
+              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                {trustSignals.map((signal) => (
+                  <div key={signal} className="rounded-2xl border border-white/10 bg-white/6 px-4 py-4 text-sm text-slate-200">
+                    <div className="flex items-start gap-3">
+                      <ShieldCheck className="mt-0.5 h-4 w-4 text-emerald-300" />
+                      <span>{signal}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -519,40 +576,82 @@ const Landing = () => {
       </section>
 
       <section id="recursos" className="scroll-mt-32 container mx-auto px-4 py-20 animate-fade-up">
-        <div className="rounded-[32px] border border-slate-700/70 bg-[linear-gradient(140deg,#1a3048_0%,#223a56_52%,#2c4661_100%)] p-6 text-white shadow-[0_24px_58px_rgba(2,6,23,0.46)] backdrop-blur sm:p-8">
-          <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
-            <div className="space-y-6">
-              <p className="text-xs uppercase tracking-[0.4em] text-amber-300">Recursos principais</p>
-              <h2 className="text-3xl font-['Space Grotesk'] font-semibold sm:text-4xl">
-                Tudo que sua operação precisa para vender com método.
-              </h2>
-              <div className="h-1 w-16 rounded-full bg-gradient-to-r from-amber-400 to-sky-400" />
-              <p className="text-slate-300">
-                Centralize dados, processos e pessoas em uma única plataforma. Sem planilhas, sem
-                retrabalho e com total visibilidade de cada etapa.
-              </p>
-              <div className="flex items-center gap-3 text-sm text-slate-300">
-                <Zap className="h-4 w-4 text-sky-300" />
-                Ative novos módulos em minutos.
-              </div>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {features.map((feature) => (
-                <div
-                  key={feature.title}
-                  className="group relative overflow-hidden rounded-2xl border border-white/15 bg-white/5 p-6 shadow-sm transition hover:-translate-y-1 hover:border-amber-300/60 hover:bg-white/10 hover:shadow-xl"
-                >
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.22),_transparent_55%)] opacity-0 transition group-hover:opacity-100" />
-                  <div className="relative">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-200/25 text-amber-300 shadow-sm">
-                      <feature.icon className="h-5 w-5" />
-                    </span>
-                    <h3 className="mt-4 text-lg font-semibold text-white">{feature.title}</h3>
-                    <p className="mt-2 text-sm text-slate-300">{feature.text}</p>
-                  </div>
+        <div className="grid gap-6 xl:grid-cols-[1.03fr_0.97fr]">
+          <div className="rounded-[32px] border border-slate-700/75 bg-[linear-gradient(145deg,#142c45_0%,#1b3551_52%,#233d5a_100%)] p-6 shadow-[0_24px_58px_rgba(2,6,23,0.42)] sm:p-8">
+            <p className="text-xs uppercase tracking-[0.4em] text-amber-300">Recursos principais</p>
+            <h2 className="mt-4 text-3xl font-['Space Grotesk'] font-semibold sm:text-4xl">
+              O cliente percebe velocidade e confiança. O time percebe organização de verdade.
+            </h2>
+            <p className="mt-4 max-w-2xl text-slate-300">
+              Uma boa plataforma imobiliária precisa resolver experiência pública e rotina interna ao mesmo tempo.
+              É isso que cria valor visível, adoção e retenção no dia a dia.
+            </p>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              {[
+                {
+                  icon: LayoutGrid,
+                  title: "Captação e vitrine",
+                  text: "Cadastre, publique e mantenha o estoque consistente em poucos passos.",
+                },
+                {
+                  icon: MessageCircle,
+                  title: "Atendimento centralizado",
+                  text: "Toda conversa com lead e proprietário fica registrada e acionável.",
+                },
+                {
+                  icon: Zap,
+                  title: "Automação útil",
+                  text: "Alertas, distribuição e follow-up sem aquele caos de tarefas manuais.",
+                },
+                {
+                  icon: BarChart3,
+                  title: "Gestão com previsibilidade",
+                  text: "Veja o que está convertendo, quem precisa de apoio e onde agir primeiro.",
+                },
+              ].map((card) => (
+                <div key={card.title} className="rounded-3xl border border-white/15 bg-white/6 p-5 shadow-sm">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/8 text-amber-300">
+                    <card.icon className="h-5 w-5" />
+                  </span>
+                  <h3 className="mt-4 text-lg font-semibold text-white">{card.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-300">{card.text}</p>
                 </div>
               ))}
             </div>
+
+            <div className="mt-8 rounded-[28px] border border-amber-300/25 bg-[linear-gradient(135deg,rgba(251,191,36,0.14),rgba(15,23,42,0.24))] p-6 shadow-[0_18px_42px_rgba(2,6,23,0.2)]">
+              <p className="text-xs uppercase tracking-[0.28em] text-amber-200">Percepção de valor</p>
+              <h3 className="mt-3 text-2xl font-['Space Grotesk'] font-semibold text-white">
+                A mesma plataforma ajuda a captar melhor, atender melhor e apresentar melhor o estoque.
+              </h3>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-200">
+                Isso deixa a landing mais convincente porque ela para de parecer só uma peça visual e passa a
+                comunicar um produto que realmente organiza a imobiliária.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            {features.map((feature, index) => (
+              <div
+                key={feature.title}
+                className={`group relative overflow-hidden rounded-[28px] border border-white/15 p-6 shadow-[0_18px_42px_rgba(2,6,23,0.22)] transition hover:-translate-y-1 hover:border-amber-300/45 hover:shadow-[0_24px_54px_rgba(2,6,23,0.28)] ${
+                  index === 0 || index === 3
+                    ? "bg-[linear-gradient(145deg,rgba(15,23,42,0.72),rgba(15,23,42,0.42))]"
+                    : "bg-[linear-gradient(145deg,rgba(20,44,69,0.76),rgba(30,58,88,0.42))]"
+                }`}
+              >
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.18),_transparent_55%)] opacity-0 transition group-hover:opacity-100" />
+                <div className="relative">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/8 text-amber-300">
+                    <feature.icon className="h-5 w-5" />
+                  </span>
+                  <h3 className="mt-4 text-lg font-semibold text-white">{feature.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-300">{feature.text}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -854,3 +953,4 @@ const Landing = () => {
 };
 
 export default Landing;
+
