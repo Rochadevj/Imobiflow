@@ -245,7 +245,12 @@ const Landing = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="pointer-events-auto relative flex items-center justify-between gap-6 overflow-hidden rounded-2xl border border-white/20 bg-slate-800/65 px-4 py-3 shadow-[0_16px_32px_rgba(2,6,23,0.45)] backdrop-blur sm:px-6">
             <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 via-orange-400 to-sky-400 opacity-80" />
-            <Link to="/" className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="flex items-center gap-3 text-left transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+              aria-label="Voltar ao início da landing page"
+            >
               <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-400 text-slate-900 shadow-[0_10px_25px_rgba(251,146,60,0.35)]">
                 <Sparkles className="h-5 w-5" />
               </span>
@@ -255,7 +260,7 @@ const Landing = () => {
                 </p>
                 <p className="text-xs uppercase tracking-[0.3em] text-slate-300">Sistema de Gestão</p>
               </div>
-            </Link>
+            </button>
 
             <nav className="hidden lg:flex items-center gap-6 text-sm text-slate-300">
               <a href="#diferenciais" className="hover:text-amber-300 transition">Diferenciais</a>
