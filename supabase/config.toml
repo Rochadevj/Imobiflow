@@ -1,1 +1,4 @@
 project_id = "ddnoxanxwhsicjufclpa"
+
+[auth.email]
+otp_length = 6
