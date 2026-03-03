@@ -8,8 +8,8 @@ import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/s
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { key: "comprar", label: "Comprar", href: "/imobiliaria?type=comprar" },
-  { key: "alugar", label: "Alugar", href: "/imobiliaria?type=alugar" },
+  { key: "comprar", label: "Comprar", href: "/imobiliaria?list=1&type=comprar" },
+  { key: "alugar", label: "Alugar", href: "/imobiliaria?list=1&type=alugar" },
   { key: "lancamentos", label: "Lançamentos", href: "/lancamentos" },
   { key: "sobre", label: "Sobre", href: "/sobre" },
 ];

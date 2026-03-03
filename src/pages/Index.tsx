@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import PropertyCard from "@/components/PropertyCard";
 import Footer from "@/components/Footer";
 import { Input } from "@/components/ui/input";
@@ -53,6 +53,7 @@ const isPropertyHighlighted = (property: Property) =>
   );
 
 const Index = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [properties, setProperties] = useState<Property[]>([]);
   const [featuredProperties, setFeaturedProperties] = useState<HeroProperty[]>([]);
@@ -429,9 +430,7 @@ const Index = () => {
               <button
                 type="button"
                 onClick={() => {
-                  setHeroTab('comprar');
-                  setTransactionType('venda');
-                  setShowList(true);
+                  navigate('/imobiliaria?list=1&type=comprar');
                 }}
                 className={`pb-3 md:pb-4 text-sm font-medium relative ${heroTab==='comprar'?'text-accent':'text-muted-foreground hover:text-foreground'}`}
               >
@@ -441,9 +440,7 @@ const Index = () => {
               <button
                 type="button"
                 onClick={() => {
-                  setHeroTab('alugar');
-                  setTransactionType('aluguel');
-                  setShowList(true);
+                  navigate('/imobiliaria?list=1&type=alugar');
                 }}
                 className={`pb-3 md:pb-4 text-sm font-medium relative ${heroTab==='alugar'?'text-accent':'text-muted-foreground hover:text-foreground'}`}
               >
@@ -453,9 +450,7 @@ const Index = () => {
               <button
                 type="button"
                 onClick={() => {
-                  setHeroTab('todos');
-                  setTransactionType('');
-                  setShowList(true);
+                  navigate('/imobiliaria?list=1');
                 }}
                 className={`pb-3 md:pb-4 text-sm font-medium relative ${heroTab==='todos'?'text-accent':'text-muted-foreground hover:text-foreground'}`}
               >
