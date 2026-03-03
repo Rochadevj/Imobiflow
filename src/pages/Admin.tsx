@@ -149,6 +149,10 @@ const formatCurrency = (value: number) =>
   });
 
 const isConfirmedUser = (user: User | null) => Boolean(user?.email_confirmed_at);
+const configuredDeleteAccountFunctionName = import.meta.env.VITE_DELETE_ACCOUNT_FUNCTION_NAME?.trim();
+const deleteAccountFunctionNames = Array.from(
+  new Set([configuredDeleteAccountFunctionName, "delete-account", "quick-action"].filter(Boolean)),
+);
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -301,12 +305,41 @@ const Admin = () => {
 
     setDeletingAccount(true);
 
-    const { error } = await supabase.functions.invoke("delete-account", {
-      body: {},
-    });
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
-    if (error) {
-      toast.error("Nao foi possivel excluir a conta agora. Verifique se a Edge Function foi publicada.");
+    if (!session?.access_token) {
+      toast.error("Sua sessao expirou. Entre novamente antes de excluir a conta.");
+      setDeletingAccount(false);
+      return;
+    }
+
+    let functionErrorMessage = "";
+    let deleted = false;
+
+    for (const functionName of deleteAccountFunctionNames) {
+      const { error } = await supabase.functions.invoke(functionName, {
+        body: {},
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (!error) {
+        deleted = true;
+        break;
+      }
+
+      functionErrorMessage = error.message?.trim() || functionErrorMessage;
+    }
+
+    if (!deleted) {
+      toast.error(
+        functionErrorMessage
+          ? `Nao foi possivel excluir a conta: ${functionErrorMessage}`
+          : "Nao foi possivel excluir a conta agora. Verifique se a Edge Function foi publicada.",
+      );
       setDeletingAccount(false);
       return;
     }
