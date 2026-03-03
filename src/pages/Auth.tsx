@@ -1,40 +1,151 @@
-import { useState, useEffect } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Building2, CheckCircle2, Lock, ShieldCheck } from "lucide-react";
+import {
+  Building2,
+  CheckCircle2,
+  Clock3,
+  Lock,
+  MailCheck,
+  RefreshCw,
+  ShieldCheck,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import TurnstileWidget from "@/components/TurnstileWidget";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  MIN_SIGNUP_FILL_MS,
+  OTP_ALLOWED_LENGTHS,
+  OTP_MAX_LENGTH,
+  RESEND_COOLDOWN_MS,
+  formatAuthError,
+  formatDuration,
+  getPasswordRuleResults,
+  getSignupRateLimit,
+  getStrongPasswordError,
+  isAllowedOtpLength,
+  normalizeOtp,
+  registerSignupAttempt,
+  resetSignupAttempts,
+} from "@/lib/authSecurity";
 
-const emailSchema = z.string().email({ message: "E-mail inválido" });
-const passwordSchema = z.string().min(6, { message: "A senha deve ter pelo menos 6 caracteres" });
+const emailSchema = z.string().email({ message: "E-mail invalido" });
+const loginPasswordSchema = z.string().min(1, { message: "Informe sua senha" });
 
 const benefits = [
-  "Gerenciamento completo de imóveis",
+  "Gerenciamento completo de imoveis",
   "Fluxo de atendimento e cadastro",
-  "Demo pronta para apresentação comercial",
+  "Confirmacao por e-mail para reduzir contas falsas",
 ];
+
+type AuthTab = "login" | "signup";
+type SignupStep = "form" | "verify";
+
+const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY?.trim() ?? "";
+const captchaEnabled = Boolean(turnstileSiteKey);
 
 const Auth = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const signupRedirectUrl = typeof window !== "undefined" ? `${window.location.origin}/auth` : "";
+  const [activeTab, setActiveTab] = useState<AuthTab>("login");
   const [loading, setLoading] = useState(false);
+  const [now, setNow] = useState(Date.now());
+
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupPassword, setSignupPassword] = useState("");
+  const [signupConfirmPassword, setSignupConfirmPassword] = useState("");
+  const [signupOtp, setSignupOtp] = useState("");
+  const [signupStep, setSignupStep] = useState<SignupStep>("form");
+  const [signupStartedAt, setSignupStartedAt] = useState(Date.now());
+  const [signupSentAt, setSignupSentAt] = useState<number | null>(null);
+  const [honeypot, setHoneypot] = useState("");
+
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [captchaNonce, setCaptchaNonce] = useState(0);
+
+  const passwordRuleResults = getPasswordRuleResults(signupPassword);
+  const resendRemainingMs = signupSentAt ? Math.max(0, signupSentAt + RESEND_COOLDOWN_MS - now) : 0;
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) navigate("/admin");
+    const syncSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) return;
+
+      if (!session.user.email_confirmed_at) {
+        await supabase.auth.signOut();
+        return;
+      }
+
+      navigate("/admin");
+    };
+
+    void syncSession();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_, session) => {
+      if (!session) return;
+
+      if (!session.user.email_confirmed_at) {
+        await supabase.auth.signOut();
+        return;
+      }
+
+      navigate("/admin");
     });
+
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const validateInputs = () => {
+  useEffect(() => {
+    if (signupStep !== "verify" || resendRemainingMs <= 0) return;
+
+    const intervalId = window.setInterval(() => {
+      setNow(Date.now());
+    }, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, [signupStep, resendRemainingMs]);
+
+  useEffect(() => {
+    if (activeTab === "signup" && signupStep === "form") {
+      setSignupStartedAt(Date.now());
+    }
+  }, [activeTab, signupStep]);
+
+  const resetCaptcha = () => {
+    setCaptchaToken("");
+    setCaptchaNonce((current) => current + 1);
+  };
+
+  const resetSignupFlow = (email = signupEmail) => {
+    setSignupEmail(email);
+    setSignupPassword("");
+    setSignupConfirmPassword("");
+    setSignupOtp("");
+    setSignupStep("form");
+    setSignupStartedAt(Date.now());
+    setSignupSentAt(null);
+    setHoneypot("");
+    resetCaptcha();
+  };
+
+  const validateLoginInputs = () => {
     try {
-      emailSchema.parse(email);
-      passwordSchema.parse(password);
+      emailSchema.parse(loginEmail.trim());
+      loginPasswordSchema.parse(loginPassword);
       return true;
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -44,40 +155,191 @@ const Auth = () => {
     }
   };
 
-  const handleLogin = async (event: React.FormEvent) => {
+  const validateSignupInputs = () => {
+    try {
+      emailSchema.parse(signupEmail.trim());
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast.error(error.errors[0].message);
+      }
+      return false;
+    }
+
+    if (honeypot.trim()) {
+      toast.error("Nao foi possivel validar o cadastro.");
+      return false;
+    }
+
+    if (Date.now() - signupStartedAt < MIN_SIGNUP_FILL_MS) {
+      toast.error("Preencha o cadastro com calma e tente novamente em alguns segundos.");
+      return false;
+    }
+
+    if (signupPassword !== signupConfirmPassword) {
+      toast.error("As senhas precisam ser iguais.");
+      return false;
+    }
+
+    const passwordError = getStrongPasswordError(signupPassword, signupEmail);
+    if (passwordError) {
+      toast.error(passwordError);
+      return false;
+    }
+
+    const rateLimit = getSignupRateLimit();
+    if (rateLimit.blocked) {
+      toast.error(`Muitas tentativas de cadastro. Aguarde ${formatDuration(rateLimit.retryAfterMs)}.`);
+      return false;
+    }
+
+    if (captchaEnabled && !captchaToken) {
+      toast.error("Conclua a verificacao anti-bot antes de continuar.");
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleLogin = async (event: FormEvent) => {
     event.preventDefault();
-    if (!validateInputs()) return;
+    if (!validateLoginInputs()) return;
 
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+    const normalizedEmail = loginEmail.trim();
+    const { error } = await supabase.auth.signInWithPassword({
+      email: normalizedEmail,
+      password: loginPassword,
+    });
 
     if (error) {
-      toast.error(error.message);
+      if (/email not confirmed/i.test(error.message)) {
+        setActiveTab("signup");
+        setSignupEmail(normalizedEmail);
+        setSignupStep("verify");
+        setSignupOtp("");
+        setSignupSentAt(null);
+      }
+
+      toast.error(formatAuthError(error.message));
     } else {
       toast.success("Login realizado com sucesso.");
       navigate("/admin");
     }
+
     setLoading(false);
   };
 
-  const handleSignup = async (event: React.FormEvent) => {
+  const handleSignup = async (event: FormEvent) => {
     event.preventDefault();
-    if (!validateInputs()) return;
+    if (!validateSignupInputs()) return;
 
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
+    registerSignupAttempt();
+
+    const normalizedEmail = signupEmail.trim();
+    const currentCaptchaToken = captchaToken || undefined;
+    const { data, error } = await supabase.auth.signUp({
+      email: normalizedEmail,
+      password: signupPassword,
       options: {
-        emailRedirectTo: `${window.location.origin}/admin`,
+        emailRedirectTo: signupRedirectUrl,
+        captchaToken: currentCaptchaToken,
       },
     });
 
+    resetCaptcha();
+
     if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success("Conta criada com sucesso. Você já pode fazer login.");
+      toast.error(formatAuthError(error.message));
+      setLoading(false);
+      return;
     }
+
+    if (data.session) {
+      await supabase.auth.signOut();
+      toast.error("Ative a confirmacao de e-mail no Supabase para exigir o codigo antes de liberar o acesso.");
+      setLoading(false);
+      return;
+    }
+
+    setSignupEmail(normalizedEmail);
+    setSignupPassword("");
+    setSignupConfirmPassword("");
+    setSignupOtp("");
+    setSignupStep("verify");
+    setSignupSentAt(Date.now());
+    setNow(Date.now());
+
+    toast.success("Codigo enviado para o seu e-mail. Digite-o para concluir o cadastro.");
+    setLoading(false);
+  };
+
+  const handleVerifySignup = async (event: FormEvent) => {
+    event.preventDefault();
+
+    const token = normalizeOtp(signupOtp);
+    if (!isAllowedOtpLength(token)) {
+      toast.error(`Informe o codigo completo enviado para o e-mail (${OTP_ALLOWED_LENGTHS.join(" ou ")} digitos).`);
+      return;
+    }
+
+    setLoading(true);
+
+    const { error } = await supabase.auth.verifyOtp({
+      email: signupEmail.trim(),
+      token,
+      type: "signup",
+    });
+
+    if (error) {
+      toast.error(formatAuthError(error.message));
+    } else {
+      resetSignupAttempts();
+      toast.success("E-mail confirmado com sucesso.");
+      navigate("/admin");
+    }
+
+    setLoading(false);
+  };
+
+  const handleResendCode = async () => {
+    if (resendRemainingMs > 0) return;
+
+    const rateLimit = getSignupRateLimit();
+    if (rateLimit.blocked) {
+      toast.error(`Muitas tentativas de cadastro. Aguarde ${formatDuration(rateLimit.retryAfterMs)}.`);
+      return;
+    }
+
+    if (captchaEnabled && !captchaToken) {
+      toast.error("Conclua a verificacao anti-bot para reenviar o codigo.");
+      return;
+    }
+
+    setLoading(true);
+    registerSignupAttempt();
+
+    const currentCaptchaToken = captchaToken || undefined;
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: signupEmail.trim(),
+      options: {
+        emailRedirectTo: signupRedirectUrl,
+        captchaToken: currentCaptchaToken,
+      },
+    });
+
+    resetCaptcha();
+
+    if (error) {
+      toast.error(formatAuthError(error.message));
+    } else {
+      setSignupSentAt(Date.now());
+      setNow(Date.now());
+      toast.success("Enviamos um novo codigo para o seu e-mail.");
+    }
+
     setLoading(false);
   };
 
@@ -92,8 +354,8 @@ const Auth = () => {
             Acesse o painel da <span className="text-amber-300">Imobiflow</span>
           </h1>
           <p className="mt-3 max-w-xl text-sm text-white/80 md:text-base">
-            Ambiente administrativo para cadastro de imóveis, organização de estoque e demonstração
-            profissional do seu produto imobiliário.
+            Ambiente administrativo com validacao por e-mail, senha forte e camadas extras para reduzir
+            cadastros automatizados.
           </p>
 
           <div className="mt-7 space-y-3">
@@ -109,16 +371,20 @@ const Auth = () => {
             <div className="rounded-2xl border border-white/20 bg-white/10 p-4">
               <p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-white/65">
                 <ShieldCheck className="h-3.5 w-3.5 text-amber-300" />
-                Segurança
+                Seguranca
               </p>
-              <p className="mt-2 text-sm text-white/85">Autenticação via Supabase com controle de sessão.</p>
+              <p className="mt-2 text-sm text-white/85">
+                OTP por e-mail, PKCE no Supabase e senha endurecida no cadastro.
+              </p>
             </div>
             <div className="rounded-2xl border border-white/20 bg-white/10 p-4">
               <p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-white/65">
                 <Lock className="h-3.5 w-3.5 text-amber-300" />
-                Demo pronta
+                Antiabuso
               </p>
-              <p className="mt-2 text-sm text-white/85">Acesse e gerencie o conteúdo para demonstrações.</p>
+              <p className="mt-2 text-sm text-white/85">
+                Honeypot, tempo minimo de preenchimento, cooldown e limite de tentativas no cadastro.
+              </p>
             </div>
           </div>
         </section>
@@ -127,11 +393,11 @@ const Auth = () => {
           <CardHeader>
             <CardTitle className="text-2xl text-white">Bem-vindo</CardTitle>
             <CardDescription className="text-white/75">
-              Entre com sua conta ou crie um novo acesso para a área administrativa.
+              Entre com sua conta ou crie um novo acesso com validacao por codigo no e-mail.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="login" className="w-full">
+            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as AuthTab)} className="w-full">
               <TabsList className="grid h-12 w-full grid-cols-2 rounded-xl border border-white/15 bg-slate-800/70 p-1">
                 <TabsTrigger
                   value="login"
@@ -157,8 +423,9 @@ const Auth = () => {
                       id="login-email"
                       type="email"
                       placeholder="seu@email.com"
-                      value={email}
-                      onChange={(event) => setEmail(event.target.value)}
+                      value={loginEmail}
+                      onChange={(event) => setLoginEmail(event.target.value)}
+                      autoComplete="email"
                       required
                       className="h-12 rounded-xl border-white/15 bg-slate-950/55 text-white placeholder:text-white/50 focus-visible:ring-amber-300"
                     />
@@ -171,12 +438,16 @@ const Auth = () => {
                       id="login-password"
                       type="password"
                       placeholder="********"
-                      value={password}
-                      onChange={(event) => setPassword(event.target.value)}
+                      value={loginPassword}
+                      onChange={(event) => setLoginPassword(event.target.value)}
+                      autoComplete="current-password"
                       required
                       className="h-12 rounded-xl border-white/15 bg-slate-950/55 text-white placeholder:text-white/50 focus-visible:ring-amber-300"
                     />
                   </div>
+                  <p className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white/70">
+                    Contas novas so recebem acesso ao painel depois da confirmacao do e-mail.
+                  </p>
                   <Button
                     type="submit"
                     className="h-12 w-full rounded-xl bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 font-semibold text-slate-900 hover:from-amber-300 hover:via-orange-400 hover:to-amber-400"
@@ -188,43 +459,199 @@ const Auth = () => {
               </TabsContent>
 
               <TabsContent value="signup" className="mt-5">
-                <form onSubmit={handleSignup} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email" className="text-white/85">
-                      E-mail
-                    </Label>
-                    <Input
-                      id="signup-email"
-                      type="email"
-                      placeholder="seu@email.com"
-                      value={email}
-                      onChange={(event) => setEmail(event.target.value)}
-                      required
-                      className="h-12 rounded-xl border-white/15 bg-slate-950/55 text-white placeholder:text-white/50 focus-visible:ring-amber-300"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password" className="text-white/85">
-                      Senha
-                    </Label>
-                    <Input
-                      id="signup-password"
-                      type="password"
-                      placeholder="********"
-                      value={password}
-                      onChange={(event) => setPassword(event.target.value)}
-                      required
-                      className="h-12 rounded-xl border-white/15 bg-slate-950/55 text-white placeholder:text-white/50 focus-visible:ring-amber-300"
-                    />
-                  </div>
-                  <Button
-                    type="submit"
-                    className="h-12 w-full rounded-xl bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 font-semibold text-slate-900 hover:from-amber-300 hover:via-orange-400 hover:to-amber-400"
-                    disabled={loading}
-                  >
-                    {loading ? "Criando conta..." : "Criar conta"}
-                  </Button>
-                </form>
+                {signupStep === "form" ? (
+                  <form onSubmit={handleSignup} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-email" className="text-white/85">
+                        E-mail
+                      </Label>
+                      <Input
+                        id="signup-email"
+                        type="email"
+                        placeholder="seu@email.com"
+                        value={signupEmail}
+                        onChange={(event) => setSignupEmail(event.target.value)}
+                        autoComplete="email"
+                        required
+                        className="h-12 rounded-xl border-white/15 bg-slate-950/55 text-white placeholder:text-white/50 focus-visible:ring-amber-300"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-password" className="text-white/85">
+                        Senha forte
+                      </Label>
+                      <Input
+                        id="signup-password"
+                        type="password"
+                        placeholder="Crie uma senha forte"
+                        value={signupPassword}
+                        onChange={(event) => setSignupPassword(event.target.value)}
+                        autoComplete="new-password"
+                        required
+                        className="h-12 rounded-xl border-white/15 bg-slate-950/55 text-white placeholder:text-white/50 focus-visible:ring-amber-300"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-password-confirm" className="text-white/85">
+                        Confirmar senha
+                      </Label>
+                      <Input
+                        id="signup-password-confirm"
+                        type="password"
+                        placeholder="Repita a senha"
+                        value={signupConfirmPassword}
+                        onChange={(event) => setSignupConfirmPassword(event.target.value)}
+                        autoComplete="new-password"
+                        required
+                        className="h-12 rounded-xl border-white/15 bg-slate-950/55 text-white placeholder:text-white/50 focus-visible:ring-amber-300"
+                      />
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                      <p className="text-sm font-medium text-white">Requisitos da senha</p>
+                      <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                        {passwordRuleResults.map((rule) => (
+                          <p
+                            key={rule.id}
+                            className={`flex items-center gap-2 text-xs ${
+                              rule.passed ? "text-emerald-300" : "text-white/60"
+                            }`}
+                          >
+                            <CheckCircle2 className="h-3.5 w-3.5" />
+                            {rule.label}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="absolute left-[-5000px] top-auto h-px w-px overflow-hidden opacity-0">
+                      <Label htmlFor="signup-company">Empresa</Label>
+                      <Input
+                        id="signup-company"
+                        tabIndex={-1}
+                        autoComplete="off"
+                        value={honeypot}
+                        onChange={(event) => setHoneypot(event.target.value)}
+                      />
+                    </div>
+
+                    {captchaEnabled ? (
+                      <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                        <p className="mb-3 text-sm font-medium text-white">Verificacao anti-bot</p>
+                        <TurnstileWidget
+                          key={captchaNonce}
+                          siteKey={turnstileSiteKey}
+                          onVerify={setCaptchaToken}
+                          onExpire={() => setCaptchaToken("")}
+                          onError={() => setCaptchaToken("")}
+                        />
+                      </div>
+                    ) : (
+                      <div className="rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-xs text-amber-100">
+                        Dica: configure `VITE_TURNSTILE_SITE_KEY` em producao para ativar captcha real contra bots.
+                      </div>
+                    )}
+
+                    <Button
+                      type="submit"
+                      className="h-12 w-full rounded-xl bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 font-semibold text-slate-900 hover:from-amber-300 hover:via-orange-400 hover:to-amber-400"
+                      disabled={loading}
+                    >
+                      {loading ? "Enviando codigo..." : "Criar conta e enviar codigo"}
+                    </Button>
+                  </form>
+                ) : (
+                  <form onSubmit={handleVerifySignup} className="space-y-5">
+                    <div className="rounded-2xl border border-emerald-300/20 bg-emerald-300/10 p-4">
+                      <p className="inline-flex items-center gap-2 text-sm font-medium text-emerald-100">
+                        <MailCheck className="h-4 w-4" />
+                        Confirmacao de e-mail
+                      </p>
+                      <p className="mt-2 text-sm text-white/78">
+                        {signupSentAt
+                          ? "Enviamos um codigo de confirmacao para "
+                          : "Digite o codigo enviado para "}
+                        <span className="font-semibold">{signupEmail}</span>
+                        {!signupSentAt ? " ou solicite um novo envio abaixo." : "."}
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-otp" className="text-white/85">
+                        Codigo de confirmacao
+                      </Label>
+                      <InputOTP
+                        id="signup-otp"
+                        maxLength={OTP_MAX_LENGTH}
+                        value={signupOtp}
+                        onChange={(value) => setSignupOtp(normalizeOtp(value))}
+                        containerClassName="justify-center"
+                      >
+                        <InputOTPGroup>
+                          {Array.from({ length: OTP_MAX_LENGTH }).map((_, index) => (
+                            <InputOTPSlot
+                              key={index}
+                              index={index}
+                              className="h-12 w-12 border-white/15 bg-slate-950/55 text-base text-white"
+                            />
+                          ))}
+                        </InputOTPGroup>
+                      </InputOTP>
+                    </div>
+
+                    {captchaEnabled ? (
+                      <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                        <p className="mb-3 text-sm font-medium text-white">Verificacao anti-bot para reenviar codigo</p>
+                        <TurnstileWidget
+                          key={captchaNonce}
+                          siteKey={turnstileSiteKey}
+                          onVerify={setCaptchaToken}
+                          onExpire={() => setCaptchaToken("")}
+                          onError={() => setCaptchaToken("")}
+                        />
+                      </div>
+                    ) : null}
+
+                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-xs text-white/70">
+                      <p className="inline-flex items-center gap-2">
+                        <Clock3 className="h-3.5 w-3.5 text-amber-300" />
+                        O codigo expira e pode precisar de reenvio se ficar muito tempo sem uso.
+                      </p>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      className="h-12 w-full rounded-xl bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 font-semibold text-slate-900 hover:from-amber-300 hover:via-orange-400 hover:to-amber-400"
+                      disabled={loading}
+                    >
+                      {loading ? "Validando codigo..." : "Validar codigo e entrar"}
+                    </Button>
+
+                    <div className="flex flex-col gap-3 sm:flex-row">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="h-11 flex-1 rounded-xl border-white/15 bg-transparent text-white hover:bg-white/10 hover:text-white"
+                        onClick={handleResendCode}
+                        disabled={loading || resendRemainingMs > 0}
+                      >
+                        <RefreshCw className="h-4 w-4" />
+                        {resendRemainingMs > 0
+                          ? `Reenviar em ${formatDuration(resendRemainingMs)}`
+                          : "Reenviar codigo"}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="h-11 flex-1 rounded-xl text-white/75 hover:bg-white/10 hover:text-white"
+                        onClick={() => resetSignupFlow(signupEmail)}
+                        disabled={loading}
+                      >
+                        Alterar e-mail
+                      </Button>
+                    </div>
+                  </form>
+                )}
               </TabsContent>
             </Tabs>
           </CardContent>

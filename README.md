@@ -51,7 +51,8 @@ O **Imobiflow** é uma plataforma de gestão imobiliária com página de apresen
 - 📊 **Gerenciamento**: Visualize e gerencie todas as propriedades cadastradas
 - ⭐ **Destaques Personalizados**: Escolha separadamente onde exibir cada imóvel (imperdíveis, venda e locação)
 - 🚀 **Lançamentos**: Marcação de lançamento sem preço e listagem dedicada na vitrine
-- 👤 **Autenticação**: Sistema seguro de login e gerenciamento de sessões
+- 👤 **Autenticação**: Login com Supabase, confirmação por e-mail e gerenciamento de sessões
+- 🛡️ **Proteções Antiabuso**: Senha forte, cooldown de cadastro, honeypot e suporte a CAPTCHA
 
 ---
 
@@ -125,6 +126,7 @@ Preencha as variáveis de ambiente com suas credenciais do Supabase:
 VITE_SUPABASE_PROJECT_ID=seu_project_id
 VITE_SUPABASE_PUBLISHABLE_KEY=sua_chave_publica
 VITE_SUPABASE_URL=https://seu-projeto.supabase.co
+VITE_TURNSTILE_SITE_KEY=sua_chave_publica_do_turnstile_opcional
 ```
 
 > 💡 **Como obter as credenciais do Supabase:**

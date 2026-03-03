@@ -257,12 +257,12 @@ const PropertyDetail = () => {
                   <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div>
                       <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
-                        {property.transaction_type === "aluguel" ? "Valor do aluguel" : "PreÃ§o"}
+                        {property.transaction_type === "aluguel" ? "Valor do aluguel" : "Preço"}
                       </p>
                       <p className="mt-1 text-3xl font-bold text-slate-900">
                         {formatCurrency(property.price, property.transaction_type === "aluguel")}
                         {property.transaction_type === "aluguel" ? (
-                          <span className="ml-2 text-sm font-semibold text-slate-500">/ mÃªs</span>
+                          <span className="ml-2 text-sm font-semibold text-slate-500">/ mês</span>
                         ) : null}
                       </p>
                     </div>
@@ -270,7 +270,7 @@ const PropertyDetail = () => {
                       <div className="grid grid-cols-2 gap-3 text-sm">
                         {property.condominio ? (
                           <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
-                            <p className="text-slate-500">CondomÃ­nio</p>
+                            <p className="text-slate-500">Condomínio</p>
                             <p className="font-semibold text-slate-900">{formatCurrency(property.condominio, true)}</p>
                           </div>
                         ) : null}
@@ -301,10 +301,10 @@ const PropertyDetail = () => {
 
               <div className="section-shell p-6">
                 <h2 className="text-2xl font-semibold text-slate-900">
-                  {property.is_launch ? "DescriÃ§Ã£o do empreendimento" : "Sobre o imÃ³vel"}
+                  {property.is_launch ? "Descrição do empreendimento" : "Sobre o imóvel"}
                 </h2>
                 <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-slate-600 md:text-base">
-                  {property.description || "DescriÃ§Ã£o nÃ£o disponÃ­vel."}
+                  {property.description || "Descrição não disponível."}
                 </p>
               </div>
 
@@ -333,7 +333,7 @@ const PropertyDetail = () => {
                     Plantas
                   </AccordionTrigger>
                   <AccordionContent className="pb-5 text-sm text-slate-600">
-                    As plantas deste imÃ³vel estarÃ£o disponÃ­veis em breve.
+                    As plantas deste imóvel estarão disponíveis em breve.
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
