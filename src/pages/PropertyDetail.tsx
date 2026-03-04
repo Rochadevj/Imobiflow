@@ -16,6 +16,7 @@ import PropertyMeta from "@/components/PropertyMeta";
 import RealtorCard from "@/components/RealtorCard";
 import SimilarPropertiesCarousel from "@/components/SimilarPropertiesCarousel";
 import { supabase } from "@/integrations/supabase/client";
+import { CONTACT_WHATSAPP_NUMBER } from "@/lib/contact";
 import { trackPropertyView } from "@/lib/propertyViews";
 
 interface Property {
@@ -345,7 +346,7 @@ const PropertyDetail = () => {
               <RealtorCard
                 name="Imobiflow"
                 creci="CRECI - 000000-XX (demo)"
-                phone="5500000000000"
+                phone={CONTACT_WHATSAPP_NUMBER}
                 propertyTitle={property.title}
                 propertyCode={property.codigo || property.id.slice(0, 8)}
                 propertyType={property.property_type}

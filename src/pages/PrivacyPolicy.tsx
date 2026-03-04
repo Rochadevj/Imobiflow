@@ -1,5 +1,6 @@
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import { CONTACT_WHATSAPP_DISPLAY } from "@/lib/contact";
 
 const sections = [
   {
@@ -68,7 +69,7 @@ const PrivacyPolicy = () => {
                 <p>Imobiflow (demo)</p>
                 <p>CRECI: 000000-XX (demo)</p>
                 <p>E-mail: contato@imobiflow.com</p>
-                <p>Telefone/WhatsApp: (00) 00000-0000</p>
+                <p>Telefone/WhatsApp: {CONTACT_WHATSAPP_DISPLAY}</p>
               </div>
             </div>
           </div>

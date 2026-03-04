@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import { buildWhatsAppLink } from "@/lib/contact";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -79,7 +80,7 @@ const PropertySubmit = () => {
         </section>
 
         <section className="container mx-auto px-4 py-10 md:py-14">
-          <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
             <div className="section-shell p-6 md:p-8">
               <form onSubmit={handleSubmit} className="space-y-8">
                 <div>
@@ -226,7 +227,7 @@ const PropertySubmit = () => {
                   Precisa de ajuda para preencher? Fale com um corretor e montamos o anúncio com você.
                 </p>
                 <a
-                  href="https://wa.me/5500000000000"
+                  href={buildWhatsAppLink("Olá! Preciso de ajuda para anunciar um imóvel na Imobiflow.")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-4 inline-flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600"
@@ -246,3 +247,4 @@ const PropertySubmit = () => {
 };
 
 export default PropertySubmit;
+
