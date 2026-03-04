@@ -79,7 +79,7 @@ export default function RealtorCard({
   const whatsappLink = `https://api.whatsapp.com/send?phone=${phone.replace(/\D/g, "")}&text=${whatsappMessage}`;
 
   return (
-    <div className="surface-card sticky top-24 space-y-5 border-slate-200/80 p-5">
+    <div className="surface-card space-y-5 border-slate-200/80 p-5 lg:sticky lg:top-24">
       <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-900 to-slate-800 p-4 text-white">
         <div className="flex items-center gap-3">
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/20 bg-white/10">
@@ -187,3 +187,4 @@ export default function RealtorCard({
     </div>
   );
 }
+

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Building2, Facebook, Instagram, Mail, MapPin, Phone, ShieldCheck } from "lucide-react";
+import { CONTACT_WHATSAPP_DISPLAY, buildWhatsAppLink } from "@/lib/contact";
 
 const Footer = () => {
   return (
@@ -62,13 +63,13 @@ const Footer = () => {
                 contato@imobiflow.com
               </a>
               <a
-                href="https://wa.me/5500000000000?text=Ol%C3%A1!%20Gostaria%20de%20mais%20informa%C3%A7%C3%B5es%20sobre%20os%20im%C3%B3veis."
+                href={buildWhatsAppLink("Olá! Gostaria de saber mais sobre a Imobiflow.")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 transition hover:text-amber-600"
               >
                 <Phone className="h-4 w-4 text-amber-500" />
-                (00) 00000-0000
+                {CONTACT_WHATSAPP_DISPLAY}
               </a>
               <span className="flex items-center gap-2 text-slate-600">
                 <MapPin className="h-4 w-4 text-amber-500" />

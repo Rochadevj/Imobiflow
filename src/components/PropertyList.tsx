@@ -158,7 +158,7 @@ const PropertyList = ({ userId, onEdit }: PropertyListProps) => {
                 R$ {property.price.toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-2 sm:flex-row">
                 {onEdit && (
                   <Button variant="outline" className="flex-1" onClick={() => onEdit(property.id)}>
                     <Edit className="mr-2 h-4 w-4" />
@@ -197,3 +197,4 @@ const PropertyList = ({ userId, onEdit }: PropertyListProps) => {
 };
 
 export default PropertyList;
+

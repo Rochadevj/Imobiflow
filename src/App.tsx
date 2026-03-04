@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import WhatsAppButton from "./components/WhatsAppButton";
+import { CONTACT_WHATSAPP_NUMBER } from "./lib/contact";
 import Index from "./pages/Index";
 import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
@@ -22,7 +23,7 @@ const RouteAwareWhatsApp = () => {
   const location = useLocation();
   const hide = /^\/(admin|auth)(\/|$)/.test(location.pathname);
   if (hide) return null;
-  return <WhatsAppButton phone="55 00 00000-0000" message="Olá! Gostaria de mais informações sobre os imóveis." />;
+  return <WhatsAppButton phone={CONTACT_WHATSAPP_NUMBER} message="Olá! Gostaria de saber mais sobre a Imobiflow." />;
 };
 
 const App = () => (

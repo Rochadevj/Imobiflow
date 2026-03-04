@@ -60,7 +60,7 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
         <Button
           variant={viewMode === "photos" ? "default" : "outline"}
           onClick={() => setViewMode("photos")}
-          className={`rounded-full ${viewMode === "photos" ? "bg-slate-900 text-white hover:bg-slate-800" : ""}`}
+          className={`w-full justify-center rounded-full sm:w-auto ${viewMode === "photos" ? "bg-slate-900 text-white hover:bg-slate-800" : ""}`}
         >
           <Image className="mr-2 h-4 w-4" />
           Fotos ({photos.length})
@@ -70,7 +70,7 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
           <Button
             variant={viewMode === "video" ? "default" : "outline"}
             onClick={() => setViewMode("video")}
-            className={`rounded-full ${viewMode === "video" ? "bg-slate-900 text-white hover:bg-slate-800" : ""}`}
+            className={`w-full justify-center rounded-full sm:w-auto ${viewMode === "video" ? "bg-slate-900 text-white hover:bg-slate-800" : ""}`}
           >
             <Video className="mr-2 h-4 w-4" />
             Vídeo ({videos.length})
@@ -80,7 +80,7 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
         <Button
           variant={viewMode === "map" ? "default" : "outline"}
           onClick={() => setViewMode("map")}
-          className={`rounded-full ${viewMode === "map" ? "bg-slate-900 text-white hover:bg-slate-800" : ""}`}
+          className={`w-full justify-center rounded-full sm:w-auto ${viewMode === "map" ? "bg-slate-900 text-white hover:bg-slate-800" : ""}`}
         >
           <Map className="mr-2 h-4 w-4" />
           Mapa
@@ -89,7 +89,7 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
         <Button
           variant={viewMode === "tour" ? "default" : "outline"}
           onClick={() => setViewMode("tour")}
-          className={`rounded-full ${viewMode === "tour" ? "bg-slate-900 text-white hover:bg-slate-800" : ""}`}
+          className={`w-full justify-center rounded-full sm:w-auto ${viewMode === "tour" ? "bg-slate-900 text-white hover:bg-slate-800" : ""}`}
         >
           <Scan className="mr-2 h-4 w-4" />
           Tour
@@ -99,7 +99,7 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
       {(viewMode === "photos" || viewMode === "video") && displayContent.length > 0 ? (
         <div className="surface-card border-slate-200/80 p-4">
           <div className="relative">
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {visibleItems.map((item, idx) => {
                 const absoluteIndex = currentIndex + idx;
                 return (
@@ -135,7 +135,7 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
             {displayContent.length > ITEMS_PER_VIEW && currentIndex > 0 ? (
               <button
                 onClick={() => setCurrentIndex((previous) => Math.max(0, previous - 1))}
-                className="absolute -left-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/35 bg-slate-950/55 p-2 text-white shadow-lg transition hover:bg-slate-950/75"
+                className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/35 bg-slate-950/55 p-2 text-white shadow-lg transition hover:bg-slate-950/75"
                 aria-label="Anterior"
               >
                 <ChevronLeft className="h-5 w-5" />
@@ -145,7 +145,7 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
             {displayContent.length > ITEMS_PER_VIEW && currentIndex < maxIndex ? (
               <button
                 onClick={() => setCurrentIndex((previous) => Math.min(maxIndex, previous + 1))}
-                className="absolute -right-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/35 bg-slate-950/55 p-2 text-white shadow-lg transition hover:bg-slate-950/75"
+                className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/35 bg-slate-950/55 p-2 text-white shadow-lg transition hover:bg-slate-950/75"
                 aria-label="Próximo"
               >
                 <ChevronRight className="h-5 w-5" />
@@ -175,7 +175,7 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
       {viewMode === "map" ? (
         <div className="surface-card overflow-hidden border-slate-200/80 p-2">
           {location ? (
-            <div className="h-[460px] overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
+            <div className="h-[320px] overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 sm:h-[380px] lg:h-[460px]">
               <iframe
                 width="100%"
                 height="100%"
@@ -190,7 +190,7 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
               />
             </div>
           ) : (
-            <div className="flex h-[460px] items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 text-sm text-slate-500">
+            <div className="flex h-[320px] items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 text-sm text-slate-500 sm:h-[380px] lg:h-[460px]">
               Endereço indisponível para exibir no mapa.
             </div>
           )}
@@ -213,7 +213,7 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
           }
         }}
       >
-        <DialogContent hideClose className="max-w-[92vw] border-none bg-transparent p-0 shadow-none">
+        <DialogContent hideClose className="max-h-[90vh] max-w-[96vw] overflow-y-auto border-none bg-transparent p-0 shadow-none sm:max-w-[92vw]">
           {selectedIndex !== null ? (
             <div className="relative rounded-2xl border border-white/20 bg-slate-950/92 p-3 md:p-5">
               <div className="mb-3 flex items-center justify-between text-white">
@@ -247,7 +247,7 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
                 </div>
               </div>
 
-              <div className="relative flex min-h-[52vh] items-center justify-center">
+              <div className="relative flex min-h-[40vh] items-center justify-center md:min-h-[52vh]">
                 {isVideoUrl(displayContent[selectedIndex]) ? (
                   <video
                     src={displayContent[selectedIndex]}
@@ -290,7 +290,7 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
                     key={`${item}-thumb-${idx}`}
                     type="button"
                     onClick={() => setSelectedIndex(idx)}
-                    className={`h-16 w-24 overflow-hidden rounded-lg border transition ${
+                    className={`h-14 w-20 overflow-hidden rounded-lg border transition sm:h-16 sm:w-24 ${
                       idx === selectedIndex ? "border-white" : "border-white/25"
                     }`}
                   >
@@ -309,3 +309,4 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
     </div>
   );
 }
+

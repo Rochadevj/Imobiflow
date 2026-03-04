@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { CONTACT_WHATSAPP_NUMBER } from "@/lib/contact";
 
 interface WhatsAppButtonProps {
   phone?: string;
@@ -12,8 +13,8 @@ const WhatsAppIcon = ({ className = "w-7 h-7" }: { className?: string }) => (
 );
 
 export default function WhatsAppButton({
-  phone = "55 00 00000-0000",
-  message = "Olá! Gostaria de mais informações sobre os imóveis.",
+  phone = CONTACT_WHATSAPP_NUMBER,
+  message = "Olá! Gostaria de saber mais sobre a Imobiflow.",
 }: WhatsAppButtonProps) {
   const [showTip, setShowTip] = useState(true);
 
@@ -34,7 +35,7 @@ export default function WhatsAppButton({
   }, [phoneWithCountry, message]);
 
   return (
-    <div className="fixed right-6 bottom-14 md:right-8 md:bottom-18 z-50 select-none">
+    <div className="fixed bottom-5 right-4 z-50 select-none md:bottom-8 md:right-8">
       <div
         className="relative group"
         onMouseEnter={() => setShowTip(true)}
@@ -45,14 +46,14 @@ export default function WhatsAppButton({
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Abrir conversa no WhatsApp"
-          className="relative inline-flex items-center justify-center w-14 h-14 rounded-full bg-[#25D366] text-white shadow-xl transition-all duration-200 hover:shadow-2xl hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#25D366]"
+          className="relative inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl transition-all duration-200 hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#25D366] md:h-14 md:w-14"
         >
           <span className="absolute inset-0 rounded-full bg-[#25D366]/30 opacity-0 group-hover:opacity-100 animate-ping pointer-events-none" />
           <WhatsAppIcon className="w-7 h-7 relative" />
         </a>
 
         <div
-          className={`absolute top-1/2 right-16 -translate-y-1/2 transition-opacity ${showTip ? "opacity-100" : "opacity-0"}`}
+          className={`absolute right-14 top-1/2 hidden -translate-y-1/2 transition-opacity md:right-16 md:block ${showTip ? "opacity-100" : "opacity-0"}`}
         >
           <div className="relative bg-white text-foreground text-xs md:text-sm rounded-lg shadow-md px-3 py-2 border border-gray-200 w-56 md:w-72 max-w-[80vw] whitespace-normal">
             {message}
@@ -63,3 +64,4 @@ export default function WhatsAppButton({
     </div>
   );
 }
+

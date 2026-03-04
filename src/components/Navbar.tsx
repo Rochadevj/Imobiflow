@@ -86,7 +86,7 @@ const Navbar = () => {
             </span>
             <div>
               <p className="text-lg font-semibold leading-none text-slate-900">Imobiflow</p>
-              <p className="mt-1 text-[10px] uppercase tracking-[0.28em] text-slate-500">
+              <p className="mt-1 hidden text-[10px] uppercase tracking-[0.28em] text-slate-500 sm:block">
                 Soluções imobiliárias
               </p>
             </div>
@@ -168,13 +168,13 @@ const Navbar = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="md:hidden rounded-full text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                className="rounded-full text-slate-700 hover:bg-slate-100 hover:text-slate-900 lg:hidden"
               >
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Abrir menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[320px] border-l border-slate-200 bg-white">
+            <SheetContent side="right" className="w-[88vw] max-w-[320px] border-l border-slate-200 bg-white px-5 sm:px-6">
               <div className="mt-6 space-y-2">
                 {navItems.map((item) => (
                   <SheetClose asChild key={item.href}>
@@ -259,3 +259,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
