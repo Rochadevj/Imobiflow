@@ -647,26 +647,39 @@ const Landing = () => {
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            {features.map((feature, index) => (
-              <div
-                key={feature.title}
-                className={`group relative overflow-hidden rounded-[28px] border border-white/15 p-6 shadow-[0_18px_42px_rgba(2,6,23,0.22)] transition hover:-translate-y-1 hover:border-amber-300/45 hover:shadow-[0_24px_54px_rgba(2,6,23,0.28)] ${
-                  index === 0 || index === 3
-                    ? "bg-[linear-gradient(145deg,rgba(15,23,42,0.72),rgba(15,23,42,0.42))]"
-                    : "bg-[linear-gradient(145deg,rgba(20,44,69,0.76),rgba(30,58,88,0.42))]"
-                }`}
-              >
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.18),_transparent_55%)] opacity-0 transition group-hover:opacity-100" />
-                <div className="relative">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/8 text-amber-300">
-                    <feature.icon className="h-5 w-5" />
-                  </span>
-                  <h3 className="mt-4 text-lg font-semibold text-white">{feature.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-300">{feature.text}</p>
+          <div className="grid auto-rows-fr gap-4 sm:grid-cols-2">
+            {features.map((feature, index) => {
+              const isFeaturedCard = index === 0;
+              const cardTone =
+                index % 3 === 0
+                  ? "bg-[linear-gradient(145deg,rgba(15,23,42,0.72),rgba(15,23,42,0.42))]"
+                  : index % 3 === 1
+                    ? "bg-[linear-gradient(145deg,rgba(20,44,69,0.8),rgba(30,58,88,0.46))]"
+                    : "bg-[linear-gradient(145deg,rgba(16,40,63,0.78),rgba(42,67,96,0.44))]";
+
+              return (
+                <div
+                  key={feature.title}
+                  className={`group relative overflow-hidden rounded-[28px] border border-white/15 p-6 shadow-[0_18px_42px_rgba(2,6,23,0.22)] transition hover:-translate-y-1 hover:border-amber-300/45 hover:shadow-[0_24px_54px_rgba(2,6,23,0.28)] ${cardTone} ${
+                    isFeaturedCard ? "sm:col-span-2" : ""
+                  }`}
+                >
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.18),_transparent_55%)] opacity-0 transition group-hover:opacity-100" />
+                  <div className={`relative ${isFeaturedCard ? "sm:flex sm:items-start sm:gap-5" : ""}`}>
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/8 text-amber-300">
+                      <feature.icon className="h-5 w-5" />
+                    </span>
+                    <div className={isFeaturedCard ? "mt-4 sm:mt-0" : ""}>
+                      <p className="text-[10px] uppercase tracking-[0.22em] text-amber-200/90">
+                        {isFeaturedCard ? "Destaque da plataforma" : "Módulo estratégico"}
+                      </p>
+                      <h3 className="mt-2 text-lg font-semibold text-white">{feature.title}</h3>
+                      <p className="mt-2 text-sm leading-6 text-slate-300">{feature.text}</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -681,17 +694,41 @@ const Landing = () => {
               </h2>
               <div className="h-1 w-16 rounded-full bg-gradient-to-r from-amber-400 to-sky-400" />
             </div>
-            <div className="grid gap-6 lg:grid-cols-3">
-              {steps.map((step) => (
+            <div className="relative grid gap-6 lg:grid-cols-3">
+              <div className="pointer-events-none absolute left-[15%] right-[15%] top-10 hidden h-px bg-gradient-to-r from-amber-400/35 via-sky-300/45 to-emerald-300/35 lg:block" />
+              {steps.map((step, index) => (
                 <div
                   key={step.step}
-                  className="group relative overflow-hidden rounded-2xl border border-white/15 bg-white/5 p-6 shadow-sm transition hover:-translate-y-1 hover:bg-white/10 hover:shadow-lg"
+                  className={`group relative overflow-hidden rounded-[26px] border p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg ${
+                    index === 1
+                      ? "border-amber-300/35 bg-[linear-gradient(165deg,rgba(251,191,36,0.14),rgba(15,23,42,0.34))]"
+                      : index === 2
+                        ? "border-sky-300/35 bg-[linear-gradient(165deg,rgba(56,189,248,0.14),rgba(15,23,42,0.34))]"
+                        : "border-white/15 bg-white/5 hover:bg-white/10"
+                  }`}
                 >
-                  <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-amber-400 to-sky-400 opacity-70" />
+                  <div
+                    className={`absolute inset-x-0 top-0 h-1 ${
+                      index === 1
+                        ? "bg-gradient-to-r from-amber-400 to-orange-400"
+                        : index === 2
+                          ? "bg-gradient-to-r from-sky-400 to-cyan-300"
+                          : "bg-gradient-to-r from-amber-400 to-sky-400 opacity-70"
+                    }`}
+                  />
                   <div className="relative">
-                    <span className="text-sm text-amber-300">{step.step}</span>
-                    <h3 className="mt-3 text-xl font-semibold">{step.title}</h3>
+                    <span className="inline-flex h-8 min-w-8 items-center justify-center rounded-full border border-white/25 px-2 text-xs font-semibold tracking-[0.16em] text-amber-200">
+                      {step.step}
+                    </span>
+                    <h3 className="mt-4 text-xl font-semibold">{step.title}</h3>
                     <p className="mt-2 text-sm text-slate-300">{step.text}</p>
+                    <p className="mt-4 text-xs uppercase tracking-[0.2em] text-slate-300/90">
+                      {index === 0
+                        ? "Diagnóstico em até 30 min"
+                        : index === 1
+                          ? "Implantação sem travar o time"
+                          : "Acompanhamento por indicadores"}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -771,17 +808,39 @@ const Landing = () => {
               </div>
             </div>
             <div className="grid gap-4">
-              {testimonials.map((testimonial) => (
-                <div
-                  key={testimonial.name}
-                  className="relative overflow-hidden rounded-2xl border border-white/15 bg-white/5 p-6 shadow-sm transition hover:-translate-y-1 hover:bg-white/10 hover:shadow-lg"
-                >
-                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 via-orange-400 to-sky-400 opacity-70" />
-                  <p className="text-slate-100">“{testimonial.quote}”</p>
-                  <p className="mt-4 text-sm font-semibold text-white">{testimonial.name}</p>
-                  <p className="text-xs text-slate-300">{testimonial.role}</p>
+              <article className="relative overflow-hidden rounded-[28px] border border-white/15 bg-[linear-gradient(145deg,rgba(15,23,42,0.72),rgba(30,41,59,0.54))] p-6 shadow-[0_18px_42px_rgba(2,6,23,0.22)]">
+                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 via-orange-400 to-sky-400 opacity-80" />
+                <p className="text-[11px] uppercase tracking-[0.28em] text-amber-200">Caso em destaque</p>
+                <p className="mt-4 text-slate-100">“{testimonials[0].quote}”</p>
+                <div className="mt-5 rounded-2xl border border-white/10 bg-white/6 px-4 py-3">
+                  <p className="text-sm font-semibold text-white">{testimonials[0].name}</p>
+                  <p className="text-xs text-slate-300">{testimonials[0].role}</p>
                 </div>
-              ))}
+              </article>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <article className="relative overflow-hidden rounded-2xl border border-white/15 bg-white/5 p-5 shadow-sm transition hover:-translate-y-1 hover:bg-white/10 hover:shadow-lg">
+                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-sky-400 to-cyan-300 opacity-75" />
+                  <p className="text-sm text-slate-100">“{testimonials[1].quote}”</p>
+                  <p className="mt-4 text-sm font-semibold text-white">{testimonials[1].name}</p>
+                  <p className="text-xs text-slate-300">{testimonials[1].role}</p>
+                </article>
+
+                <div className="rounded-2xl border border-emerald-300/25 bg-emerald-500/10 p-5 shadow-sm">
+                  <p className="text-[11px] uppercase tracking-[0.24em] text-emerald-200">Indicadores médios</p>
+                  <div className="mt-4 space-y-3">
+                    {stats.map((item) => (
+                      <div
+                        key={item.label}
+                        className="flex items-center justify-between rounded-xl border border-white/10 bg-white/7 px-3 py-2"
+                      >
+                        <span className="text-xs text-slate-200">{item.label}</span>
+                        <span className="text-sm font-semibold text-white">{item.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1026,5 +1085,4 @@ const Landing = () => {
 };
 
 export default Landing;
-
 
