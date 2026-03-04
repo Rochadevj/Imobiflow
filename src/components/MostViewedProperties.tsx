@@ -203,7 +203,7 @@ export default function MostViewedProperties() {
                 to={`/property/${property.property_code || property.property_id}`}
                 className="block rounded-lg transition-colors hover:bg-accent/5"
               >
-                <div className="flex items-center gap-4 rounded-lg border border-slate-200 p-3 transition-all hover:border-accent hover:shadow-md">
+                <div className="flex flex-col gap-3 rounded-lg border border-slate-200 p-3 transition-all hover:border-accent hover:shadow-md sm:flex-row sm:items-center sm:gap-4">
                   <div className="flex-shrink-0">
                     <div
                       className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold ${
@@ -224,14 +224,14 @@ export default function MostViewedProperties() {
                     <img
                       src={property.primary_image || "/placeholder.jpg"}
                       alt={property.title}
-                      className="h-20 w-20 object-cover"
+                      className="h-40 w-full object-cover sm:h-20 sm:w-20"
                     />
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <div className="mb-1 flex items-start justify-between gap-2">
+                    <div className="mb-1 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                       <h4 className="line-clamp-1 text-sm font-semibold text-foreground">{property.title}</h4>
-                      <Badge variant="outline" className="flex-shrink-0 border-slate-200 text-xs text-slate-700">
+                      <Badge variant="outline" className="w-fit flex-shrink-0 border-slate-200 text-xs text-slate-700">
                         {getPropertyTypeLabel(property.property_type)}
                       </Badge>
                     </div>
@@ -243,7 +243,7 @@ export default function MostViewedProperties() {
                       </span>
                     </div>
 
-                    <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <div className="text-sm font-bold text-accent">{formatPrice(property.price)}</div>
 
                       <div className="flex items-center gap-1 text-xs font-semibold text-primary">
@@ -262,7 +262,7 @@ export default function MostViewedProperties() {
 
         {!loading && properties.length > 0 && (
           <div className="mt-6 border-t border-slate-200 pt-4">
-            <div className="grid grid-cols-2 gap-4 text-center md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 text-center sm:grid-cols-2 md:grid-cols-3">
               <div>
                 <div className="text-2xl font-bold text-primary">{properties.length}</div>
                 <div className="text-xs text-muted-foreground">Imóveis ranqueados</div>
@@ -271,7 +271,7 @@ export default function MostViewedProperties() {
                 <div className="text-2xl font-bold text-accent">{totalViews}</div>
                 <div className="text-xs text-muted-foreground">Total de visualizações</div>
               </div>
-              <div className="col-span-2 md:col-span-1">
+              <div className="sm:col-span-2 md:col-span-1">
                 <div className="text-2xl font-bold text-emerald-600">
                   {properties.length > 0 ? Math.round(totalViews / properties.length) : 0}
                 </div>
@@ -284,3 +284,4 @@ export default function MostViewedProperties() {
     </Card>
   );
 }
+

@@ -222,6 +222,20 @@ const trustSignals = [
   "Estrutura pronta para escalar com segurança",
 ];
 
+const renderSentenceTitle = (text: string) => {
+  const parts = text.split(/(?<=\.)\s+/).filter(Boolean);
+
+  if (parts.length <= 1) {
+    return text;
+  }
+
+  return parts.map((part, index) => (
+    <span key={`${part}-${index}`} className="block">
+      {part}
+    </span>
+  ));
+};
+
 const Landing = () => {
   const [headerOffset, setHeaderOffset] = useState(0);
 
@@ -243,7 +257,7 @@ const Landing = () => {
         style={{ transform: `translateY(${headerOffset}px)` }}
       >
         <div className="container mx-auto px-4 py-4">
-          <div className="pointer-events-auto relative flex items-center justify-between gap-6 overflow-hidden rounded-2xl border border-white/20 bg-slate-800/65 px-4 py-3 shadow-[0_16px_32px_rgba(2,6,23,0.45)] backdrop-blur sm:px-6">
+          <div className="pointer-events-auto relative flex items-center justify-between gap-3 overflow-hidden rounded-2xl border border-white/20 bg-slate-800/65 px-4 py-3 shadow-[0_16px_32px_rgba(2,6,23,0.45)] backdrop-blur sm:gap-6 sm:px-6">
             <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 via-orange-400 to-sky-400 opacity-80" />
             <button
               type="button"
@@ -258,7 +272,7 @@ const Landing = () => {
                 <p className="text-lg font-['Space Grotesk'] font-semibold tracking-tight">
                   Imobiflow
                 </p>
-                <p className="text-xs uppercase tracking-[0.3em] text-slate-300">Sistema de Gestão</p>
+                <p className="hidden text-xs uppercase tracking-[0.3em] text-slate-300 sm:block">Sistema de Gestão</p>
               </div>
             </button>
 
@@ -270,7 +284,7 @@ const Landing = () => {
               <a href="#faq" className="hover:text-amber-300 transition">FAQ</a>
             </nav>
 
-            <div className="flex items-center gap-3">
+            <div className="flex shrink-0 items-center gap-2 sm:gap-3">
               <Button
                 variant="ghost"
                 className="hidden sm:inline-flex text-slate-200 hover:text-white"
@@ -434,11 +448,12 @@ const Landing = () => {
             <div>
               <p className="text-xs uppercase tracking-[0.4em] text-amber-300">Percepção de valor</p>
               <h2 className="mt-4 text-3xl font-['Space Grotesk'] font-semibold sm:text-4xl">
-                A landing ficou mais forte porque mostra operação real, não só promessa bonita.
+                {renderSentenceTitle("A imobiliária ganha gestão. O cliente final percebe confiança.")}
               </h2>
               <p className="mt-4 max-w-xl text-slate-300">
-                Para vender software imobiliário, a página precisa comunicar clareza, velocidade e confiança em
-                poucos segundos. Agora esse bloco deixa isso mais evidente.
+                A Imobiflow não entrega só um painel interno. Ela entrega presença digital profissional,
+                atendimento mais rápido e uma experiência mais organizada para quem quer comprar, alugar ou
+                anunciar um imóvel.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 {[
@@ -580,7 +595,7 @@ const Landing = () => {
           <div className="rounded-[32px] border border-slate-700/75 bg-[linear-gradient(145deg,#142c45_0%,#1b3551_52%,#233d5a_100%)] p-6 shadow-[0_24px_58px_rgba(2,6,23,0.42)] sm:p-8">
             <p className="text-xs uppercase tracking-[0.4em] text-amber-300">Recursos principais</p>
             <h2 className="mt-4 text-3xl font-['Space Grotesk'] font-semibold sm:text-4xl">
-              O cliente percebe velocidade e confiança. O time percebe organização de verdade.
+              {renderSentenceTitle("O cliente percebe velocidade e confiança. O time percebe organização de verdade.")}
             </h2>
             <p className="mt-4 max-w-2xl text-slate-300">
               Uma boa plataforma imobiliária precisa resolver experiência pública e rotina interna ao mesmo tempo.
@@ -869,7 +884,7 @@ const Landing = () => {
       </section>
 
       <section className="container mx-auto px-4 pb-20 animate-fade-up">
-        <div className="relative overflow-hidden rounded-[32px] border border-slate-700/80 bg-[linear-gradient(140deg,#1a3049_0%,#243d59_52%,#1a3049_100%)] p-10 text-white shadow-[0_25px_60px_rgba(2,6,23,0.5)]">
+        <div className="relative overflow-hidden rounded-[32px] border border-slate-700/80 bg-[linear-gradient(140deg,#1a3049_0%,#243d59_52%,#1a3049_100%)] p-6 text-white shadow-[0_25px_60px_rgba(2,6,23,0.5)] sm:p-10">
           <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-amber-300/30 blur-3xl" />
           <div className="absolute bottom-0 left-10 h-40 w-40 rounded-full bg-sky-300/25 blur-3xl" />
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
@@ -953,4 +968,5 @@ const Landing = () => {
 };
 
 export default Landing;
+
 

@@ -88,7 +88,7 @@ const Auth = () => {
           <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-400 text-slate-900 shadow-[0_12px_26px_rgba(251,146,60,0.35)]">
             <Building2 className="h-6 w-6" />
           </div>
-          <h1 className="mt-5 text-4xl font-semibold leading-tight">
+          <h1 className="mt-5 text-3xl font-semibold leading-tight sm:text-4xl">
             Acesse o painel da <span className="text-amber-300">Imobiflow</span>
           </h1>
           <p className="mt-3 max-w-xl text-sm text-white/80 md:text-base">
@@ -235,3 +235,4 @@ const Auth = () => {
 };
 
 export default Auth;
+
