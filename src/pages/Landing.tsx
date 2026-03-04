@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -17,11 +17,11 @@ import {
   Rocket,
   ShieldCheck,
   Sparkles,
-  TimerReset,
   Users2,
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CONTACT_WHATSAPP_DISPLAY, buildWhatsAppLink } from "@/lib/contact";
 
 const stats = [
   { label: "Imobiliárias onboard", value: "120+" },
@@ -121,7 +121,7 @@ const testimonials = [
 const plans = [
   {
     name: "Start",
-    price: "R$ 289",
+    price: "R$ 199",
     description: "Para operações menores que querem se organizar.",
     features: [
       "Site responsivo com SEO",
@@ -132,7 +132,7 @@ const plans = [
   },
   {
     name: "Growth",
-    price: "R$ 549",
+    price: "R$ 349",
     description: "Para equipes em crescimento e time comercial ativo.",
     features: [
       "Tudo do Start",
@@ -913,7 +913,7 @@ const Landing = () => {
                 size="lg"
                 asChild
               >
-                <Link to="/auth">Agendar demo</Link>
+                <Link to="/auth">Agendar Contato</Link>
               </Button>
               <Button
                 variant="outline"
@@ -929,37 +929,93 @@ const Landing = () => {
       </section>
 
       <footer id="contato" className="border-t border-slate-500/55 bg-[#182f4a]/92">
-        <div className="container mx-auto px-4 py-10">
-          <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
-            <div className="space-y-2">
-              <p className="text-lg font-['Space Grotesk'] font-semibold">Imobiflow</p>
-              <p className="text-sm text-slate-300">
-                Software de gestão para negócios imobiliários.
+        <div className="container mx-auto px-4 py-12">
+          <div className="grid gap-8 border-b border-white/10 pb-10 md:grid-cols-[1.1fr_0.9fr_1fr]">
+            <div className="space-y-5">
+              <div className="flex items-center gap-3">
+                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-400 text-slate-900 shadow-[0_10px_24px_rgba(251,146,60,0.3)]">
+                  <Building2 className="h-6 w-6" />
+                </span>
+                <div>
+                  <p className="text-lg font-['Space Grotesk'] font-semibold text-white">Imobiflow</p>
+                  <p className="text-xs uppercase tracking-[0.28em] text-slate-300">Plataforma imobiliária</p>
+                </div>
+              </div>
+              <p className="max-w-md text-sm leading-6 text-slate-300">
+                Site imobiliário, gestão comercial e operação centralizada em uma única plataforma.
               </p>
+              <div className="flex flex-wrap gap-2">
+                {["Site próprio", "CRM comercial", "Operação integrada"].map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-full border border-white/15 bg-white/8 px-3 py-1 text-xs text-slate-100"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
             </div>
-            <div className="flex flex-wrap gap-3 text-sm text-slate-300">
-              <span className="inline-flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-amber-500" />
-                Suporte humano
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <Zap className="h-4 w-4 text-amber-500" />
-                Implantação rápida
-              </span>
+
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-amber-300">Institucional</p>
+              <nav className="mt-4 grid gap-3 text-sm text-slate-300">
+                <a href="#diferenciais" className="transition hover:text-white">Diferenciais</a>
+                <a href="#recursos" className="transition hover:text-white">Recursos</a>
+                <a href="#como-funciona" className="transition hover:text-white">Como funciona</a>
+                <a href="#planos" className="transition hover:text-white">Planos</a>
+                <a href="#faq" className="transition hover:text-white">FAQ</a>
+              </nav>
             </div>
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                className="rounded-full border-white/30 bg-white/10 text-white hover:bg-white/20"
-                asChild
-              >
-                <a href="mailto:contato@imobiflow.com">Falar com vendas</a>
-              </Button>
+
+            <div className="rounded-[28px] border border-white/12 bg-white/6 p-5 shadow-[0_18px_38px_rgba(2,6,23,0.18)]">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-amber-300">Contato</p>
+              <div className="mt-4 space-y-3 text-sm text-slate-200">
+                <a href="mailto:contato@imobiflow.com" className="flex items-center gap-2 transition hover:text-white">
+                  <MessageCircle className="h-4 w-4 text-amber-400" />
+                  contato@imobiflow.com
+                </a>
+                <a
+                  href={buildWhatsAppLink("Olá! Quero conhecer melhor a plataforma Imobiflow.")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 transition hover:text-white"
+                >
+                  <Link2 className="h-4 w-4 text-amber-400" />
+                  WhatsApp: {CONTACT_WHATSAPP_DISPLAY}
+                </a>
+                <Link to="/politica-privacidade" className="flex items-center gap-2 transition hover:text-white">
+                  <FileText className="h-4 w-4 text-amber-400" />
+                  Política de Privacidade
+                </Link>
+              </div>
+              <div className="mt-6 flex flex-col gap-3">
+                <Button
+                  className="rounded-full bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 text-slate-900 hover:from-amber-300 hover:via-orange-400 hover:to-amber-400"
+                  asChild
+                >
+                  <Link to="/auth">Solicitar apresentação</Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="rounded-full border-white/25 bg-white/8 text-white hover:bg-white/15"
+                  asChild
+                >
+                  <Link to="/imobiliaria">Ver ambiente demo</Link>
+                </Button>
+              </div>
             </div>
           </div>
-          <div className="mt-8 flex flex-col gap-3 text-xs text-slate-400 md:flex-row md:items-center md:justify-between">
-            <span>Imobiflow · {new Date().getFullYear()} · Todos os direitos reservados</span>
-            <span>Política de privacidade</span>
+
+          <div className="mt-6 flex flex-col gap-4 text-xs text-slate-400 md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-wrap gap-4">
+              <span>Imobiflow · {new Date().getFullYear()} · Todos os direitos reservados</span>
+              <span>Software para operações imobiliárias</span>
+            </div>
+            <div className="flex flex-wrap gap-4">
+              <span>Site</span>
+              <span>CRM</span>
+              <span>Atendimento</span>
+            </div>
           </div>
         </div>
       </footer>
@@ -968,5 +1024,6 @@ const Landing = () => {
 };
 
 export default Landing;
+
 
 
