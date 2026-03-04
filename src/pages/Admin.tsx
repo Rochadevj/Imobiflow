@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { User } from "@supabase/supabase-js";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import Footer from "@/components/Footer";
 import MostViewedProperties from "@/components/MostViewedProperties";
@@ -8,8 +9,21 @@ import Navbar from "@/components/Navbar";
 import PropertyEditForm from "@/components/PropertyEditForm";
 import PropertyForm from "@/components/PropertyForm";
 import PropertyList from "@/components/PropertyList";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   BarChart3,
@@ -26,7 +40,10 @@ import {
   MessageCircle,
   Plus,
   Rocket,
+  Settings,
+  ShieldAlert,
   TrendingUp,
+  Trash2,
   Users2,
   Zap,
 } from "lucide-react";
@@ -131,6 +148,12 @@ const formatCurrency = (value: number) =>
     maximumFractionDigits: 0,
   });
 
+const isConfirmedUser = (user: User | null) => Boolean(user?.email_confirmed_at);
+const configuredDeleteAccountFunctionName = import.meta.env.VITE_DELETE_ACCOUNT_FUNCTION_NAME?.trim();
+const deleteAccountFunctionNames = Array.from(
+  new Set([configuredDeleteAccountFunctionName, "delete-account", "quick-action"].filter(Boolean)),
+);
+
 const Admin = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
@@ -139,6 +162,9 @@ const Admin = () => {
   const [editingPropertyId, setEditingPropertyId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [dashboardView, setDashboardView] = useState("resumo");
+  const [deleteAccountOpen, setDeleteAccountOpen] = useState(false);
+  const [deleteAccountConfirmation, setDeleteAccountConfirmation] = useState("");
+  const [deletingAccount, setDeletingAccount] = useState(false);
   const [stats, setStats] = useState<DashboardStats>({
     total: 0,
     available: 0,
@@ -149,7 +175,10 @@ const Admin = () => {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
+      if (!session || !isConfirmedUser(session.user)) {
+        if (session && !isConfirmedUser(session.user)) {
+          void supabase.auth.signOut();
+        }
         navigate("/auth");
       } else {
         setUser(session.user);
@@ -161,10 +190,14 @@ const Admin = () => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_, session) => {
-      if (!session) {
+      if (!session || !isConfirmedUser(session.user)) {
+        if (session && !isConfirmedUser(session.user)) {
+          void supabase.auth.signOut();
+        }
         navigate("/auth");
       } else {
         setUser(session.user);
+        setLoading(false);
         fetchStats(session.user.id);
       }
     });
@@ -254,6 +287,71 @@ const Admin = () => {
     setActiveTab("edit");
   };
 
+  const normalizedUserEmail = user?.email?.trim().toLowerCase() ?? "";
+  const canDeleteAccount =
+    normalizedUserEmail.length > 0 &&
+    deleteAccountConfirmation.trim().toLowerCase() === normalizedUserEmail;
+
+  const handleDeleteAccount = async () => {
+    if (!user?.email) {
+      toast.error("Nao foi possivel validar a conta atual.");
+      return;
+    }
+
+    if (!canDeleteAccount) {
+      toast.error("Digite seu e-mail exatamente como confirmacao.");
+      return;
+    }
+
+    setDeletingAccount(true);
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.access_token) {
+      toast.error("Sua sessao expirou. Entre novamente antes de excluir a conta.");
+      setDeletingAccount(false);
+      return;
+    }
+
+    let functionErrorMessage = "";
+    let deleted = false;
+
+    for (const functionName of deleteAccountFunctionNames) {
+      const { error } = await supabase.functions.invoke(functionName, {
+        body: {},
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (!error) {
+        deleted = true;
+        break;
+      }
+
+      functionErrorMessage = error.message?.trim() || functionErrorMessage;
+    }
+
+    if (!deleted) {
+      toast.error(
+        functionErrorMessage
+          ? `Nao foi possivel excluir a conta: ${functionErrorMessage}`
+          : "Nao foi possivel excluir a conta agora. Verifique se a Edge Function foi publicada.",
+      );
+      setDeletingAccount(false);
+      return;
+    }
+
+    await supabase.auth.signOut();
+    setDeletingAccount(false);
+    setDeleteAccountOpen(false);
+    setDeleteAccountConfirmation("");
+    toast.success("Conta excluida com sucesso.");
+    navigate("/auth");
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -300,6 +398,10 @@ const Admin = () => {
             <TabsTrigger value="add" className="rounded-xl px-4 py-2">
               <Plus className="mr-2 h-4 w-4" />
               Adicionar
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="rounded-xl px-4 py-2">
+              <Settings className="mr-2 h-4 w-4" />
+              Configuracoes
             </TabsTrigger>
             {editingPropertyId ? (
               <TabsTrigger value="edit" className="rounded-xl px-4 py-2">
@@ -588,6 +690,116 @@ const Admin = () => {
 
           <TabsContent value="add" className="mt-6">
             <PropertyForm onSuccess={handlePropertyAdded} />
+          </TabsContent>
+
+          <TabsContent value="settings" className="mt-6">
+            <section className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+              <Card className="section-shell p-1">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl text-slate-900">
+                    <Settings className="h-5 w-5 text-amber-600" />
+                    Configuracoes da conta
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="surface-card-muted p-4">
+                    <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Conta atual</p>
+                    <p className="mt-2 text-base font-semibold text-slate-900">{user?.email || "Sem e-mail"}</p>
+                    <p className="mt-2 text-sm text-slate-600">
+                      Se voce excluir a conta, o acesso e os dados vinculados a ela serao removidos do sistema.
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+                    <p className="text-sm font-semibold text-emerald-800">Recriacao do mesmo e-mail</p>
+                    <p className="mt-2 text-sm text-emerald-700">
+                      A exclusao sera definitiva. Depois disso, voce podera criar uma nova conta com o mesmo e-mail.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="section-shell border-rose-200 p-1">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl text-rose-700">
+                    <ShieldAlert className="h-5 w-5" />
+                    Zona de risco
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="rounded-xl border border-rose-200 bg-rose-50 p-4">
+                    <p className="text-sm font-semibold text-rose-800">Excluir conta permanentemente</p>
+                    <p className="mt-2 text-sm text-rose-700">
+                      Isso remove o usuario do Supabase Auth, encerra o acesso ao painel e apaga os dados associados.
+                    </p>
+                  </div>
+
+                  <AlertDialog
+                    open={deleteAccountOpen}
+                    onOpenChange={(open) => {
+                      setDeleteAccountOpen(open);
+                      if (!open) {
+                        setDeleteAccountConfirmation("");
+                      }
+                    }}
+                  >
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        className="h-11 rounded-xl bg-rose-600 text-white hover:bg-rose-700"
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Excluir minha conta
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Excluir conta permanentemente?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Essa acao nao pode ser desfeita. Para confirmar, digite seu e-mail abaixo exatamente como ele aparece na conta.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium text-slate-900">E-mail da conta</p>
+                        <p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                          {user?.email}
+                        </p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label htmlFor="delete-account-confirmation" className="text-sm font-medium text-slate-900">
+                          Confirmacao
+                        </label>
+                        <Input
+                          id="delete-account-confirmation"
+                          type="email"
+                          placeholder="Digite seu e-mail para confirmar"
+                          value={deleteAccountConfirmation}
+                          onChange={(event) => setDeleteAccountConfirmation(event.target.value)}
+                          autoComplete="email"
+                        />
+                      </div>
+
+                      <AlertDialogFooter>
+                        <AlertDialogCancel disabled={deletingAccount}>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction
+                          className="bg-rose-600 text-white hover:bg-rose-700 focus-visible:ring-rose-500"
+                          onClick={(event) => {
+                            event.preventDefault();
+                            void handleDeleteAccount();
+                          }}
+                          disabled={!canDeleteAccount || deletingAccount}
+                        >
+                          {deletingAccount ? "Excluindo..." : "Excluir definitivamente"}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </CardContent>
+              </Card>
+            </section>
           </TabsContent>
 
           {editingPropertyId ? (
