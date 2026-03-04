@@ -792,15 +792,17 @@ const Landing = () => {
           <div className="absolute -right-24 top-10 h-52 w-52 rounded-full bg-amber-300/30 blur-3xl" />
           <div className="absolute -left-16 bottom-0 h-40 w-40 rounded-full bg-sky-300/25 blur-3xl" />
           <div className="text-center">
-            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-emerald-300/35 bg-emerald-500/12 px-3 py-1 text-xs font-medium text-emerald-200">
-              <BadgeCheck className="h-3.5 w-3.5" />
-              Sem fidelidade e sem setup oculto
+            <div className="mx-auto flex w-fit flex-col items-center gap-3 sm:gap-4">
+              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300/35 bg-emerald-500/12 px-3 py-1 text-xs font-medium text-emerald-200">
+                <BadgeCheck className="h-3.5 w-3.5" />
+                Sem fidelidade e sem setup oculto
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/55 bg-amber-400/12 px-5 py-2.5 text-base font-semibold text-amber-200 shadow-sm">
+                <Sparkles className="h-4 w-4 text-amber-300" />
+                Planos
+              </div>
             </div>
-            <div className="mx-auto mt-4 inline-flex items-center gap-2 rounded-full border border-amber-300/55 bg-amber-400/12 px-5 py-2.5 text-base font-semibold text-amber-200 shadow-sm">
-              <Sparkles className="h-4 w-4 text-amber-300" />
-              Planos
-            </div>
-            <h2 className="mt-4 text-4xl font-['Space Grotesk'] font-semibold sm:text-5xl">
+            <h2 className="mt-6 text-4xl font-['Space Grotesk'] font-semibold sm:text-5xl">
               Escolha o ritmo ideal para sua operação.
             </h2>
             <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-gradient-to-r from-amber-400 to-sky-400" />
@@ -1024,6 +1026,5 @@ const Landing = () => {
 };
 
 export default Landing;
-
 
 
