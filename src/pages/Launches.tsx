@@ -93,7 +93,7 @@ const Launches = () => {
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/75">
-                Página dedicada
+                Vitrine de lançamentos
               </p>
               <h1 className="mt-3 text-3xl font-bold sm:text-4xl md:text-5xl">
                 Lançamentos
