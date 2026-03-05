@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { toast } from "sonner";
 import {
+  ArrowLeft,
   Building2,
   CheckCircle2,
   Clock3,
@@ -140,6 +141,30 @@ const Auth = () => {
     setSignupSentAt(null);
     setHoneypot("");
     resetCaptcha();
+  };
+
+  const handleGoBack = () => {
+    if (typeof window === "undefined") {
+      navigate("/");
+      return;
+    }
+
+    const hasSameOriginReferrer = (() => {
+      if (!document.referrer) return false;
+
+      try {
+        return new URL(document.referrer).origin === window.location.origin;
+      } catch {
+        return false;
+      }
+    })();
+
+    if (hasSameOriginReferrer && window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    navigate("/");
   };
 
   const validateLoginInputs = () => {
@@ -345,6 +370,18 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-[linear-gradient(160deg,#0f172a_0%,#111827_52%,#1e293b_100%)] px-4 py-8">
+      <div className="mx-auto mb-4 flex w-full max-w-6xl">
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={handleGoBack}
+          className="h-10 rounded-xl border border-white/15 bg-white/5 px-3 text-white/85 hover:bg-white/10 hover:text-white"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Voltar
+        </Button>
+      </div>
+
       <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
         <section className="rounded-[28px] border border-white/15 bg-white/8 p-7 text-white backdrop-blur md:p-9">
           <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-400 text-slate-900 shadow-[0_12px_26px_rgba(251,146,60,0.35)]">
@@ -391,9 +428,6 @@ const Auth = () => {
         <Card className="border border-white/20 bg-slate-900/78 text-white shadow-[0_24px_44px_rgba(2,6,23,0.42)] backdrop-blur">
           <CardHeader>
             <CardTitle className="text-2xl text-white">Bem-vindo</CardTitle>
-            <CardDescription className="text-white/75">
-              Entre com sua conta ou crie um novo acesso com validação por código no e-mail.
-            </CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as AuthTab)} className="w-full">
