@@ -35,13 +35,13 @@ import {
   resetSignupAttempts,
 } from "@/lib/authSecurity";
 
-const emailSchema = z.string().email({ message: "E-mail invalido" });
+const emailSchema = z.string().email({ message: "E-mail inválido" });
 const loginPasswordSchema = z.string().min(1, { message: "Informe sua senha" });
 
 const benefits = [
-  "Gerenciamento completo de imoveis",
-  "Fluxo de atendimento e cadastro",
-  "Confirmacao por e-mail para reduzir contas falsas",
+  "Painel simples para anunciar e organizar seus imóveis",
+  "Acompanhamento de atendimentos e cadastros em um só lugar",
+  "Acesso protegido com confirmação por e-mail",
 ];
 
 type AuthTab = "login" | "signup";
@@ -166,7 +166,7 @@ const Auth = () => {
     }
 
     if (honeypot.trim()) {
-      toast.error("Nao foi possivel validar o cadastro.");
+      toast.error("Não foi possível validar o cadastro.");
       return false;
     }
 
@@ -193,7 +193,7 @@ const Auth = () => {
     }
 
     if (captchaEnabled && !captchaToken) {
-      toast.error("Conclua a verificacao anti-bot antes de continuar.");
+      toast.error("Conclua a verificação anti-bot antes de continuar.");
       return false;
     }
 
@@ -258,7 +258,7 @@ const Auth = () => {
 
     if (data.session) {
       await supabase.auth.signOut();
-      toast.error("Ative a confirmacao de e-mail no Supabase para exigir o codigo antes de liberar o acesso.");
+      toast.error("Ative a confirmação de e-mail no Supabase para exigir o código antes de liberar o acesso.");
       setLoading(false);
       return;
     }
@@ -271,7 +271,7 @@ const Auth = () => {
     setSignupSentAt(Date.now());
     setNow(Date.now());
 
-    toast.success("Codigo enviado para o seu e-mail. Digite-o para concluir o cadastro.");
+    toast.success("Código enviado para o seu e-mail. Digite-o para concluir o cadastro.");
     setLoading(false);
   };
 
@@ -280,7 +280,7 @@ const Auth = () => {
 
     const token = normalizeOtp(signupOtp);
     if (!isAllowedOtpLength(token)) {
-      toast.error(`Informe o codigo completo enviado para o e-mail (${OTP_ALLOWED_LENGTHS.join(" ou ")} digitos).`);
+      toast.error(`Informe o código completo enviado para o e-mail (${OTP_ALLOWED_LENGTHS.join(" ou ")} dígitos).`);
       return;
     }
 
@@ -313,7 +313,7 @@ const Auth = () => {
     }
 
     if (captchaEnabled && !captchaToken) {
-      toast.error("Conclua a verificacao anti-bot para reenviar o codigo.");
+      toast.error("Conclua a verificação anti-bot para reenviar o código.");
       return;
     }
 
@@ -337,7 +337,7 @@ const Auth = () => {
     } else {
       setSignupSentAt(Date.now());
       setNow(Date.now());
-      toast.success("Enviamos um novo codigo para o seu e-mail.");
+      toast.success("Enviamos um novo código para o seu e-mail.");
     }
 
     setLoading(false);
@@ -354,8 +354,7 @@ const Auth = () => {
             Acesse o painel da <span className="text-amber-300">Imobiflow</span>
           </h1>
           <p className="mt-3 max-w-xl text-sm text-white/80 md:text-base">
-            Ambiente administrativo com validacao por e-mail, senha forte e camadas extras para reduzir
-            cadastros automatizados.
+            Tudo em um só painel para você cadastrar, acompanhar e gerenciar seus imóveis com praticidade.
           </p>
 
           <div className="mt-7 space-y-3">
@@ -371,19 +370,19 @@ const Auth = () => {
             <div className="rounded-2xl border border-white/20 bg-white/10 p-4">
               <p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-white/65">
                 <ShieldCheck className="h-3.5 w-3.5 text-amber-300" />
-                Seguranca
+                Acesso protegido
               </p>
               <p className="mt-2 text-sm text-white/85">
-                OTP por e-mail, PKCE no Supabase e senha endurecida no cadastro.
+                Seu e-mail é confirmado antes de liberar o uso da conta.
               </p>
             </div>
             <div className="rounded-2xl border border-white/20 bg-white/10 p-4">
               <p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-white/65">
                 <Lock className="h-3.5 w-3.5 text-amber-300" />
-                Antiabuso
+                Cadastro monitorado
               </p>
               <p className="mt-2 text-sm text-white/85">
-                Honeypot, tempo minimo de preenchimento, cooldown e limite de tentativas no cadastro.
+                Validações automáticas ajudam a manter o ambiente confiável.
               </p>
             </div>
           </div>
@@ -393,7 +392,7 @@ const Auth = () => {
           <CardHeader>
             <CardTitle className="text-2xl text-white">Bem-vindo</CardTitle>
             <CardDescription className="text-white/75">
-              Entre com sua conta ou crie um novo acesso com validacao por codigo no e-mail.
+              Entre com sua conta ou crie um novo acesso com validação por código no e-mail.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -446,7 +445,7 @@ const Auth = () => {
                     />
                   </div>
                   <p className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white/70">
-                    Contas novas so recebem acesso ao painel depois da confirmacao do e-mail.
+                    Contas novas só recebem acesso ao painel depois da confirmação do e-mail.
                   </p>
                   <Button
                     type="submit"
@@ -537,7 +536,7 @@ const Auth = () => {
 
                     {captchaEnabled ? (
                       <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                        <p className="mb-3 text-sm font-medium text-white">Verificacao anti-bot</p>
+                        <p className="mb-3 text-sm font-medium text-white">Verificação anti-bot</p>
                         <TurnstileWidget
                           key={captchaNonce}
                           siteKey={turnstileSiteKey}
@@ -546,18 +545,14 @@ const Auth = () => {
                           onError={() => setCaptchaToken("")}
                         />
                       </div>
-                    ) : (
-                      <div className="rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-xs text-amber-100">
-                        Dica: configure `VITE_TURNSTILE_SITE_KEY` em producao para ativar captcha real contra bots.
-                      </div>
-                    )}
+                    ) : null}
 
                     <Button
                       type="submit"
                       className="h-12 w-full rounded-xl bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 font-semibold text-slate-900 hover:from-amber-300 hover:via-orange-400 hover:to-amber-400"
                       disabled={loading}
                     >
-                      {loading ? "Enviando codigo..." : "Criar conta e enviar codigo"}
+                      {loading ? "Enviando código..." : "Criar conta e enviar código"}
                     </Button>
                   </form>
                 ) : (
@@ -565,12 +560,12 @@ const Auth = () => {
                     <div className="rounded-2xl border border-emerald-300/20 bg-emerald-300/10 p-4">
                       <p className="inline-flex items-center gap-2 text-sm font-medium text-emerald-100">
                         <MailCheck className="h-4 w-4" />
-                        Confirmacao de e-mail
+                        Confirmação de e-mail
                       </p>
                       <p className="mt-2 text-sm text-white/78">
                         {signupSentAt
-                          ? "Enviamos um codigo de confirmacao para "
-                          : "Digite o codigo enviado para "}
+                          ? "Enviamos um código de confirmação para "
+                          : "Digite o código enviado para "}
                         <span className="font-semibold">{signupEmail}</span>
                         {!signupSentAt ? " ou solicite um novo envio abaixo." : "."}
                       </p>
@@ -578,7 +573,7 @@ const Auth = () => {
 
                     <div className="space-y-2">
                       <Label htmlFor="signup-otp" className="text-white/85">
-                        Codigo de confirmacao
+                        Código de confirmação
                       </Label>
                       <InputOTP
                         id="signup-otp"
@@ -601,7 +596,7 @@ const Auth = () => {
 
                     {captchaEnabled ? (
                       <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                        <p className="mb-3 text-sm font-medium text-white">Verificacao anti-bot para reenviar codigo</p>
+                        <p className="mb-3 text-sm font-medium text-white">Verificação anti-bot para reenviar código</p>
                         <TurnstileWidget
                           key={captchaNonce}
                           siteKey={turnstileSiteKey}
@@ -615,7 +610,7 @@ const Auth = () => {
                     <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-xs text-white/70">
                       <p className="inline-flex items-center gap-2">
                         <Clock3 className="h-3.5 w-3.5 text-amber-300" />
-                        O codigo expira e pode precisar de reenvio se ficar muito tempo sem uso.
+                        O código expira e pode precisar de reenvio se ficar muito tempo sem uso.
                       </p>
                     </div>
 
@@ -624,7 +619,7 @@ const Auth = () => {
                       className="h-12 w-full rounded-xl bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 font-semibold text-slate-900 hover:from-amber-300 hover:via-orange-400 hover:to-amber-400"
                       disabled={loading}
                     >
-                      {loading ? "Validando codigo..." : "Validar codigo e entrar"}
+                      {loading ? "Validando código..." : "Validar código e entrar"}
                     </Button>
 
                     <div className="flex flex-col gap-3 sm:flex-row">
@@ -638,7 +633,7 @@ const Auth = () => {
                         <RefreshCw className="h-4 w-4" />
                         {resendRemainingMs > 0
                           ? `Reenviar em ${formatDuration(resendRemainingMs)}`
-                          : "Reenviar codigo"}
+                          : "Reenviar código"}
                       </Button>
                       <Button
                         type="button"
@@ -662,4 +657,3 @@ const Auth = () => {
 };
 
 export default Auth;
-

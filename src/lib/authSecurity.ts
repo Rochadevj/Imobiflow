@@ -22,17 +22,17 @@ const passwordRules: PasswordRule[] = [
   },
   {
     id: "uppercase",
-    label: "Uma letra maiuscula",
+    label: "Uma letra maiúscula",
     test: (password) => /[A-Z]/.test(password),
   },
   {
     id: "lowercase",
-    label: "Uma letra minuscula",
+    label: "Uma letra minúscula",
     test: (password) => /[a-z]/.test(password),
   },
   {
     id: "number",
-    label: "Um numero",
+    label: "Um número",
     test: (password) => /\d/.test(password),
   },
   {
@@ -110,11 +110,11 @@ export const getStrongPasswordError = (password: string, email: string) => {
 
   const emailPrefix = email.trim().split("@")[0]?.toLowerCase();
   if (emailPrefix && emailPrefix.length >= 3 && password.toLowerCase().includes(emailPrefix)) {
-    return "A senha nao pode conter o e-mail";
+    return "A senha não pode conter o e-mail";
   }
 
   if (commonWeakPatterns.test(password)) {
-    return "Use uma senha menos previsivel";
+    return "Use uma senha menos previsível";
   }
 
   return null;
@@ -143,23 +143,23 @@ export const formatDuration = (milliseconds: number) => {
 
 export const formatAuthError = (message: string) => {
   if (/email not confirmed/i.test(message)) {
-    return "Seu e-mail ainda nao foi confirmado. Digite o codigo enviado para concluir o cadastro.";
+    return "Seu e-mail ainda não foi confirmado. Digite o código enviado para concluir o cadastro.";
   }
 
   if (/invalid login credentials/i.test(message)) {
-    return "E-mail ou senha invalidos.";
+    return "E-mail ou senha inválidos.";
   }
 
   if (/token has expired|otp expired|token is invalid|otp is invalid/i.test(message)) {
-    return "Codigo invalido ou expirado. Solicite um novo codigo.";
+    return "Código inválido ou expirado. Solicite um novo código.";
   }
 
   if (/rate limit/i.test(message)) {
-    return "Voce atingiu o limite de tentativas. Aguarde alguns minutos antes de tentar novamente.";
+    return "Você atingiu o limite de tentativas. Aguarde alguns minutos antes de tentar novamente.";
   }
 
   if (/captcha/i.test(message)) {
-    return "A verificacao anti-bot falhou. Recarregue o captcha e tente novamente.";
+    return "A verificação anti-bot falhou. Recarregue o captcha e tente novamente.";
   }
 
   return message;
