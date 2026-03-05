@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -695,7 +695,6 @@ const Landing = () => {
               <div className="h-1 w-16 rounded-full bg-gradient-to-r from-amber-400 to-sky-400" />
             </div>
             <div className="relative grid gap-6 lg:grid-cols-3">
-              <div className="pointer-events-none absolute left-[15%] right-[15%] top-10 hidden h-px bg-gradient-to-r from-amber-400/35 via-sky-300/45 to-emerald-300/35 lg:block" />
               {steps.map((step, index) => (
                 <div
                   key={step.step}
