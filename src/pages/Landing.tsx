@@ -284,21 +284,22 @@ const Landing = () => {
               <a href="#faq" className="hover:text-amber-300 transition">FAQ</a>
             </nav>
 
-            <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+            <div className="flex shrink-0 items-center gap-2">
               <Button
                 variant="ghost"
-                className="hidden sm:inline-flex text-slate-200 hover:text-white"
+                className="h-10 rounded-full border border-white/15 bg-white/8 px-3 text-sm text-slate-100 hover:bg-white/12 hover:text-white sm:px-4"
                 asChild
               >
                 <Link to="/auth">Entrar</Link>
               </Button>
               <Button
-                className="rounded-full bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 text-slate-900 shadow-[0_12px_28px_rgba(251,146,60,0.3)] transition-transform hover:-translate-y-0.5 hover:from-amber-300 hover:via-orange-400 hover:to-amber-400"
+                className="h-10 rounded-full bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 px-3 text-sm text-slate-900 shadow-[0_12px_28px_rgba(251,146,60,0.3)] transition-transform hover:-translate-y-0.5 hover:from-amber-300 hover:via-orange-400 hover:to-amber-400 sm:px-5"
                 asChild
               >
                 <Link to="/imobiliaria">
-                  Ver demo
-                  <ArrowRight className="h-4 w-4" />
+                  <span className="sm:hidden">Demo</span>
+                  <span className="hidden sm:inline">Ver demo</span>
+                  <ArrowRight className="hidden h-4 w-4 sm:inline-flex" />
                 </Link>
               </Button>
             </div>
