@@ -217,6 +217,15 @@ export type Database = {
       anonymize_ip: { Args: { ip_text: string }; Returns: string }
       cleanup_old_property_views: { Args: never; Returns: number }
       generate_property_code: { Args: never; Returns: string }
+      record_property_view: {
+        Args: {
+          p_ip_address: string
+          p_property_id: string
+          p_session_id?: string
+          p_user_agent?: string
+        }
+        Returns: boolean
+      }
       get_most_viewed_properties: {
         Args: { p_end_date?: string; p_limit?: number; p_start_date?: string }
         Returns: {

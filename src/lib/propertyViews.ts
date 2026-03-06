@@ -1,9 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 
 const VIEW_THROTTLE_MS = 30000;
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-
 const getSessionId = (): string => {
   let sessionId = sessionStorage.getItem("visitor_session_id");
 
@@ -44,26 +41,6 @@ const getUserIP = async (): Promise<string> => {
   }
 };
 
-const invokePublicRpc = async <T>(functionName: string, payload: Record<string, unknown>): Promise<T> => {
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${functionName}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      apikey: SUPABASE_PUBLISHABLE_KEY,
-      Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
-    },
-    body: JSON.stringify(payload),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || `Erro ao executar RPC ${functionName}`);
-  }
-
-  const responseText = await response.text();
-  return (responseText ? JSON.parse(responseText) : null) as T;
-};
-
 export const trackPropertyView = async (propertyId: string): Promise<boolean> => {
   try {
     if (shouldThrottlePropertyView(propertyId)) {
@@ -76,14 +53,16 @@ export const trackPropertyView = async (propertyId: string): Promise<boolean> =>
     const sessionId = getSessionId();
     const userAgent = navigator.userAgent;
 
-    const result = await invokePublicRpc<boolean>("record_property_view", {
+    const { data, error } = await supabase.rpc("record_property_view", {
       p_property_id: propertyId,
       p_ip_address: ipAddress,
       p_user_agent: userAgent,
       p_session_id: sessionId,
     });
 
-    return Boolean(result);
+    if (error) throw error;
+
+    return Boolean(data);
   } catch (error) {
     console.error("Erro ao rastrear visualização:", error);
     return false;
