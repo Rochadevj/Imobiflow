@@ -66,6 +66,7 @@ export type Database = {
           parking_spaces: number | null
           price: number
           property_type: string
+          street_number: string | null
           state: string | null
           status: string | null
           title: string
@@ -97,6 +98,7 @@ export type Database = {
           parking_spaces?: number | null
           price: number
           property_type: string
+          street_number?: string | null
           state?: string | null
           status?: string | null
           title: string
@@ -128,6 +130,7 @@ export type Database = {
           parking_spaces?: number | null
           price?: number
           property_type?: string
+          street_number?: string | null
           state?: string | null
           status?: string | null
           title?: string

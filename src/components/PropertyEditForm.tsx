@@ -42,6 +42,7 @@ export default function PropertyEditForm({
     banheiros: "",
     vagas: "",
     endereco: "",
+    numero: "",
     cidade: "",
     estado: "",
     cep: "",
@@ -110,6 +111,7 @@ export default function PropertyEditForm({
           banheiros: property.bathrooms?.toString() || "",
           vagas: property.parking_spaces?.toString() || "",
           endereco: property.location || "",
+          numero: property.street_number || "",
           cidade: property.city || "",
           estado: property.state || "",
           cep: property.zipcode || "",
@@ -268,6 +270,7 @@ export default function PropertyEditForm({
           bathrooms: parseInt(formData.banheiros),
           parking_spaces: parseInt(formData.vagas),
           location: formData.endereco,
+          street_number: formData.numero || null,
           city: formData.cidade,
           state: formData.estado || null,
           zipcode: formData.cep || null,
@@ -653,6 +656,19 @@ export default function PropertyEditForm({
               name="endereco"
               value={formData.endereco}
               onChange={handleInputChange}
+              placeholder="Ex: Santos Ferreira"
+              required
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="numero">Número</Label>
+            <Input
+              id="numero"
+              name="numero"
+              value={formData.numero}
+              onChange={handleInputChange}
+              placeholder="Ex: 1180"
               required
             />
           </div>

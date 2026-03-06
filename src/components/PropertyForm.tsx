@@ -17,6 +17,7 @@ const propertySchema = z.object({
   propertyType: z.string().min(1, "Selecione um tipo de imóvel"),
   price: z.number().nonnegative("Preço inválido"),
   location: z.string().min(3, "Localização inválida").max(200),
+  streetNumber: z.string().min(1, "Número inválido").max(20),
   city: z.string().min(2, "Cidade inválida").max(100),
 });
 
@@ -35,6 +36,7 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
     transactionType: "venda",
     price: "",
     location: "",
+    streetNumber: "",
     city: "",
       state: "",
       zipcode: "",
@@ -95,6 +97,7 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
         propertyType: formData.propertyType,
         price: priceValue,
         location: formData.location,
+        streetNumber: formData.streetNumber,
         city: formData.city,
       });
 
@@ -112,6 +115,7 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
           transaction_type: formData.transactionType,
         price: validatedData.price,
         location: validatedData.location,
+        street_number: validatedData.streetNumber,
         city: validatedData.city,
           state: formData.state || null,
           zipcode: formData.zipcode || null,
@@ -203,6 +207,7 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
         transactionType: "venda",
         price: "",
         location: "",
+        streetNumber: "",
         city: "",
           state: "",
           zipcode: "",
@@ -353,12 +358,23 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="location">Bairro *</Label>
+              <Label htmlFor="location">Endereço (rua/avenida) *</Label>
               <Input
                 id="location"
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                placeholder="Ex: Jardim Paulista"
+                placeholder="Ex: Santos Ferreira"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="streetNumber">Número *</Label>
+              <Input
+                id="streetNumber"
+                value={formData.streetNumber}
+                onChange={(e) => setFormData({ ...formData, streetNumber: e.target.value })}
+                placeholder="Ex: 1180"
                 required
               />
             </div>

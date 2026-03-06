@@ -102,7 +102,7 @@ const About = () => {
               </div>
 
               <div className="hero-panel">
-                <p className="text-xs uppercase tracking-[0.18em] text-white/80">Manifesto Imobiflow</p>
+                <p className="text-xs uppercase tracking-[0.18em] text-white/80">Sobre Imobiflow</p>
                 <h2 className="mt-3 text-2xl font-semibold text-white">Como trabalhamos</h2>
                 <div className="mt-5 space-y-3">
                   {values.map((item) => (

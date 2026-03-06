@@ -36,6 +36,7 @@ interface Property {
   city: string;
   state: string;
   zipcode: string;
+  street_number?: string | null;
   features: string[];
   iptu?: number;
   condominio?: number;
@@ -82,6 +83,7 @@ const PropertyDetail = () => {
               transaction_type,
               price,
               location,
+              street_number,
               city,
               state,
               zipcode,
@@ -227,7 +229,7 @@ const PropertyDetail = () => {
                 <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">{property.title}</h1>
                 <p className="mt-2 inline-flex items-center gap-1 text-sm text-white/80">
                   <MapPin className="h-4 w-4 text-amber-300" />
-                  {property.location || "Endereço indisponível"}, {property.city}
+                  {[property.location, property.street_number].filter(Boolean).join(", ") || "Endereço indisponível"}, {property.city}
                 </p>
               </div>
               <Button
@@ -248,6 +250,7 @@ const PropertyDetail = () => {
               <GalleryCarousel
                 images={imageUrls}
                 location={property.location}
+                streetNumber={property.street_number}
                 city={property.city}
                 state={property.state}
                 zipcode={property.zipcode}
@@ -366,6 +369,5 @@ const PropertyDetail = () => {
 };
 
 export default PropertyDetail;
-
 
 

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+  Compass,
   ChevronLeft,
   ChevronRight,
   Image,
@@ -16,27 +17,120 @@ import { Dialog, DialogContent } from "./ui/dialog";
 interface GalleryCarouselProps {
   images: string[];
   location?: string;
+  streetNumber?: string | null;
   city?: string;
   state?: string;
   zipcode?: string;
 }
 
-type ViewMode = "photos" | "video" | "map" | "tour";
+type ViewMode = "photos" | "video" | "map" | "street" | "tour";
+type GeocodingResult = {
+  lat?: string;
+  lon?: string;
+  display_name?: string;
+  address?: {
+    house_number?: string;
+    road?: string;
+    pedestrian?: string;
+    footway?: string;
+    city?: string;
+    town?: string;
+    village?: string;
+  };
+};
+type ViaCepResult = {
+  cep?: string;
+  logradouro?: string;
+  bairro?: string;
+  localidade?: string;
+  uf?: string;
+  erro?: boolean;
+};
 
 const ITEMS_PER_VIEW = 3;
-const GOOGLE_MAPS_EMBED_KEY = import.meta.env.VITE_GOOGLE_MAPS_EMBED_KEY;
+const GOOGLE_MAPS_API_KEY =
+  import.meta.env.VITE_GOOGLE_MAPS_API_KEY?.trim() ??
+  import.meta.env.VITE_GOOGLE_MAPS_EMBED_KEY?.trim() ??
+  "";
 
-export default function GalleryCarousel({ images, location, city, state }: GalleryCarouselProps) {
+type GoogleGeocodingResult = {
+  formatted_address?: string;
+  geometry?: {
+    location?: {
+      lat?: number;
+      lng?: number;
+    };
+  };
+  address_components?: Array<{
+    long_name: string;
+    short_name: string;
+    types: string[];
+  }>;
+};
+
+type GoogleGeocodingResponse = {
+  status?: string;
+  error_message?: string;
+  results?: GoogleGeocodingResult[];
+};
+
+export default function GalleryCarousel({ images, location, streetNumber, city, state, zipcode }: GalleryCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [viewMode, setViewMode] = useState<ViewMode>("photos");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [zoom, setZoom] = useState(1);
+  const [streetCoords, setStreetCoords] = useState<{ lat: string; lon: string } | null>(null);
+  const [streetCoordsLoading, setStreetCoordsLoading] = useState(false);
 
   const isVideoUrl = (url: string) => /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url);
 
   const photos = useMemo(() => images.filter((url) => !isVideoUrl(url)), [images]);
   const videos = useMemo(() => images.filter((url) => isVideoUrl(url)), [images]);
+  const normalizedZipcode = useMemo(() => zipcode?.replace(/\D/g, "") ?? "", [zipcode]);
+  const normalizedStreetNumber = useMemo(() => streetNumber?.toString().trim() ?? "", [streetNumber]);
+  const normalizedLocation = useMemo(() => location?.toString().trim() ?? "", [location]);
+  const inferredStreetNumber = useMemo(() => {
+    const match = normalizedLocation.match(/\b\d{1,6}[A-Za-z]?\b/);
+    return match?.[0] ?? "";
+  }, [normalizedLocation]);
+  const effectiveStreetNumber = normalizedStreetNumber || inferredStreetNumber;
+  const addressLine = useMemo(() => {
+    if (!normalizedLocation) return effectiveStreetNumber;
+    if (!effectiveStreetNumber) return normalizedLocation;
+    if (normalizedLocation.includes(effectiveStreetNumber)) return normalizedLocation;
+    return `${normalizedLocation}, ${effectiveStreetNumber}`;
+  }, [normalizedLocation, effectiveStreetNumber]);
+  const mapQuery = useMemo(
+    () =>
+      [addressLine, zipcode, city, state, "Brasil"]
+        .map((item) => item?.toString().trim())
+        .filter(Boolean)
+        .join(", "),
+    [addressLine, zipcode, city, state]
+  );
+
+  const mapEmbedSrc = useMemo(
+    () => (mapQuery ? `https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed` : ""),
+    [mapQuery]
+  );
+  const streetViewEmbedSrc = useMemo(
+    () =>
+      streetCoords
+        ? `https://www.google.com/maps?q=&layer=c&cbll=${streetCoords.lat},${streetCoords.lon}&cbp=11,0,0,0,0&output=svembed`
+        : "",
+    [streetCoords]
+  );
+  const streetViewOpenUrl = useMemo(
+    () =>
+      streetCoords
+        ? `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${streetCoords.lat},${streetCoords.lon}`
+        : mapQuery
+          ? `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${encodeURIComponent(mapQuery)}`
+          : "",
+    [mapQuery, streetCoords]
+  );
+
   const displayContent = viewMode === "video" ? videos : photos;
   const maxIndex = Math.max(0, displayContent.length - ITEMS_PER_VIEW);
 
@@ -47,6 +141,363 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
   useEffect(() => {
     if (selectedIndex !== null) setZoom(1);
   }, [selectedIndex]);
+
+  useEffect(() => {
+    if (!mapQuery) {
+      setStreetCoords(null);
+      setStreetCoordsLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    const geocodeStreetView = async () => {
+      try {
+        setStreetCoordsLoading(true);
+        const geocodingQueries: Array<{
+          query: string;
+          expectedStreet?: string;
+          expectedCity?: string;
+          expectedState?: string;
+        }> = [];
+        const expectedStreetNumber = effectiveStreetNumber.replace(/\D/g, "");
+        const normalizeText = (value: string) =>
+          value
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase()
+            .replace(/[.,/-]/g, " ")
+            .replace(/\bav\b/g, "avenida")
+            .replace(/\br\b/g, "rua")
+            .replace(/\bmal\b/g, "marechal")
+            .replace(/\bdr\b/g, "doutor")
+            .replace(/\s+/g, " ")
+            .trim();
+        const scoreCandidate = (
+          candidate: {
+            displayName?: string;
+            road?: string;
+            city?: string;
+            houseNumber?: string;
+          },
+          expectedStreet?: string,
+          expectedCity?: string
+        ) => {
+          const displayName = normalizeText(candidate.displayName || "");
+          const resultRoad = normalizeText(candidate.road || "");
+          const resultCity = normalizeText(candidate.city || "");
+          const houseNumber = (candidate.houseNumber || "").replace(/\D/g, "");
+          const displayNumbers = ((candidate.displayName || "").match(/\b\d{1,6}[A-Za-z]?\b/g) || [])
+            .map((value) => value.replace(/\D/g, ""))
+            .filter(Boolean);
+
+          let score = 0;
+
+          if (expectedStreetNumber) {
+            if (houseNumber === expectedStreetNumber) {
+              score += 140;
+            } else if (houseNumber) {
+              // Number explicitly returned but different from the property number.
+              score -= 90;
+            } else if (displayNumbers.includes(expectedStreetNumber)) {
+              score += 90;
+            } else if (displayNumbers.length > 0) {
+              // Result has a different number in text (e.g. 482 when expected 1180).
+              score -= 45;
+            } else {
+              // Result may represent the street segment without explicit house number.
+              score -= 5;
+            }
+          }
+
+          if (expectedStreet) {
+            const expectedStreetNorm = normalizeText(expectedStreet);
+            if (resultRoad && (resultRoad.includes(expectedStreetNorm) || expectedStreetNorm.includes(resultRoad))) {
+              score += 40;
+            } else if (displayName.includes(expectedStreetNorm)) {
+              score += 25;
+            }
+          }
+
+          if (expectedCity) {
+            const expectedCityNorm = normalizeText(expectedCity);
+            if (resultCity === expectedCityNorm) {
+              score += 15;
+            } else if (displayName.includes(expectedCityNorm)) {
+              score += 8;
+            }
+          }
+
+          return score;
+        };
+        const scoreOpenStreetMapResult = (
+          result: GeocodingResult,
+          expectedStreet?: string,
+          expectedCity?: string
+        ) =>
+          scoreCandidate(
+            {
+              displayName: result.display_name,
+              road: result.address?.road || result.address?.pedestrian || result.address?.footway,
+              city: result.address?.city || result.address?.town || result.address?.village,
+              houseNumber: result.address?.house_number,
+            },
+            expectedStreet,
+            expectedCity
+          );
+        const scoreGoogleResult = (
+          result: GoogleGeocodingResult,
+          expectedStreet?: string,
+          expectedCity?: string
+        ) => {
+          const route = result.address_components?.find((component) => component.types.includes("route"))?.long_name;
+          const locality =
+            result.address_components?.find((component) => component.types.includes("locality"))?.long_name ||
+            result.address_components?.find((component) => component.types.includes("administrative_area_level_2"))?.long_name;
+          const houseNumber = result.address_components?.find((component) => component.types.includes("street_number"))?.long_name;
+
+          return scoreCandidate(
+            {
+              displayName: result.formatted_address,
+              road: route,
+              city: locality,
+              houseNumber,
+            },
+            expectedStreet,
+            expectedCity
+          );
+        };
+
+        if (normalizedZipcode.length === 8) {
+          const formattedZipcode = `${normalizedZipcode.slice(0, 5)}-${normalizedZipcode.slice(5)}`;
+
+          try {
+            const viaCepResponse = await fetch(`https://viacep.com.br/ws/${normalizedZipcode}/json/`, {
+              signal: controller.signal,
+              headers: {
+                Accept: "application/json",
+              },
+            });
+
+            if (viaCepResponse.ok) {
+              const viaCepData = (await viaCepResponse.json()) as ViaCepResult;
+
+              if (!viaCepData.erro) {
+                const cityFromCep = (viaCepData.localidade || city || "").trim();
+                const stateFromCep = (viaCepData.uf || state || "").trim();
+                const streetFromCep = (viaCepData.logradouro || "").trim();
+                const mainAddress = (addressLine || streetFromCep || viaCepData.bairro || "").trim();
+                const cepFromCep = (viaCepData.cep || formattedZipcode).trim();
+
+                if (streetFromCep && cityFromCep) {
+                  const streetFromCepWithNumber = effectiveStreetNumber
+                    ? `${streetFromCep}, ${effectiveStreetNumber}`
+                    : streetFromCep;
+                  geocodingQueries.push({
+                    query: [streetFromCepWithNumber, cityFromCep, stateFromCep, cepFromCep, "Brasil"]
+                      .filter(Boolean)
+                      .join(", "),
+                    expectedStreet: streetFromCep,
+                    expectedCity: cityFromCep,
+                    expectedState: stateFromCep,
+                  });
+                }
+
+                if (mainAddress && cityFromCep) {
+                  geocodingQueries.push({
+                    query: [mainAddress, cityFromCep, stateFromCep, cepFromCep, "Brasil"]
+                      .filter(Boolean)
+                      .join(", "),
+                    expectedStreet: streetFromCep || normalizedLocation,
+                    expectedCity: cityFromCep,
+                    expectedState: stateFromCep,
+                  });
+                }
+
+                geocodingQueries.push({
+                  query: [cepFromCep, cityFromCep, stateFromCep, "Brasil"].filter(Boolean).join(", "),
+                  expectedStreet: streetFromCep || normalizedLocation,
+                  expectedCity: cityFromCep,
+                  expectedState: stateFromCep,
+                });
+              } else {
+                geocodingQueries.push({
+                  query: [formattedZipcode, "Brasil"].join(", "),
+                  expectedStreet: normalizedLocation,
+                  expectedCity: city,
+                  expectedState: state,
+                });
+              }
+            } else {
+              geocodingQueries.push({
+                query: [formattedZipcode, "Brasil"].join(", "),
+                expectedStreet: normalizedLocation,
+                expectedCity: city,
+                expectedState: state,
+              });
+            }
+          } catch {
+            if (!controller.signal.aborted) {
+              geocodingQueries.push({
+                query: [formattedZipcode, "Brasil"].join(", "),
+                expectedStreet: normalizedLocation,
+                expectedCity: city,
+                expectedState: state,
+              });
+            }
+          }
+        }
+
+        geocodingQueries.push({
+          query: mapQuery,
+          expectedStreet: normalizedLocation,
+          expectedCity: city,
+          expectedState: state,
+        });
+
+        const seenQueries = new Set<string>();
+        const uniqueQueries = geocodingQueries.filter((item) => {
+          const query = item.query.trim();
+          if (!query || seenQueries.has(query)) return false;
+          seenQueries.add(query);
+          return true;
+        });
+
+        let bestCandidate: { lat: string; lon: string; score: number } | null = null;
+        if (GOOGLE_MAPS_API_KEY) {
+          for (const item of uniqueQueries) {
+            const googleUrl = new URL("https://maps.googleapis.com/maps/api/geocode/json");
+            googleUrl.searchParams.set("address", item.query);
+            googleUrl.searchParams.set("key", GOOGLE_MAPS_API_KEY);
+
+            const componentFilters = [
+              "country:BR",
+              normalizedZipcode.length === 8 ? `postal_code:${normalizedZipcode}` : "",
+              item.expectedCity ? `locality:${item.expectedCity}` : "",
+              item.expectedState ? `administrative_area:${item.expectedState}` : "",
+            ].filter(Boolean);
+
+            if (componentFilters.length > 0) {
+              googleUrl.searchParams.set("components", componentFilters.join("|"));
+            }
+
+            const googleResponse = await fetch(googleUrl.toString(), {
+              signal: controller.signal,
+              headers: {
+                Accept: "application/json",
+              },
+            });
+
+            if (!googleResponse.ok) {
+              continue;
+            }
+
+            const googleData = (await googleResponse.json()) as GoogleGeocodingResponse;
+            if (googleData.status !== "OK" || !googleData.results?.length) {
+              continue;
+            }
+
+            const scoredGoogleResults = googleData.results
+              .filter(
+                (result): result is GoogleGeocodingResult & { geometry: { location: { lat: number; lng: number } } } =>
+                  typeof result.geometry?.location?.lat === "number" &&
+                  typeof result.geometry?.location?.lng === "number"
+              )
+              .map((result) => ({
+                ...result,
+                score: scoreGoogleResult(result, item.expectedStreet, item.expectedCity),
+              }))
+              .sort((a, b) => b.score - a.score);
+
+            const firstGoogleResult = scoredGoogleResults[0];
+            if (!firstGoogleResult) {
+              continue;
+            }
+
+            if (!bestCandidate || firstGoogleResult.score > bestCandidate.score) {
+              bestCandidate = {
+                lat: String(firstGoogleResult.geometry.location.lat),
+                lon: String(firstGoogleResult.geometry.location.lng),
+                score: firstGoogleResult.score,
+              };
+            }
+
+            if (firstGoogleResult.score >= 110) {
+              setStreetCoords({
+                lat: String(firstGoogleResult.geometry.location.lat),
+                lon: String(firstGoogleResult.geometry.location.lng),
+              });
+              return;
+            }
+          }
+        }
+
+        for (const item of uniqueQueries) {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=10&countrycodes=br&q=${encodeURIComponent(
+              item.query
+            )}`,
+            {
+              signal: controller.signal,
+              headers: {
+                Accept: "application/json",
+              },
+            }
+          );
+
+          if (!response.ok) {
+            continue;
+          }
+
+          const results = (await response.json()) as GeocodingResult[];
+          const scoredResults = results
+            .filter((result): result is GeocodingResult & { lat: string; lon: string } => Boolean(result.lat && result.lon))
+            .map((result) => ({
+              ...result,
+              score: scoreOpenStreetMapResult(result, item.expectedStreet, item.expectedCity),
+            }))
+            .sort((a, b) => b.score - a.score);
+
+          const firstResult = scoredResults[0];
+          if (!firstResult) {
+            continue;
+          }
+
+          if (!bestCandidate || firstResult.score > bestCandidate.score) {
+            bestCandidate = {
+              lat: firstResult.lat,
+              lon: firstResult.lon,
+              score: firstResult.score,
+            };
+          }
+
+          if (firstResult.score >= 110) {
+            setStreetCoords({ lat: firstResult.lat, lon: firstResult.lon });
+            return;
+          }
+        }
+
+        const minimumAcceptedScore = expectedStreetNumber ? 45 : 20;
+        if (bestCandidate && bestCandidate.score >= minimumAcceptedScore) {
+          setStreetCoords({ lat: bestCandidate.lat, lon: bestCandidate.lon });
+          return;
+        }
+
+        setStreetCoords(null);
+      } catch {
+        if (!controller.signal.aborted) {
+          setStreetCoords(null);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setStreetCoordsLoading(false);
+        }
+      }
+    };
+
+    void geocodeStreetView();
+
+    return () => controller.abort();
+  }, [mapQuery, normalizedZipcode, addressLine, effectiveStreetNumber, normalizedLocation, city, state]);
 
   const visibleItems = displayContent.slice(currentIndex, currentIndex + ITEMS_PER_VIEW);
 
@@ -85,6 +536,15 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
         >
           <Map className="mr-2 h-4 w-4" />
           Mapa
+        </Button>
+
+        <Button
+          variant={viewMode === "street" ? "default" : "outline"}
+          onClick={() => setViewMode("street")}
+          className={`shrink-0 justify-center rounded-full ${viewMode === "street" ? "bg-slate-900 text-white hover:bg-slate-800" : ""}`}
+        >
+          <Compass className="mr-2 h-4 w-4" />
+          Street View
         </Button>
 
         <Button
@@ -210,7 +670,7 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
 
       {viewMode === "map" ? (
         <div className="surface-card overflow-hidden border-slate-200/80 p-2">
-          {location && GOOGLE_MAPS_EMBED_KEY ? (
+          {mapQuery ? (
             <div className="h-[320px] overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 sm:h-[380px] lg:h-[460px]">
               <iframe
                 width="100%"
@@ -219,15 +679,52 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
                 loading="lazy"
                 allowFullScreen
                 referrerPolicy="no-referrer-when-downgrade"
-                src={`https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_EMBED_KEY}&q=${encodeURIComponent(
-                  [location, city, state || "RS", "Brasil"].filter(Boolean).join(", ")
-                )}`}
+                src={mapEmbedSrc}
                 title="Localização do imóvel"
               />
             </div>
           ) : (
             <div className="flex h-[320px] items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 text-sm text-slate-500 sm:h-[380px] lg:h-[460px]">
-              {!location ? "Endereço indisponível para exibir no mapa." : "Mapa temporariamente indisponível. Configure VITE_GOOGLE_MAPS_EMBED_KEY."}
+              Endereço indisponível para exibir no mapa.
+            </div>
+          )}
+        </div>
+      ) : null}
+
+      {viewMode === "street" ? (
+        <div className="surface-card overflow-hidden border-slate-200/80 p-2">
+          {mapQuery && streetCoordsLoading ? (
+            <div className="flex h-[320px] items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-sm text-slate-500 sm:h-[380px] lg:h-[460px]">
+              Carregando Street View...
+            </div>
+          ) : mapQuery && streetViewEmbedSrc ? (
+            <div className="h-[320px] overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 sm:h-[380px] lg:h-[460px]">
+              <iframe
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                loading="lazy"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
+                src={streetViewEmbedSrc}
+                title="Street View do imóvel"
+              />
+            </div>
+          ) : mapQuery ? (
+            <div className="flex h-[320px] flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 text-center text-sm text-slate-600 sm:h-[380px] lg:h-[460px]">
+              <p>Street View indisponível no momento para este endereço.</p>
+              <a
+                href={streetViewOpenUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100"
+              >
+                Abrir Street View no Google Maps
+              </a>
+            </div>
+          ) : (
+            <div className="flex h-[320px] items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 text-sm text-slate-500 sm:h-[380px] lg:h-[460px]">
+              Endereço indisponível para exibir o Street View.
             </div>
           )}
         </div>
@@ -345,4 +842,3 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
     </div>
   );
 }
-

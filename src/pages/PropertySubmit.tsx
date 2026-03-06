@@ -132,8 +132,8 @@ const PropertySubmit = () => {
                       <Input id="price" type="number" required placeholder="R$ 0,00" className="mt-1 border-slate-200 bg-white" />
                     </div>
                     <div>
-                      <Label htmlFor="location">Bairro</Label>
-                      <Input id="location" required placeholder="Nome do bairro" className="mt-1 border-slate-200 bg-white" />
+                      <Label htmlFor="location">Endereço (rua e número)</Label>
+                      <Input id="location" required placeholder="Ex: Rua Encantado, 471" className="mt-1 border-slate-200 bg-white" />
                     </div>
                     <div>
                       <Label htmlFor="city">Cidade</Label>
@@ -247,4 +247,3 @@ const PropertySubmit = () => {
 };
 
 export default PropertySubmit;
-
