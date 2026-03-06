@@ -23,7 +23,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   BarChart3,
@@ -54,6 +57,63 @@ type DashboardStats = {
   sold: number;
   rented: number;
   totalValue: number;
+};
+
+type AdminProperty = {
+  id: string;
+  title: string;
+  city: string;
+  location: string;
+  status: string | null;
+  price: number;
+  created_at: string | null;
+  updated_at: string | null;
+};
+
+type NegotiationChecklistItem = {
+  id: string;
+  label: string;
+  completed: boolean;
+};
+
+type NegotiationHistoryItem = {
+  id: string;
+  label: string;
+  createdAt: string;
+};
+
+type NegotiationRecord = {
+  checklist: NegotiationChecklistItem[];
+  history: NegotiationHistoryItem[];
+};
+
+const negotiationChecklistTemplate: Array<Omit<NegotiationChecklistItem, "completed">> = [
+  { id: "owner-docs", label: "Documentos do proprietário conferidos" },
+  { id: "property-docs", label: "Matrícula e certidões do imóvel validadas" },
+  { id: "proposal", label: "Proposta formal registrada" },
+  { id: "legal-review", label: "Minuta revisada pelo jurídico" },
+  { id: "signature", label: "Assinatura do contrato confirmada" },
+];
+
+const negotiationQuickActions = [
+  "Documentação solicitada ao cliente",
+  "Proposta enviada para análise",
+  "Contrato encaminhado para assinatura",
+  "Pagamento confirmado e operação concluída",
+];
+
+const createNegotiationChecklist = (): NegotiationChecklistItem[] =>
+  negotiationChecklistTemplate.map((item) => ({
+    ...item,
+    completed: false,
+  }));
+
+const formatPropertyStatus = (status: string | null) => {
+  if (status === "available") return "Disponível";
+  if (status === "sold") return "Vendido";
+  if (status === "rented") return "Alugado";
+  if (status === "launch") return "Lançamento";
+  return "Em análise";
 };
 
 const moduleCards = [
@@ -153,6 +213,7 @@ const configuredDeleteAccountFunctionName = import.meta.env.VITE_DELETE_ACCOUNT_
 const deleteAccountFunctionNames = Array.from(
   new Set([configuredDeleteAccountFunctionName, "delete-account", "quick-action"].filter(Boolean)),
 );
+const getNegotiationStorageKey = (userId: string) => `imobiflow:negotiation:${userId}`;
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -165,6 +226,10 @@ const Admin = () => {
   const [deleteAccountOpen, setDeleteAccountOpen] = useState(false);
   const [deleteAccountConfirmation, setDeleteAccountConfirmation] = useState("");
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const [properties, setProperties] = useState<AdminProperty[]>([]);
+  const [selectedPropertyId, setSelectedPropertyId] = useState("");
+  const [negotiationStore, setNegotiationStore] = useState<Record<string, NegotiationRecord>>({});
+  const [historyInput, setHistoryInput] = useState("");
   const [stats, setStats] = useState<DashboardStats>({
     total: 0,
     available: 0,
@@ -205,11 +270,42 @@ const Admin = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  useEffect(() => {
+    if (!user?.id) {
+      setNegotiationStore({});
+      return;
+    }
+
+    try {
+      const rawData = localStorage.getItem(getNegotiationStorageKey(user.id));
+      if (!rawData) {
+        setNegotiationStore({});
+        return;
+      }
+
+      setNegotiationStore(JSON.parse(rawData) as Record<string, NegotiationRecord>);
+    } catch (error) {
+      console.error("Erro ao carregar documentos e contratos:", error);
+      setNegotiationStore({});
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (!properties.length) {
+      setSelectedPropertyId("");
+      return;
+    }
+
+    if (!selectedPropertyId || !properties.some((property) => property.id === selectedPropertyId)) {
+      setSelectedPropertyId(properties[0].id);
+    }
+  }, [properties, selectedPropertyId]);
+
   const fetchStats = async (userId: string) => {
     try {
       const { data, error } = await supabase
         .from("properties")
-        .select("status, price")
+        .select("id, title, city, location, status, price, created_at, updated_at")
         .eq("user_id", userId);
 
       if (error) throw error;
@@ -220,11 +316,255 @@ const Admin = () => {
       const rented = data?.filter((property) => property.status === "rented").length || 0;
       const totalValue = data?.reduce((sum, property) => sum + (property.price || 0), 0) || 0;
 
+      setProperties(
+        ([...(data ?? [])] as AdminProperty[]).sort((left, right) => {
+          const leftDate = new Date(left.updated_at ?? left.created_at ?? 0).getTime();
+          const rightDate = new Date(right.updated_at ?? right.created_at ?? 0).getTime();
+          return rightDate - leftDate;
+        }),
+      );
       setStats({ total, available, sold, rented, totalValue });
     } catch (error) {
       console.error("Erro ao buscar estatísticas:", error);
     }
   };
+
+  const selectedProperty = useMemo(
+    () => properties.find((property) => property.id === selectedPropertyId) ?? null,
+    [properties, selectedPropertyId],
+  );
+
+  const selectedNegotiation = useMemo<NegotiationRecord>(() => {
+    if (!selectedPropertyId) {
+      return {
+        checklist: createNegotiationChecklist(),
+        history: [],
+      };
+    }
+
+    const existingRecord = negotiationStore[selectedPropertyId];
+
+    if (!existingRecord) {
+      return {
+        checklist: createNegotiationChecklist(),
+        history: [],
+      };
+    }
+
+    return {
+      checklist: negotiationChecklistTemplate.map((templateItem) => ({
+        ...templateItem,
+        completed:
+          existingRecord.checklist.find((item) => item.id === templateItem.id)?.completed ?? false,
+      })),
+      history: existingRecord.history ?? [],
+    };
+  }, [negotiationStore, selectedPropertyId]);
+
+  const persistNegotiation = (nextState: Record<string, NegotiationRecord>) => {
+    setNegotiationStore(nextState);
+
+    if (!user?.id) return;
+
+    localStorage.setItem(getNegotiationStorageKey(user.id), JSON.stringify(nextState));
+  };
+
+  const toggleChecklistItem = (itemId: string) => {
+    if (!selectedPropertyId) return;
+
+    const updatedChecklist = selectedNegotiation.checklist.map((item) =>
+      item.id === itemId
+        ? {
+            ...item,
+            completed: !item.completed,
+          }
+        : item,
+    );
+
+    persistNegotiation({
+      ...negotiationStore,
+      [selectedPropertyId]: {
+        checklist: updatedChecklist,
+        history: selectedNegotiation.history,
+      },
+    });
+  };
+
+  const addNegotiationHistory = (label: string) => {
+    if (!selectedPropertyId) return;
+
+    const sanitizedLabel = label.trim();
+    if (!sanitizedLabel) return;
+
+    persistNegotiation({
+      ...negotiationStore,
+      [selectedPropertyId]: {
+        checklist: selectedNegotiation.checklist,
+        history: [
+          {
+            id: `${Date.now()}-${Math.round(Math.random() * 1000)}`,
+            label: sanitizedLabel,
+            createdAt: new Date().toISOString(),
+          },
+          ...selectedNegotiation.history,
+        ].slice(0, 20),
+      },
+    });
+
+    setHistoryInput("");
+  };
+
+  const completedChecklistItems = selectedNegotiation.checklist.filter((item) => item.completed).length;
+  const checklistProgress = selectedNegotiation.checklist.length
+    ? Math.round((completedChecklistItems / selectedNegotiation.checklist.length) * 100)
+    : 0;
+
+  const legalWorkspace = (
+    <section className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+      <Card className="section-shell p-1">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl text-slate-900">
+            <FileText className="h-5 w-5 text-amber-600" />
+            Documentos e contratos
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {properties.length === 0 ? (
+            <div className="surface-card-muted p-4 text-sm text-slate-600">
+              Cadastre um imóvel para iniciar o checklist jurídico da negociação.
+            </div>
+          ) : (
+            <>
+              <div className="grid gap-3 md:grid-cols-[1.1fr_0.9fr]">
+                <div className="space-y-2">
+                  <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Imóvel da negociação</p>
+                  <Select value={selectedPropertyId} onValueChange={setSelectedPropertyId}>
+                    <SelectTrigger className="h-11 rounded-xl border-slate-200 bg-white">
+                      <SelectValue placeholder="Selecione um imóvel" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {properties.map((property) => (
+                        <SelectItem key={property.id} value={property.id}>
+                          {property.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="surface-card-muted flex items-center justify-between gap-3 p-4">
+                  <div className="min-w-0">
+                    <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Status comercial</p>
+                    <p className="mt-1 truncate text-sm font-medium text-slate-900">
+                      {selectedProperty ? `${selectedProperty.location}, ${selectedProperty.city}` : "Nenhum imóvel selecionado"}
+                    </p>
+                  </div>
+                  <Badge className="rounded-full border border-slate-200 bg-white text-slate-700">
+                    {formatPropertyStatus(selectedProperty?.status ?? null)}
+                  </Badge>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                <div className="flex items-center justify-between gap-3 text-sm">
+                  <span className="font-semibold text-slate-900">Checklist jurídico</span>
+                  <span className="text-slate-500">
+                    {completedChecklistItems}/{selectedNegotiation.checklist.length} concluídos
+                  </span>
+                </div>
+                <Progress value={checklistProgress} className="mt-3 h-2 bg-slate-100" />
+                <div className="mt-4 space-y-3">
+                  {selectedNegotiation.checklist.map((item) => (
+                    <label
+                      key={item.id}
+                      htmlFor={`negotiation-${item.id}`}
+                      className="surface-card-muted flex cursor-pointer items-center gap-3 p-3"
+                    >
+                      <Checkbox
+                        id={`negotiation-${item.id}`}
+                        checked={item.completed}
+                        onCheckedChange={() => toggleChecklistItem(item.id)}
+                      />
+                      <span className={`text-sm ${item.completed ? "text-slate-900" : "text-slate-600"}`}>
+                        {item.label}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="section-shell p-1">
+        <CardHeader>
+          <CardTitle className="text-xl text-slate-900">Histórico da negociação</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap gap-2">
+            {negotiationQuickActions.map((action) => (
+              <Button
+                key={action}
+                type="button"
+                variant="outline"
+                size="sm"
+                className="rounded-full border-slate-200 bg-white text-slate-700"
+                onClick={() => addNegotiationHistory(action)}
+                disabled={!selectedPropertyId}
+              >
+                {action}
+              </Button>
+            ))}
+          </div>
+
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Input
+              value={historyInput}
+              onChange={(event) => setHistoryInput(event.target.value)}
+              placeholder="Registrar observação manual"
+              className="h-11 rounded-xl border-slate-200 bg-white"
+              disabled={!selectedPropertyId}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  addNegotiationHistory(historyInput);
+                }
+              }}
+            />
+            <Button
+              type="button"
+              className="h-11 rounded-xl bg-slate-900 text-white hover:bg-slate-800"
+              onClick={() => addNegotiationHistory(historyInput)}
+              disabled={!selectedPropertyId}
+            >
+              Salvar
+            </Button>
+          </div>
+
+          <div className="space-y-3">
+            {selectedNegotiation.history.length === 0 ? (
+              <div className="surface-card-muted p-4 text-sm text-slate-600">
+                Nenhum evento registrado para este imóvel ainda.
+              </div>
+            ) : (
+              selectedNegotiation.history.map((item) => (
+                <div key={item.id} className="surface-card-muted p-4">
+                  <p className="text-sm font-medium text-slate-900">{item.label}</p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {new Intl.DateTimeFormat("pt-BR", {
+                      dateStyle: "short",
+                      timeStyle: "short",
+                    }).format(new Date(item.createdAt))}
+                  </p>
+                </div>
+              ))
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </section>
+  );
 
   const insights = useMemo(() => {
     const closedDeals = stats.sold + stats.rented;
@@ -294,12 +634,12 @@ const Admin = () => {
 
   const handleDeleteAccount = async () => {
     if (!user?.email) {
-      toast.error("Nao foi possivel validar a conta atual.");
+      toast.error("Não foi possível validar a conta atual.");
       return;
     }
 
     if (!canDeleteAccount) {
-      toast.error("Digite seu e-mail exatamente como confirmacao.");
+      toast.error("Digite seu e-mail exatamente como confirmação.");
       return;
     }
 
@@ -310,7 +650,7 @@ const Admin = () => {
     } = await supabase.auth.getSession();
 
     if (!session?.access_token) {
-      toast.error("Sua sessao expirou. Entre novamente antes de excluir a conta.");
+      toast.error("Sua sessão expirou. Entre novamente antes de excluir a conta.");
       setDeletingAccount(false);
       return;
     }
@@ -337,8 +677,8 @@ const Admin = () => {
     if (!deleted) {
       toast.error(
         functionErrorMessage
-          ? `Nao foi possivel excluir a conta: ${functionErrorMessage}`
-          : "Nao foi possivel excluir a conta agora. Verifique se a Edge Function foi publicada.",
+          ? `Não foi possível excluir a conta: ${functionErrorMessage}`
+          : "Não foi possível excluir a conta agora. Verifique se a Edge Function foi publicada.",
       );
       setDeletingAccount(false);
       return;
@@ -348,7 +688,7 @@ const Admin = () => {
     setDeletingAccount(false);
     setDeleteAccountOpen(false);
     setDeleteAccountConfirmation("");
-    toast.success("Conta excluida com sucesso.");
+    toast.success("Conta excluída com sucesso.");
     navigate("/auth");
   };
 
@@ -386,7 +726,7 @@ const Admin = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8 w-full">
-          <TabsList className="h-auto w-full max-w-4xl flex-wrap justify-start gap-2 rounded-2xl border border-slate-200 bg-white/80 p-2">
+          <TabsList className="h-auto w-full max-w-5xl flex-wrap justify-start gap-2 rounded-2xl border border-slate-200 bg-white/80 p-2">
             <TabsTrigger value="dashboard" className="rounded-xl px-4 py-2">
               <BarChart3 className="mr-2 h-4 w-4" />
               Dashboard
@@ -399,9 +739,13 @@ const Admin = () => {
               <Plus className="mr-2 h-4 w-4" />
               Adicionar
             </TabsTrigger>
+            <TabsTrigger value="legal" className="rounded-xl px-4 py-2">
+              <FileText className="mr-2 h-4 w-4" />
+              Jurídico
+            </TabsTrigger>
             <TabsTrigger value="settings" className="rounded-xl px-4 py-2">
               <Settings className="mr-2 h-4 w-4" />
-              Configuracoes
+              Configurações
             </TabsTrigger>
             {editingPropertyId ? (
               <TabsTrigger value="edit" className="rounded-xl px-4 py-2">
@@ -682,6 +1026,25 @@ const Admin = () => {
             </Tabs>
           </TabsContent>
 
+          <TabsContent value="legal" className="mt-6">
+            <div className="space-y-4">
+              <div className="surface-card-muted flex flex-col gap-2 rounded-3xl border border-slate-200 p-5 md:flex-row md:items-end md:justify-between">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Aba jurídica</p>
+                  <h2 className="mt-2 text-2xl font-semibold text-slate-900">Documentos, checklist e histórico</h2>
+                  <p className="mt-2 max-w-2xl text-sm text-slate-600">
+                    Centralize a conferência documental e acompanhe cada etapa da negociação com mais clareza.
+                  </p>
+                </div>
+                <Badge className="rounded-full border border-amber-200 bg-amber-50 text-amber-700">
+                  {properties.length} imóveis disponíveis para acompanhamento
+                </Badge>
+              </div>
+
+              {legalWorkspace}
+            </div>
+          </TabsContent>
+
           <TabsContent value="list" className="mt-6">
             <div className="section-shell p-6">
               <PropertyList key={refreshKey} userId={user?.id} onEdit={handleEdit} />
@@ -751,7 +1114,7 @@ const Admin = () => {
                       <AlertDialogHeader>
                         <AlertDialogTitle>Excluir conta permanentemente?</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Essa acao nao pode ser desfeita. Para confirmar, digite seu e-mail abaixo exatamente como ele aparece na conta.
+                          Essa ação não pode ser desfeita. Para confirmar, digite seu e-mail abaixo exatamente como ele aparece na conta.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
 
@@ -764,7 +1127,7 @@ const Admin = () => {
 
                       <div className="space-y-2">
                         <label htmlFor="delete-account-confirmation" className="text-sm font-medium text-slate-900">
-                          Confirmacao
+                          Confirmação
                         </label>
                         <Input
                           id="delete-account-confirmation"
