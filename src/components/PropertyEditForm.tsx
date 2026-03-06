@@ -293,8 +293,8 @@ export default function PropertyEditForm({
         for (const image of newImages) {
           const watermarked = await applyWatermark(image);
           const fileExt = watermarked.name.split(".").pop();
-          const fileName = `${propertyId}-img-${Date.now()}.${fileExt}`;
-          const filePath = `${fileName}`;
+          const fileName = `${Date.now()}-img-${Math.random().toString(36).slice(2, 8)}.${fileExt}`;
+          const filePath = `${propertyId}/${fileName}`;
 
           const { error: uploadError } = await supabase.storage
             .from("property-images")
@@ -321,8 +321,8 @@ export default function PropertyEditForm({
       if (newVideos.length > 0) {
         for (const video of newVideos) {
           const fileExt = video.name.split(".").pop();
-          const fileName = `${propertyId}-vid-${Date.now()}.${fileExt}`;
-          const filePath = `${fileName}`;
+          const fileName = `${Date.now()}-vid-${Math.random().toString(36).slice(2, 8)}.${fileExt}`;
+          const filePath = `${propertyId}/${fileName}`;
 
           const { error: uploadError } = await supabase.storage
             .from("property-images")

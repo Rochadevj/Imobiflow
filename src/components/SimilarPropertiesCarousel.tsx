@@ -46,62 +46,83 @@ export default function SimilarPropertiesCarousel({ properties }: SimilarPropert
 
   const visibleProperties = properties.slice(currentIndex, currentIndex + itemsPerView);
 
+  const renderCard = (property: SimilarProperty, cardClassName: string) => {
+    const primaryImage = property.property_images?.find((img) => img.is_primary)?.image_url;
+    const fallbackImage = property.property_images?.[0]?.image_url;
+    const imageUrl = property.images?.[0] || primaryImage || fallbackImage || "/placeholder.jpg";
+    const region = property.neighborhood || property.location || "Região";
+
+    return (
+      <Link
+        key={property.id}
+        to={`/property/${property.codigo || property.id}`}
+        className={cardClassName}
+      >
+        <div className="relative aspect-[4/3] overflow-hidden">
+          <img
+            src={imageUrl}
+            alt={property.title}
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        </div>
+
+        <div className="space-y-3 p-4">
+          <div className="text-sm font-semibold text-primary">{property.property_type}</div>
+
+          <div className="flex items-center gap-1 text-sm text-gray-600">
+            <MapPin className="h-4 w-4" />
+            <span className="line-clamp-1">
+              {region} | {property.city}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-4 text-sm text-gray-700">
+            <div className="flex items-center gap-1">
+              <Home className="h-4 w-4" />
+              <span>{property.area ? `${property.area}m²` : "-"}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Bed className="h-4 w-4" />
+              <span>{property.bedrooms ? `${property.bedrooms} Quartos` : "-"}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Car className="h-4 w-4" />
+              <span>{property.parking_spaces ? `${property.parking_spaces} Vagas` : "-"}</span>
+            </div>
+          </div>
+
+          <div className="border-t pt-2 text-lg font-bold text-gray-900">{formatPrice(property.price)}</div>
+        </div>
+      </Link>
+    );
+  };
+
   return (
     <div className="py-12">
       <h2 className="mb-6 text-2xl font-bold text-gray-900">Você também pode se interessar</h2>
 
-      <div className="relative">
+      <div className="md:hidden">
+        <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {properties.map((property) =>
+            renderCard(
+              property,
+              "group w-[86%] min-w-[86%] snap-center overflow-hidden rounded-lg border border-gray-200 transition-shadow hover:shadow-lg"
+            ),
+          )}
+        </div>
+        {properties.length > 1 ? (
+          <p className="mt-3 text-xs text-slate-500">Deslize para o lado para ver mais imóveis.</p>
+        ) : null}
+      </div>
+
+      <div className="relative hidden md:block">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {visibleProperties.map((property) => {
-            const primaryImage = property.property_images?.find((img) => img.is_primary)?.image_url;
-            const fallbackImage = property.property_images?.[0]?.image_url;
-            const imageUrl = property.images?.[0] || primaryImage || fallbackImage || "/placeholder.jpg";
-            const region = property.neighborhood || property.location || "Região";
-
-            return (
-              <Link
-                key={property.id}
-                to={`/property/${property.codigo || property.id}`}
-                className="group overflow-hidden rounded-lg border border-gray-200 transition-shadow hover:shadow-lg"
-              >
-                <div className="relative aspect-[4/3] overflow-hidden">
-                  <img
-                    src={imageUrl}
-                    alt={property.title}
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                </div>
-
-                <div className="space-y-3 p-4">
-                  <div className="text-sm font-semibold text-primary">{property.property_type}</div>
-
-                  <div className="flex items-center gap-1 text-sm text-gray-600">
-                    <MapPin className="h-4 w-4" />
-                    <span>
-                      {region} | {property.city}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-4 text-sm text-gray-700">
-                    <div className="flex items-center gap-1">
-                      <Home className="h-4 w-4" />
-                      <span>{property.area ? `${property.area}m²` : "-"}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Bed className="h-4 w-4" />
-                      <span>{property.bedrooms ? `${property.bedrooms} Quartos` : "-"}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Car className="h-4 w-4" />
-                      <span>{property.parking_spaces ? `${property.parking_spaces} Vagas` : "-"}</span>
-                    </div>
-                  </div>
-
-                  <div className="border-t pt-2 text-lg font-bold text-gray-900">{formatPrice(property.price)}</div>
-                </div>
-              </Link>
-            );
-          })}
+          {visibleProperties.map((property) =>
+            renderCard(
+              property,
+              "group overflow-hidden rounded-lg border border-gray-200 transition-shadow hover:shadow-lg"
+            ),
+          )}
         </div>
 
         {currentIndex > 0 && (

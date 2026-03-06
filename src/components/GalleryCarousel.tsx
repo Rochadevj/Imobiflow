@@ -56,11 +56,11 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap gap-2">
+      <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap">
         <Button
           variant={viewMode === "photos" ? "default" : "outline"}
           onClick={() => setViewMode("photos")}
-          className={`w-full justify-center rounded-full sm:w-auto ${viewMode === "photos" ? "bg-slate-900 text-white hover:bg-slate-800" : ""}`}
+          className={`shrink-0 justify-center rounded-full ${viewMode === "photos" ? "bg-slate-900 text-white hover:bg-slate-800" : ""}`}
         >
           <Image className="mr-2 h-4 w-4" />
           Fotos ({photos.length})
@@ -70,7 +70,7 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
           <Button
             variant={viewMode === "video" ? "default" : "outline"}
             onClick={() => setViewMode("video")}
-            className={`w-full justify-center rounded-full sm:w-auto ${viewMode === "video" ? "bg-slate-900 text-white hover:bg-slate-800" : ""}`}
+            className={`shrink-0 justify-center rounded-full ${viewMode === "video" ? "bg-slate-900 text-white hover:bg-slate-800" : ""}`}
           >
             <Video className="mr-2 h-4 w-4" />
             Vídeo ({videos.length})
@@ -80,7 +80,7 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
         <Button
           variant={viewMode === "map" ? "default" : "outline"}
           onClick={() => setViewMode("map")}
-          className={`w-full justify-center rounded-full sm:w-auto ${viewMode === "map" ? "bg-slate-900 text-white hover:bg-slate-800" : ""}`}
+          className={`shrink-0 justify-center rounded-full ${viewMode === "map" ? "bg-slate-900 text-white hover:bg-slate-800" : ""}`}
         >
           <Map className="mr-2 h-4 w-4" />
           Mapa
@@ -89,7 +89,7 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
         <Button
           variant={viewMode === "tour" ? "default" : "outline"}
           onClick={() => setViewMode("tour")}
-          className={`w-full justify-center rounded-full sm:w-auto ${viewMode === "tour" ? "bg-slate-900 text-white hover:bg-slate-800" : ""}`}
+          className={`shrink-0 justify-center rounded-full ${viewMode === "tour" ? "bg-slate-900 text-white hover:bg-slate-800" : ""}`}
         >
           <Scan className="mr-2 h-4 w-4" />
           Tour
@@ -98,7 +98,42 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
 
       {(viewMode === "photos" || viewMode === "video") && displayContent.length > 0 ? (
         <div className="surface-card border-slate-200/80 p-4">
-          <div className="relative">
+          <div className="sm:hidden">
+            <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {displayContent.map((item, absoluteIndex) => (
+                <button
+                  key={`${item}-${absoluteIndex}`}
+                  type="button"
+                  onClick={() => openPreview(absoluteIndex)}
+                  className="group relative aspect-[4/3] w-[86%] min-w-[86%] snap-center overflow-hidden rounded-2xl border border-slate-200 bg-slate-50"
+                >
+                  {isVideoUrl(item) ? (
+                    <>
+                      <video src={item} className="h-full w-full object-cover" muted playsInline />
+                      <div className="absolute inset-0 flex items-center justify-center bg-slate-950/30">
+                        <span className="rounded-full border border-white/40 bg-white/20 p-3 text-white">
+                          <Video className="h-5 w-5" />
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <img
+                      src={item}
+                      alt={`Imagem ${absoluteIndex + 1}`}
+                      loading="eager"
+                      decoding="async"
+                      className="h-full w-full object-cover"
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
+            {displayContent.length > 1 ? (
+              <p className="mt-3 text-xs text-slate-500">Deslize para o lado para ver mais fotos.</p>
+            ) : null}
+          </div>
+
+          <div className="relative hidden sm:block">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {visibleItems.map((item, idx) => {
                 const absoluteIndex = currentIndex + idx;
@@ -153,7 +188,7 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
             ) : null}
           </div>
 
-          <p className="mt-3 text-right text-xs text-slate-500">
+          <p className="mt-3 hidden text-right text-xs text-slate-500 sm:block">
             Exibindo {Math.min(currentIndex + 1, displayContent.length)}-
             {Math.min(currentIndex + ITEMS_PER_VIEW, displayContent.length)} de {displayContent.length}
           </p>
@@ -284,13 +319,13 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
                 ) : null}
               </div>
 
-              <div className="mt-3 flex flex-wrap justify-center gap-2">
+              <div className="mt-3 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {displayContent.map((item, idx) => (
                   <button
                     key={`${item}-thumb-${idx}`}
                     type="button"
                     onClick={() => setSelectedIndex(idx)}
-                    className={`h-14 w-20 overflow-hidden rounded-lg border transition sm:h-16 sm:w-24 ${
+                    className={`h-14 w-20 shrink-0 overflow-hidden rounded-lg border transition sm:h-16 sm:w-24 ${
                       idx === selectedIndex ? "border-white" : "border-white/25"
                     }`}
                   >
