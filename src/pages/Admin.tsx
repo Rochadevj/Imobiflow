@@ -698,7 +698,7 @@ const Admin = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-xl text-slate-900">
                     <Settings className="h-5 w-5 text-amber-600" />
-                    Configuracoes da conta
+                    Configurações da conta
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -706,16 +706,10 @@ const Admin = () => {
                     <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Conta atual</p>
                     <p className="mt-2 text-base font-semibold text-slate-900">{user?.email || "Sem e-mail"}</p>
                     <p className="mt-2 text-sm text-slate-600">
-                      Se voce excluir a conta, o acesso e os dados vinculados a ela serao removidos do sistema.
+                      Se você excluir a conta, o acesso e os dados vinculados a ela serão removidos do sistema.
                     </p>
                   </div>
 
-                  <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
-                    <p className="text-sm font-semibold text-emerald-800">Recriacao do mesmo e-mail</p>
-                    <p className="mt-2 text-sm text-emerald-700">
-                      A exclusao sera definitiva. Depois disso, voce podera criar uma nova conta com o mesmo e-mail.
-                    </p>
-                  </div>
                 </CardContent>
               </Card>
 
@@ -730,7 +724,7 @@ const Admin = () => {
                   <div className="rounded-xl border border-rose-200 bg-rose-50 p-4">
                     <p className="text-sm font-semibold text-rose-800">Excluir conta permanentemente</p>
                     <p className="mt-2 text-sm text-rose-700">
-                      Isso remove o usuario do Supabase Auth, encerra o acesso ao painel e apaga os dados associados.
+                      Isso remove sua conta permanentemente, encerra o acesso ao painel e apaga os dados associados.
                     </p>
                   </div>
 

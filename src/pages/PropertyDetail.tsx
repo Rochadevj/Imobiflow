@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Heart, MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -268,7 +268,7 @@ const PropertyDetail = () => {
                       </p>
                     </div>
                     {property.condominio || property.iptu ? (
-                      <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
                         {property.condominio ? (
                           <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
                             <p className="text-slate-500">Condomínio</p>
