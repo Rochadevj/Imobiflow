@@ -24,6 +24,7 @@ interface GalleryCarouselProps {
 type ViewMode = "photos" | "video" | "map" | "tour";
 
 const ITEMS_PER_VIEW = 3;
+const GOOGLE_MAPS_EMBED_KEY = import.meta.env.VITE_GOOGLE_MAPS_EMBED_KEY;
 
 export default function GalleryCarousel({ images, location, city, state }: GalleryCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -209,7 +210,7 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
 
       {viewMode === "map" ? (
         <div className="surface-card overflow-hidden border-slate-200/80 p-2">
-          {location ? (
+          {location && GOOGLE_MAPS_EMBED_KEY ? (
             <div className="h-[320px] overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 sm:h-[380px] lg:h-[460px]">
               <iframe
                 width="100%"
@@ -218,7 +219,7 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
                 loading="lazy"
                 allowFullScreen
                 referrerPolicy="no-referrer-when-downgrade"
-                src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(
+                src={`https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_EMBED_KEY}&q=${encodeURIComponent(
                   [location, city, state || "RS", "Brasil"].filter(Boolean).join(", ")
                 )}`}
                 title="Localização do imóvel"
@@ -226,7 +227,7 @@ export default function GalleryCarousel({ images, location, city, state }: Galle
             </div>
           ) : (
             <div className="flex h-[320px] items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 text-sm text-slate-500 sm:h-[380px] lg:h-[460px]">
-              Endereço indisponível para exibir no mapa.
+              {!location ? "Endereço indisponível para exibir no mapa." : "Mapa temporariamente indisponível. Configure VITE_GOOGLE_MAPS_EMBED_KEY."}
             </div>
           )}
         </div>

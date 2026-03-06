@@ -109,7 +109,7 @@ const PropertyDetail = () => {
         }
 
         setProperty(data as unknown as Property);
-        trackPropertyView(data.id).catch((err) => console.error("Erro ao rastrear visualizaÃ§Ã£o:", err));
+        trackPropertyView(data.id).catch((err) => console.error("Erro ao rastrear visualização:", err));
 
         const { data: similar } = await supabase
           .from("properties")
@@ -121,7 +121,7 @@ const PropertyDetail = () => {
 
         if (similar) setSimilarProperties(similar as unknown as Property[]);
       } catch (error) {
-        console.error("Erro ao carregar imÃ³vel:", error);
+        console.error("Erro ao carregar imóvel:", error);
         setProperty(null);
       } finally {
         setLoading(false);
@@ -183,7 +183,7 @@ const PropertyDetail = () => {
     return (
       <div className="page-shell">
         <Navbar />
-        <div className="container mx-auto px-4 py-24 text-center text-slate-600">ImÃ³vel nÃ£o encontrado.</div>
+        <div className="container mx-auto px-4 py-24 text-center text-slate-600">Imóvel não encontrado.</div>
         <Footer />
       </div>
     );
@@ -227,7 +227,7 @@ const PropertyDetail = () => {
                 <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">{property.title}</h1>
                 <p className="mt-2 inline-flex items-center gap-1 text-sm text-white/80">
                   <MapPin className="h-4 w-4 text-amber-300" />
-                  {property.location || "EndereÃ§o indisponÃ­vel"}, {property.city}
+                  {property.location || "Endereço indisponível"}, {property.city}
                 </p>
               </div>
               <Button
