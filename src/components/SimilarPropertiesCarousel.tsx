@@ -1,5 +1,5 @@
-import { ChevronLeft, ChevronRight, MapPin, Home, Bed, Car } from "lucide-react";
-import { useState } from "react";
+import { ChevronLeft, ChevronRight, MapPin, Bed, Car } from "lucide-react";
+import { useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
 
 interface SimilarProperty {
@@ -7,6 +7,7 @@ interface SimilarProperty {
   codigo?: string;
   title: string;
   property_type: string;
+  transaction_type?: string;
   city: string;
   neighborhood?: string;
   location?: string;
@@ -22,129 +23,157 @@ interface SimilarPropertiesCarouselProps {
   properties: SimilarProperty[];
 }
 
+const formatPrice = (value: number) =>
+  new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
+
+const formatPropertyType = (value: string) =>
+  value.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
+
+const formatTransactionType = (value?: string) => {
+  if (value === "aluguel") return "Aluguel";
+  if (value === "venda") return "Venda";
+  if (value === "lancamento") return "Lançamento";
+  return "";
+};
+
 export default function SimilarPropertiesCarousel({ properties }: SimilarPropertiesCarouselProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const itemsPerView = 3;
-  const maxIndex = Math.max(0, properties.length - itemsPerView);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const carouselProperties = useMemo(
+    () => [...properties].sort(() => Math.random() - 0.5),
+    [properties],
+  );
 
-  const goToPrevious = () => {
-    setCurrentIndex((prev) => Math.max(0, prev - 1));
+  const scrollCards = (direction: "left" | "right") => {
+    const container = scrollRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    const firstCard = container.querySelector<HTMLElement>("[data-similar-card]");
+    const scrollAmount = (firstCard?.offsetWidth || container.clientWidth * 0.9) + 24;
+
+    container.scrollBy({
+      left: direction === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth",
+    });
   };
 
-  const goToNext = () => {
-    setCurrentIndex((prev) => Math.min(maxIndex, prev + 1));
-  };
-
-  const formatPrice = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value);
-  };
-
-  const visibleProperties = properties.slice(currentIndex, currentIndex + itemsPerView);
-
-  const renderCard = (property: SimilarProperty, cardClassName: string) => {
+  const renderCard = (property: SimilarProperty) => {
     const primaryImage = property.property_images?.find((img) => img.is_primary)?.image_url;
     const fallbackImage = property.property_images?.[0]?.image_url;
-    const imageUrl = property.images?.[0] || primaryImage || fallbackImage || "/placeholder.jpg";
+    const imageUrl = property.images?.[0] || primaryImage || fallbackImage || "/placeholder.svg";
     const region = property.neighborhood || property.location || "Região";
+    const transactionLabel = formatTransactionType(property.transaction_type);
 
     return (
       <Link
         key={property.id}
         to={`/property/${property.codigo || property.id}`}
-        className={cardClassName}
+        data-similar-card
+        className="group w-[252px] shrink-0 snap-start overflow-hidden rounded-[24px] border border-slate-200/80 bg-white shadow-[0_18px_34px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_44px_rgba(15,23,42,0.12)] sm:w-[272px] lg:w-[292px]"
       >
-        <div className="relative aspect-[4/3] overflow-hidden">
+        <div className="relative aspect-[16/10] overflow-hidden bg-slate-100">
           <img
             src={imageUrl}
             alt={property.title}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
+          <div className="absolute inset-x-0 top-0 flex items-start justify-between p-3">
+            <span className="rounded-full bg-slate-950/86 px-3 py-1 text-[11px] font-semibold text-white shadow-sm backdrop-blur-sm">
+              {formatPropertyType(property.property_type)}
+            </span>
+            {transactionLabel ? (
+              <span className="rounded-full border border-white/35 bg-white/18 px-3 py-1 text-[11px] font-semibold text-white shadow-sm backdrop-blur-sm">
+                {transactionLabel}
+              </span>
+            ) : null}
+          </div>
+          <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-slate-950/55 via-slate-950/15 to-transparent" />
         </div>
 
         <div className="space-y-3 p-4">
-          <div className="text-sm font-semibold text-primary">{property.property_type}</div>
+          <h3 className="line-clamp-2 min-h-[3.25rem] text-base font-semibold text-slate-900">
+            {property.title}
+          </h3>
 
-          <div className="flex items-center gap-1 text-sm text-gray-600">
-            <MapPin className="h-4 w-4" />
+          <div className="flex items-center gap-1.5 text-sm text-slate-600">
+            <MapPin className="h-4 w-4 text-amber-500" />
             <span className="line-clamp-1">
               {region} | {property.city}
             </span>
           </div>
 
-          <div className="flex items-center gap-4 text-sm text-gray-700">
-            <div className="flex items-center gap-1">
-              <Home className="h-4 w-4" />
-              <span>{property.area ? `${property.area}m²` : "-"}</span>
+          <div className="flex flex-wrap items-center gap-2 text-sm text-slate-700">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1">
+              <span>{property.area ? `${property.area}m²` : "Área n/d"}</span>
             </div>
-            <div className="flex items-center gap-1">
-              <Bed className="h-4 w-4" />
-              <span>{property.bedrooms ? `${property.bedrooms} Quartos` : "-"}</span>
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1">
+              <Bed className="h-4 w-4 text-amber-500" />
+              <span>{property.bedrooms ? `${property.bedrooms} quartos` : "Quartos n/d"}</span>
             </div>
-            <div className="flex items-center gap-1">
-              <Car className="h-4 w-4" />
-              <span>{property.parking_spaces ? `${property.parking_spaces} Vagas` : "-"}</span>
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1">
+              <Car className="h-4 w-4 text-amber-500" />
+              <span>{property.parking_spaces ? `${property.parking_spaces} vagas` : "Vagas n/d"}</span>
             </div>
           </div>
 
-          <div className="border-t pt-2 text-lg font-bold text-gray-900">{formatPrice(property.price)}</div>
+          <div className="border-t border-slate-200 pt-3 text-lg font-bold text-slate-900">
+            {formatPrice(property.price)}
+          </div>
         </div>
       </Link>
     );
   };
 
   return (
-    <div className="py-12">
-      <h2 className="mb-6 text-2xl font-bold text-gray-900">Você também pode se interessar</h2>
-
-      <div className="md:hidden">
-        <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {properties.map((property) =>
-            renderCard(
-              property,
-              "group w-[86%] min-w-[86%] snap-center overflow-hidden rounded-lg border border-gray-200 transition-shadow hover:shadow-lg"
-            ),
-          )}
+    <section className="section-shell overflow-hidden p-5 md:p-6">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-600">
+            Mais opções para navegar
+          </p>
+          <h2 className="mt-2 text-2xl font-semibold text-slate-900">Você também pode gostar</h2>
         </div>
-        {properties.length > 1 ? (
-          <p className="mt-3 text-xs text-slate-500">Deslize para o lado para ver mais imóveis.</p>
+
+        {carouselProperties.length > 1 ? (
+          <div className="hidden items-center gap-2 md:flex">
+            <button
+              type="button"
+              onClick={() => scrollCards("left")}
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
+              aria-label="Ver imóveis anteriores"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollCards("right")}
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
+              aria-label="Ver próximos imóveis"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </div>
         ) : null}
       </div>
 
-      <div className="relative hidden md:block">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {visibleProperties.map((property) =>
-            renderCard(
-              property,
-              "group overflow-hidden rounded-lg border border-gray-200 transition-shadow hover:shadow-lg"
-            ),
-          )}
-        </div>
-
-        {currentIndex > 0 && (
-          <button
-            onClick={goToPrevious}
-            className="absolute left-0 top-1/2 z-10 -translate-x-4 -translate-y-1/2 rounded-full bg-white p-3 shadow-lg transition-all hover:bg-gray-50"
-            aria-label="Anterior"
-          >
-            <ChevronLeft className="h-6 w-6 text-primary" />
-          </button>
-        )}
-
-        {currentIndex < maxIndex && (
-          <button
-            onClick={goToNext}
-            className="absolute right-0 top-1/2 z-10 translate-x-4 -translate-y-1/2 rounded-full bg-white p-3 shadow-lg transition-all hover:bg-gray-50"
-            aria-label="Próximo"
-          >
-            <ChevronRight className="h-6 w-6 text-primary" />
-          </button>
-        )}
+      <div
+        ref={scrollRef}
+        className="mt-6 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {carouselProperties.map((property) => renderCard(property))}
       </div>
-    </div>
+
+      {carouselProperties.length > 1 ? (
+        <p className="mt-4 text-sm text-slate-500">Deslize para o lado para ver mais imóveis.</p>
+      ) : null}
+    </section>
   );
 }

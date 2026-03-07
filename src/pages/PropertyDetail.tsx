@@ -115,13 +115,35 @@ const PropertyDetail = () => {
 
         const { data: similar } = await supabase
           .from("properties")
-          .select("*")
-          .eq("property_type", data.property_type)
-          .eq("city", data.city)
+          .select(
+            `
+              id,
+              codigo,
+              title,
+              property_type,
+              transaction_type,
+              city,
+              location,
+              price,
+              area,
+              bedrooms,
+              parking_spaces,
+              created_at,
+              property_images(image_url, is_primary)
+            `
+          )
           .neq("id", data.id)
-          .limit(6);
+          .eq("status", "available")
+          .order("created_at", { ascending: false })
+          .limit(18);
 
-        if (similar) setSimilarProperties(similar as unknown as Property[]);
+        if (similar) {
+          const randomProperties = [...similar]
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 8);
+
+          setSimilarProperties(randomProperties as unknown as Property[]);
+        }
       } catch (error) {
         console.error("Erro ao carregar imóvel:", error);
         setProperty(null);
