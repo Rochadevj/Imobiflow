@@ -258,42 +258,46 @@ const Index = () => {
         property_images(image_url, is_primary)
       `;
 
-      const { data: imperdiveis } = await supabase
-        .from("properties")
-        .select(baseSelect)
-        .eq("status", "available")
-        .eq("featured_imperdiveis", true)
-        .order("created_at", { ascending: false })
-        .limit(6);
+      const [imperdiveisResult, vendaResult, locacaoResult, launchResult] = await Promise.all([
+        supabase
+          .from("properties")
+          .select(baseSelect)
+          .eq("status", "available")
+          .eq("featured_imperdiveis", true)
+          .order("created_at", { ascending: false })
+          .limit(6),
+        supabase
+          .from("properties")
+          .select(baseSelect)
+          .eq("status", "available")
+          .eq("featured_venda", true)
+          .order("created_at", { ascending: false })
+          .limit(6),
+        supabase
+          .from("properties")
+          .select(baseSelect)
+          .eq("status", "available")
+          .eq("featured_locacao", true)
+          .order("created_at", { ascending: false })
+          .limit(6),
+        supabase
+          .from("properties")
+          .select(baseSelect)
+          .eq("status", "available")
+          .eq("is_launch", true)
+          .order("created_at", { ascending: false })
+          .limit(6),
+      ]);
 
-      const { data: venda } = await supabase
-        .from("properties")
-        .select(baseSelect)
-        .eq("status", "available")
-        .eq("featured_venda", true)
-        .order("created_at", { ascending: false })
-        .limit(6);
+      if (imperdiveisResult.error) throw imperdiveisResult.error;
+      if (vendaResult.error) throw vendaResult.error;
+      if (locacaoResult.error) throw locacaoResult.error;
+      if (launchResult.error) throw launchResult.error;
 
-      const { data: locacao } = await supabase
-        .from("properties")
-        .select(baseSelect)
-        .eq("status", "available")
-        .eq("featured_locacao", true)
-        .order("created_at", { ascending: false })
-        .limit(6);
-
-      const { data: launchData } = await supabase
-        .from("properties")
-        .select(baseSelect)
-        .eq("status", "available")
-        .eq("is_launch", true)
-        .order("created_at", { ascending: false })
-        .limit(6);
-
-      setFeaturedImperdiveis(imperdiveis || []);
-      setFeaturedVenda(venda || []);
-      setFeaturedLocacao(locacao || []);
-      setLaunches(launchData || []);
+      setFeaturedImperdiveis(imperdiveisResult.data || []);
+      setFeaturedVenda(vendaResult.data || []);
+      setFeaturedLocacao(locacaoResult.data || []);
+      setLaunches(launchResult.data || []);
     } catch (error) {
       console.error("Erro ao carregar destaques:", error);
     } finally {

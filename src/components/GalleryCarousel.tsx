@@ -81,6 +81,7 @@ export default function GalleryCarousel({ images, location, streetNumber, city, 
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [zoom, setZoom] = useState(1);
   const [streetCoords, setStreetCoords] = useState<{ lat: string; lon: string } | null>(null);
+  const [streetCoordsQuery, setStreetCoordsQuery] = useState("");
   const [streetCoordsLoading, setStreetCoordsLoading] = useState(false);
 
   const isVideoUrl = (url: string) => /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url);
@@ -143,8 +144,19 @@ export default function GalleryCarousel({ images, location, streetNumber, city, 
   }, [selectedIndex]);
 
   useEffect(() => {
+    if (viewMode !== "street") {
+      setStreetCoordsLoading(false);
+      return;
+    }
+
     if (!mapQuery) {
       setStreetCoords(null);
+      setStreetCoordsQuery("");
+      setStreetCoordsLoading(false);
+      return;
+    }
+
+    if (streetCoords && streetCoordsQuery === mapQuery) {
       setStreetCoordsLoading(false);
       return;
     }
@@ -426,6 +438,7 @@ export default function GalleryCarousel({ images, location, streetNumber, city, 
                 lat: String(firstGoogleResult.geometry.location.lat),
                 lon: String(firstGoogleResult.geometry.location.lng),
               });
+              setStreetCoordsQuery(mapQuery);
               return;
             }
           }
@@ -472,6 +485,7 @@ export default function GalleryCarousel({ images, location, streetNumber, city, 
 
           if (firstResult.score >= 110) {
             setStreetCoords({ lat: firstResult.lat, lon: firstResult.lon });
+            setStreetCoordsQuery(mapQuery);
             return;
           }
         }
@@ -479,6 +493,7 @@ export default function GalleryCarousel({ images, location, streetNumber, city, 
         const minimumAcceptedScore = expectedStreetNumber ? 45 : 20;
         if (bestCandidate && bestCandidate.score >= minimumAcceptedScore) {
           setStreetCoords({ lat: bestCandidate.lat, lon: bestCandidate.lon });
+          setStreetCoordsQuery(mapQuery);
           return;
         }
 
@@ -486,6 +501,7 @@ export default function GalleryCarousel({ images, location, streetNumber, city, 
       } catch {
         if (!controller.signal.aborted) {
           setStreetCoords(null);
+          setStreetCoordsQuery("");
         }
       } finally {
         if (!controller.signal.aborted) {
@@ -497,7 +513,7 @@ export default function GalleryCarousel({ images, location, streetNumber, city, 
     void geocodeStreetView();
 
     return () => controller.abort();
-  }, [mapQuery, normalizedZipcode, addressLine, effectiveStreetNumber, normalizedLocation, city, state]);
+  }, [viewMode, mapQuery, streetCoords, streetCoordsQuery, normalizedZipcode, addressLine, effectiveStreetNumber, normalizedLocation, city, state]);
 
   const visibleItems = displayContent.slice(currentIndex, currentIndex + ITEMS_PER_VIEW);
 
@@ -581,7 +597,7 @@ export default function GalleryCarousel({ images, location, streetNumber, city, 
                     <img
                       src={item}
                       alt={`Imagem ${absoluteIndex + 1}`}
-                      loading="eager"
+                      loading={absoluteIndex === 0 ? "eager" : "lazy"}
                       decoding="async"
                       className="h-full w-full object-cover"
                     />
@@ -618,7 +634,7 @@ export default function GalleryCarousel({ images, location, streetNumber, city, 
                       <img
                         src={item}
                         alt={`Imagem ${absoluteIndex + 1}`}
-                        loading="eager"
+                        loading={idx === 0 ? "eager" : "lazy"}
                         decoding="async"
                         className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                       />
@@ -830,7 +846,7 @@ export default function GalleryCarousel({ images, location, streetNumber, city, 
                     {isVideoUrl(item) ? (
                       <video src={item} className="h-full w-full object-cover" muted playsInline />
                     ) : (
-                      <img src={item} alt={`Miniatura ${idx + 1}`} className="h-full w-full object-cover" />
+                      <img src={item} alt={`Miniatura ${idx + 1}`} loading="lazy" className="h-full w-full object-cover" />
                     )}
                   </button>
                 ))}
