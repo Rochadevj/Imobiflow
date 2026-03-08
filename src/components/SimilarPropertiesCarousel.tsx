@@ -1,6 +1,6 @@
-import { ChevronLeft, ChevronRight, MapPin, Bed, Car } from "lucide-react";
+﻿import { ChevronLeft, ChevronRight, MapPin, Bed, Car } from "lucide-react";
 import { useMemo, useRef } from "react";
-import { Link } from "react-router-dom";
+import TenantLink from "@/components/TenantLink";
 
 interface SimilarProperty {
   id: string;
@@ -43,17 +43,11 @@ const formatTransactionType = (value?: string) => {
 
 export default function SimilarPropertiesCarousel({ properties }: SimilarPropertiesCarouselProps) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const carouselProperties = useMemo(
-    () => [...properties].sort(() => Math.random() - 0.5),
-    [properties],
-  );
+  const carouselProperties = useMemo(() => [...properties].sort(() => Math.random() - 0.5), [properties]);
 
   const scrollCards = (direction: "left" | "right") => {
     const container = scrollRef.current;
-
-    if (!container) {
-      return;
-    }
+    if (!container) return;
 
     const firstCard = container.querySelector<HTMLElement>("[data-similar-card]");
     const scrollAmount = (firstCard?.offsetWidth || container.clientWidth * 0.9) + 24;
@@ -72,9 +66,10 @@ export default function SimilarPropertiesCarousel({ properties }: SimilarPropert
     const transactionLabel = formatTransactionType(property.transaction_type);
 
     return (
-      <Link
+      <TenantLink
         key={property.id}
         to={`/property/${property.codigo || property.id}`}
+        forceTenant
         data-similar-card
         className="group w-[252px] shrink-0 snap-start overflow-hidden rounded-[24px] border border-slate-200/80 bg-white shadow-[0_18px_34px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_44px_rgba(15,23,42,0.12)] sm:w-[272px] lg:w-[292px]"
       >
@@ -99,9 +94,7 @@ export default function SimilarPropertiesCarousel({ properties }: SimilarPropert
         </div>
 
         <div className="space-y-3 p-4">
-          <h3 className="line-clamp-2 min-h-[3.25rem] text-base font-semibold text-slate-900">
-            {property.title}
-          </h3>
+          <h3 className="line-clamp-2 min-h-[3.25rem] text-base font-semibold text-slate-900">{property.title}</h3>
 
           <div className="flex items-center gap-1.5 text-sm text-slate-600">
             <MapPin className="h-4 w-4 text-amber-500" />
@@ -124,11 +117,9 @@ export default function SimilarPropertiesCarousel({ properties }: SimilarPropert
             </div>
           </div>
 
-          <div className="border-t border-slate-200 pt-3 text-lg font-bold text-slate-900">
-            {formatPrice(property.price)}
-          </div>
+          <div className="border-t border-slate-200 pt-3 text-lg font-bold text-slate-900">{formatPrice(property.price)}</div>
         </div>
-      </Link>
+      </TenantLink>
     );
   };
 
@@ -136,9 +127,7 @@ export default function SimilarPropertiesCarousel({ properties }: SimilarPropert
     <section className="section-shell overflow-hidden p-5 md:p-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-600">
-            Mais opções para navegar
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-600">Mais opções para navegar</p>
           <h2 className="mt-2 text-2xl font-semibold text-slate-900">Você também pode gostar</h2>
         </div>
 
