@@ -43,6 +43,110 @@ export type Database = {
           },
         ]
       }
+      tenant_users: {
+        Row: {
+          created_at: string
+          id: string
+          role: string
+          tenant_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: string
+          tenant_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: string
+          tenant_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_users_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tenants: {
+        Row: {
+          accent_color: string
+          city: string | null
+          created_at: string
+          creci: string | null
+          custom_domain: string | null
+          id: string
+          is_active: boolean
+          is_demo: boolean
+          logo_url: string | null
+          name: string
+          phone: string | null
+          primary_color: string
+          secondary_color: string
+          site_title: string | null
+          slug: string
+          state: string | null
+          subdomain: string | null
+          support_email: string | null
+          tagline: string | null
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          accent_color?: string
+          city?: string | null
+          created_at?: string
+          creci?: string | null
+          custom_domain?: string | null
+          id?: string
+          is_active?: boolean
+          is_demo?: boolean
+          logo_url?: string | null
+          name: string
+          phone?: string | null
+          primary_color?: string
+          secondary_color?: string
+          site_title?: string | null
+          slug: string
+          state?: string | null
+          subdomain?: string | null
+          support_email?: string | null
+          tagline?: string | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          accent_color?: string
+          city?: string | null
+          created_at?: string
+          creci?: string | null
+          custom_domain?: string | null
+          id?: string
+          is_active?: boolean
+          is_demo?: boolean
+          logo_url?: string | null
+          name?: string
+          phone?: string | null
+          primary_color?: string
+          secondary_color?: string
+          site_title?: string | null
+          slug?: string
+          state?: string | null
+          subdomain?: string | null
+          support_email?: string | null
+          tagline?: string | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
       properties: {
         Row: {
           area: number | null
@@ -70,6 +174,7 @@ export type Database = {
           state: string | null
           status: string | null
           title: string
+          tenant_id: string
           transaction_type: string | null
           updated_at: string | null
           user_id: string | null
@@ -102,6 +207,7 @@ export type Database = {
           state?: string | null
           status?: string | null
           title: string
+          tenant_id?: string
           transaction_type?: string | null
           updated_at?: string | null
           user_id?: string | null
@@ -134,13 +240,22 @@ export type Database = {
           state?: string | null
           status?: string | null
           title?: string
+          tenant_id?: string
           transaction_type?: string | null
           updated_at?: string | null
           user_id?: string | null
           video_url?: string | null
           zipcode?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "properties_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       property_images: {
         Row: {
@@ -181,6 +296,7 @@ export type Database = {
           ip_address: string
           property_id: string
           session_id: string | null
+          tenant_id: string
           user_agent: string | null
           viewed_at: string | null
         }
@@ -190,6 +306,7 @@ export type Database = {
           ip_address: string
           property_id: string
           session_id?: string | null
+          tenant_id?: string
           user_agent?: string | null
           viewed_at?: string | null
         }
@@ -199,6 +316,7 @@ export type Database = {
           ip_address?: string
           property_id?: string
           session_id?: string | null
+          tenant_id?: string
           user_agent?: string | null
           viewed_at?: string | null
         }
@@ -210,6 +328,13 @@ export type Database = {
             referencedRelation: "properties"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "property_views_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
@@ -219,7 +344,18 @@ export type Database = {
     Functions: {
       anonymize_ip: { Args: { ip_text: string }; Returns: string }
       cleanup_old_property_views: { Args: never; Returns: number }
+      create_tenant_for_current_user: {
+        Args: {
+          p_name: string
+          p_phone?: string
+          p_slug?: string
+          p_support_email?: string
+          p_whatsapp?: string
+        }
+        Returns: string
+      }
       generate_property_code: { Args: never; Returns: string }
+      get_current_tenant_id: { Args: never; Returns: string }
       record_property_view: {
         Args: {
           p_ip_address: string
@@ -240,6 +376,7 @@ export type Database = {
         Args: { p_property_id: string }
         Returns: number
       }
+      slugify_text: { Args: { input: string }; Returns: string }
     }
     Enums: {
       [_ in never]: never
