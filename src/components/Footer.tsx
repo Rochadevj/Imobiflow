@@ -1,79 +1,91 @@
-import { Link } from "react-router-dom";
-import { Building2, Facebook, Instagram, Mail, MapPin, Phone, ShieldCheck } from "lucide-react";
-import { CONTACT_WHATSAPP_DISPLAY, buildWhatsAppLink } from "@/lib/contact";
+﻿import { Facebook, Instagram, Mail, MapPin, Phone, ShieldCheck } from "lucide-react";
+import TenantLink from "@/components/TenantLink";
+import { useTenant } from "@/context/TenantContext";
+import { buildWhatsAppLink, formatPhoneDisplay } from "@/lib/contact";
+import {
+  getTenantBrandName,
+  getTenantCreci,
+  getTenantLocationLabel,
+  getTenantSupportEmail,
+  getTenantWhatsApp,
+} from "@/lib/tenantBrand";
 
 const Footer = () => {
+  const { tenant } = useTenant();
+  const brandName = getTenantBrandName(tenant);
+  const supportEmail = getTenantSupportEmail(tenant);
+  const whatsapp = getTenantWhatsApp(tenant);
+  const locationLabel = getTenantLocationLabel(tenant);
+  const creci = getTenantCreci(tenant);
+
   return (
     <footer className="mt-16 border-t border-slate-200/80 bg-gradient-to-b from-white/95 to-slate-100/85">
       <div className="container mx-auto px-4 py-14">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-4">
-            <Link to="/imobiliaria" className="inline-flex items-center gap-3">
+            <TenantLink to="/imobiliaria" forceTenant className="inline-flex items-center gap-3">
               <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-300 via-amber-400 to-orange-400 text-slate-900 shadow-[0_10px_20px_rgba(251,146,60,0.32)]">
-                <Building2 className="h-5 w-5" />
+                <ShieldCheck className="h-5 w-5" />
               </span>
               <div>
-                <p className="text-lg font-semibold text-slate-900">Imobiflow</p>
+                <p className="text-lg font-semibold text-slate-900">{brandName}</p>
                 <p className="text-[10px] uppercase tracking-[0.28em] text-slate-500">
                   Soluções imobiliárias
                 </p>
               </div>
-            </Link>
+            </TenantLink>
             <p className="text-sm text-slate-600">
-              Plataforma demo para apresentar captação, atendimento e negociação de imóveis em um único fluxo.
+              Catálogo imobiliário com atendimento organizado, vitrine profissional e experiência pública pronta para a operação da imobiliária.
             </p>
             <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
               <ShieldCheck className="h-3.5 w-3.5" />
-              Atendimento em todo o Brasil
+              {creci}
             </div>
           </div>
 
           <div>
             <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Navegação</h3>
             <nav className="mt-4 space-y-2 text-sm">
-              <Link to="/imobiliaria" className="block text-slate-700 transition hover:text-amber-600">
+              <TenantLink to="/imobiliaria" forceTenant className="block text-slate-700 transition hover:text-amber-600">
                 Início
-              </Link>
-              <Link to="/sobre" className="block text-slate-700 transition hover:text-amber-600">
+              </TenantLink>
+              <TenantLink to="/sobre" forceTenant className="block text-slate-700 transition hover:text-amber-600">
                 Sobre
-              </Link>
-              <Link to="/lancamentos" className="block text-slate-700 transition hover:text-amber-600">
+              </TenantLink>
+              <TenantLink to="/lancamentos" forceTenant className="block text-slate-700 transition hover:text-amber-600">
                 Lançamentos
-              </Link>
-              <Link to="/anunciar" className="block text-slate-700 transition hover:text-amber-600">
+              </TenantLink>
+              <TenantLink to="/anunciar" forceTenant className="block text-slate-700 transition hover:text-amber-600">
                 Anunciar imóvel
-              </Link>
-              <Link to="/favorites" className="block text-slate-700 transition hover:text-amber-600">
+              </TenantLink>
+              <TenantLink to="/favorites" forceTenant className="block text-slate-700 transition hover:text-amber-600">
                 Favoritos
-              </Link>
-              <Link to="/auth" className="block text-slate-700 transition hover:text-amber-600">
+              </TenantLink>
+              <TenantLink to="/auth" className="block text-slate-700 transition hover:text-amber-600">
                 Acesso ao painel
-              </Link>
+              </TenantLink>
             </nav>
           </div>
 
           <div>
             <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Contato</h3>
             <div className="mt-4 space-y-3 text-sm text-slate-700">
-              <a
-                href="mailto:contato@imobiflow.com"
-                className="flex items-center gap-2 transition hover:text-amber-600"
-              >
+              <a href={`mailto:${supportEmail}`} className="flex items-center gap-2 transition hover:text-amber-600">
                 <Mail className="h-4 w-4 text-amber-500" />
-                contato@imobiflow.com
+                {supportEmail}
               </a>
               <a
-                href={buildWhatsAppLink("Olá! Gostaria de saber mais sobre a Imobiflow.")}
+                href={buildWhatsAppLink(`Olá! Gostaria de saber mais sobre os imóveis da ${brandName}.`, whatsapp)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 transition hover:text-amber-600"
               >
                 <Phone className="h-4 w-4 text-amber-500" />
-                {CONTACT_WHATSAPP_DISPLAY}
+                {formatPhoneDisplay(whatsapp)}
               </a>
               <span className="flex items-center gap-2 text-slate-600">
                 <MapPin className="h-4 w-4 text-amber-500" />
-                Porto alegre, RS
+                {locationLabel}
               </span>
             </div>
           </div>
@@ -99,16 +111,16 @@ const Footer = () => {
               </a>
             </div>
             <p className="mt-4 text-sm text-slate-600">
-              Estrutura pronta para demonstrar operação imobiliária com visual profissional.
+              Estrutura pronta para a imobiliária publicar estoque, atender leads e apresentar imóveis com padrão profissional.
             </p>
           </div>
         </div>
 
         <div className="mt-10 flex flex-col gap-3 border-t border-slate-200 pt-6 text-sm text-slate-500 md:flex-row md:items-center md:justify-between">
-          <p>Imobiflow | {new Date().getFullYear()} | Todos os direitos reservados</p>
-          <Link to="/politica-privacidade" className="transition hover:text-amber-600">
+          <p>{brandName} | {new Date().getFullYear()} | Todos os direitos reservados</p>
+          <TenantLink to="/politica-privacidade" forceTenant className="transition hover:text-amber-600">
             Política de Privacidade
-          </Link>
+          </TenantLink>
         </div>
       </div>
     </footer>

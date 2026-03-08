@@ -2,6 +2,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Bath, Bed, Car, Heart, MapPin, Ruler } from "lucide-react";
 import { useEffect, useState, type MouseEvent } from "react";
+import { useTenant } from "@/context/TenantContext";
+import { readFavorites, writeFavorites } from "@/lib/favorites";
 
 interface PropertyCardProps {
   id?: string;
@@ -52,17 +54,13 @@ const PropertyCard = ({
   featured,
   isLaunch,
 }: PropertyCardProps) => {
+  const { tenant } = useTenant();
   const [isFavorited, setIsFavorited] = useState(false);
 
   useEffect(() => {
     if (!id) return;
-    try {
-      const favs = JSON.parse(localStorage.getItem("favorites") || "[]") as string[];
-      setIsFavorited(favs.includes(id));
-    } catch {
-      setIsFavorited(false);
-    }
-  }, [id]);
+    setIsFavorited(readFavorites(tenant?.slug).includes(id));
+  }, [id, tenant?.slug]);
 
   const toggleFavorite = (event?: MouseEvent<HTMLButtonElement>) => {
     if (event) {
@@ -70,12 +68,12 @@ const PropertyCard = ({
       event.preventDefault();
     }
     if (!id) return;
-    const favs = JSON.parse(localStorage.getItem("favorites") || "[]") as string[];
+
+    const favs = readFavorites(tenant?.slug);
     const exists = favs.includes(id);
     const updated = exists ? favs.filter((item) => item !== id) : [...favs, id];
-    localStorage.setItem("favorites", JSON.stringify(updated));
+    writeFavorites(updated, tenant?.slug);
     setIsFavorited(!exists);
-    window.dispatchEvent(new Event("favoritesChanged"));
   };
 
   return (

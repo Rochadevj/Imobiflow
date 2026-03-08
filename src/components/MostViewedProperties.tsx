@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import TenantLink from "@/components/TenantLink";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -198,7 +198,7 @@ export default function MostViewedProperties() {
         ) : (
           <div className="space-y-2">
             {properties.map((property, index) => (
-              <Link
+              <TenantLink forceTenant
                 key={property.property_id}
                 to={`/property/${property.property_code || property.property_id}`}
                 className="block rounded-lg transition-colors hover:bg-accent/5"
@@ -255,7 +255,7 @@ export default function MostViewedProperties() {
                     </div>
                   </div>
                 </div>
-              </Link>
+              </TenantLink>
             ))}
           </div>
         )}
@@ -284,4 +284,5 @@ export default function MostViewedProperties() {
     </Card>
   );
 }
+
 

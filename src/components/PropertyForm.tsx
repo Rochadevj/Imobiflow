@@ -22,10 +22,11 @@ const propertySchema = z.object({
 });
 
 interface PropertyFormProps {
+  tenantId: string;
   onSuccess: () => void;
 }
 
-const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
+const PropertyForm = ({ tenantId, onSuccess }: PropertyFormProps) => {
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<File[]>([]);
   const [videos, setVideos] = useState<File[]>([]);
@@ -58,23 +59,23 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newImages = Array.from(e.target.files);
-      setImages(prev => [...prev, ...newImages]);
+      setImages((prev) => [...prev, ...newImages]);
     }
   };
 
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newVideos = Array.from(e.target.files);
-      setVideos(prev => [...prev, ...newVideos]);
+      setVideos((prev) => [...prev, ...newVideos]);
     }
   };
 
   const removeImage = (index: number) => {
-    setImages(prev => prev.filter((_, i) => i !== index));
+    setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const removeVideo = (index: number) => {
-    setVideos(prev => prev.filter((_, i) => i !== index));
+    setVideos((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -105,6 +106,7 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
 
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado");
+      if (!tenantId) throw new Error("Configure a imobiliária antes de cadastrar imóveis.");
 
       const { data: property, error: propertyError } = await supabase
         .from("properties")
@@ -113,29 +115,30 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
           description: validatedData.description,
           property_type: validatedData.propertyType,
           transaction_type: formData.transactionType,
-        price: validatedData.price,
-        location: validatedData.location,
-        street_number: validatedData.streetNumber,
-        city: validatedData.city,
+          price: validatedData.price,
+          location: validatedData.location,
+          street_number: validatedData.streetNumber,
+          city: validatedData.city,
           state: formData.state || null,
           zipcode: formData.zipcode || null,
-        area: formData.area ? parseFloat(formData.area) : null,
-        area_privativa: formData.areaPrivativa ? parseFloat(formData.areaPrivativa) : null,
+          area: formData.area ? parseFloat(formData.area) : null,
+          area_privativa: formData.areaPrivativa ? parseFloat(formData.areaPrivativa) : null,
           bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : null,
           bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : null,
           parking_spaces: formData.parkingSpaces ? parseInt(formData.parkingSpaces) : null,
           features: features.length > 0 ? features : null,
           user_id: user.id,
+          tenant_id: tenantId,
           featured: formData.featuredImperdiveis || formData.featuredVenda || formData.featuredLocacao,
           featured_imperdiveis: formData.featuredImperdiveis,
           featured_venda: formData.featuredVenda,
           featured_locacao: formData.featuredLocacao,
           is_launch: formData.isLaunch,
-        condominio: formData.transactionType === "aluguel" && formData.condominio
+          condominio: formData.transactionType === "aluguel" && formData.condominio
           && !formData.isLaunch
           ? parseFloat(formData.condominio)
           : null,
-        iptu: formData.transactionType === "aluguel" && formData.iptu
+          iptu: formData.transactionType === "aluguel" && formData.iptu
           && !formData.isLaunch
           ? parseFloat(formData.iptu)
           : null,
@@ -316,7 +319,7 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
           {!formData.isLaunch && (
             <div className="space-y-2">
               <Label htmlFor="price">
-                {formData.transactionType === "aluguel" ? "Valor aluguel (R$) *" : "Preço (R$) *"}
+                {formData.transactionType === "aluguel" ? "Valor do aluguel (R$) *" : "Preço (R$) *"}
               </Label>
               <Input
                 id="price"
@@ -708,3 +711,4 @@ const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
 };
 
 export default PropertyForm;
+

@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
-import { Link } from "react-router-dom";
+import TenantLink from "@/components/TenantLink";
 
 interface HeroProperty {
   id: string;
@@ -81,7 +81,7 @@ export default function HeroCarousel({ properties }: HeroCarouselProps) {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/45 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-          <p className="text-xs uppercase tracking-[0.2em] text-white/70">Demo imobiliária</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-white/70">Catálogo imobiliário</p>
           <h3 className="mt-2 text-2xl font-semibold">Encontre seu imóvel ideal</h3>
           <p className="mt-1 text-sm text-white/80">
             Use os filtros para visualizar opções de compra, locação e lançamentos.
@@ -105,7 +105,7 @@ export default function HeroCarousel({ properties }: HeroCarouselProps) {
       <div className="carousel-overlay absolute inset-0" />
 
       <div className="absolute bottom-0 left-0 right-0 p-5">
-        <Link to={`/property/${currentProperty.id}`} className="block transition-transform hover:scale-[1.01]">
+        <TenantLink to={`/property/${currentProperty.id}`} forceTenant className="block transition-transform hover:scale-[1.01]">
           <div className="mb-2 flex flex-wrap items-center gap-2">
             <span className="glass-chip">{getPropertyTypeLabel(currentProperty.property_type)}</span>
             <span className="rounded-full border border-amber-300/60 bg-amber-400 px-2.5 py-1 text-xs font-semibold text-slate-900">
@@ -118,7 +118,7 @@ export default function HeroCarousel({ properties }: HeroCarouselProps) {
             {currentProperty.location}, {currentProperty.city}
           </p>
           <p className="mt-2 text-2xl font-bold text-white">{formatPrice(currentProperty.price)}</p>
-        </Link>
+        </TenantLink>
       </div>
 
       {properties.length > 1 ? (
