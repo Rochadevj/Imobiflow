@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+﻿import { useEffect, useState } from "react";
 import { Heart, HousePlus } from "lucide-react";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import PropertyCard from "@/components/PropertyCard";
+import TenantLink from "@/components/TenantLink";
 import { supabase } from "@/integrations/supabase/client";
+import { useTenant } from "@/context/TenantContext";
+import { readFavorites } from "@/lib/favorites";
 
 interface PropertyImage {
   image_url: string;
@@ -29,27 +31,23 @@ interface Property {
 }
 
 const Favorites = () => {
+  const { tenant, loading: tenantLoading } = useTenant();
   const [favorites, setFavorites] = useState<string[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
 
   useEffect(() => {
     const loadFavorites = () => {
-      try {
-        const favs = JSON.parse(localStorage.getItem("favorites") || "[]") as string[];
-        setFavorites(favs);
-      } catch {
-        setFavorites([]);
-      }
+      setFavorites(readFavorites(tenant?.slug));
     };
 
     loadFavorites();
     window.addEventListener("favoritesChanged", loadFavorites);
     return () => window.removeEventListener("favoritesChanged", loadFavorites);
-  }, []);
+  }, [tenant?.slug]);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (favorites.length === 0) {
+      if (tenantLoading || !tenant?.id || favorites.length === 0) {
         setProperties([]);
         return;
       }
@@ -61,8 +59,9 @@ const Favorites = () => {
             id, codigo, title, property_type, transaction_type, price, location, city, area,
             bedrooms, bathrooms, parking_spaces, featured,
             property_images(image_url, is_primary)
-          `
+          `,
         )
+        .eq("tenant_id", tenant.id)
         .in("id", favorites);
 
       if (error) {
@@ -72,8 +71,8 @@ const Favorites = () => {
       }
     };
 
-    fetchData();
-  }, [favorites]);
+    void fetchData();
+  }, [favorites, tenant?.id, tenantLoading]);
 
   return (
     <div className="page-shell">
@@ -93,13 +92,14 @@ const Favorites = () => {
                   Aqui ficam os imóveis salvos para comparar opções e decidir com mais segurança.
                 </p>
               </div>
-              <a
-                href="/imobiliaria?list=1"
+              <TenantLink
+                to="/imobiliaria?list=1"
+                forceTenant
                 className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
               >
                 <HousePlus className="h-4 w-4" />
                 Buscar mais imóveis
-              </a>
+              </TenantLink>
             </div>
           </div>
         </section>
@@ -112,14 +112,15 @@ const Favorites = () => {
               </div>
               <h2 className="mt-4 text-2xl font-semibold text-slate-900">Nenhum favorito salvo ainda</h2>
               <p className="mt-2 text-sm text-slate-600">
-                Explore os imóveis da demo e clique no ícone de coração para salvar suas opções.
+                Explore os imóveis deste catálogo e clique no ícone de coração para salvar suas opções.
               </p>
-              <Link
+              <TenantLink
                 to="/imobiliaria?list=1"
+                forceTenant
                 className="mt-6 inline-flex items-center rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
               >
                 Ver imóveis
-              </Link>
+              </TenantLink>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -129,7 +130,7 @@ const Favorites = () => {
                   property.property_images?.[0];
 
                 return (
-                  <Link key={property.id} to={`/property/${property.codigo || property.id}`} className="no-underline">
+                  <TenantLink key={property.id} to={`/property/${property.codigo || property.id}`} forceTenant className="no-underline">
                     <PropertyCard
                       id={property.id}
                       title={property.title}
@@ -145,7 +146,7 @@ const Favorites = () => {
                       imageUrl={primary?.image_url}
                       featured={property.featured}
                     />
-                  </Link>
+                  </TenantLink>
                 );
               })}
             </div>

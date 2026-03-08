@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
@@ -8,15 +8,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle2, ClipboardList, Clock3, MessageCircle, Phone, ShieldCheck } from "lucide-react";
+import { useTenant } from "@/context/TenantContext";
+import { getTenantBrandName, getTenantPhone, getTenantWhatsApp } from "@/lib/tenantBrand";
 
 const steps = [
-  "Preencha os dados do imóvel e proprietário",
+  "Preencha os dados do imóvel e do proprietário",
   "Nossa equipe revisa as informações",
   "Publicação e divulgação em até 24h",
 ];
 
 const PropertySubmit = () => {
+  const { tenant } = useTenant();
   const [loading, setLoading] = useState(false);
+  const brandName = getTenantBrandName(tenant);
+  const tenantPhone = getTenantPhone(tenant);
+  const whatsapp = getTenantWhatsApp(tenant);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "auto" });
@@ -45,12 +51,11 @@ const PropertySubmit = () => {
                   Anuncie de forma simples e profissional.
                 </h1>
                 <p className="max-w-xl text-sm text-white/80 md:text-base">
-                  Preencha o formulário com os dados do imóvel. A equipe Imobiflow valida as informações e
-                  retorna com os próximos passos para publicação.
+                  Preencha o formulário com os dados do imóvel. A equipe da {brandName} valida as informações e retorna com os próximos passos para publicação.
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <a
-                    href="tel:+5500000000000"
+                    href={`tel:${tenantPhone.replace(/\D/g, "")}`}
                     className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-white/90"
                   >
                     <Phone className="h-4 w-4" />
@@ -85,9 +90,7 @@ const PropertySubmit = () => {
               <form onSubmit={handleSubmit} className="space-y-8">
                 <div>
                   <h2 className="mb-6 flex items-center gap-2 text-2xl font-semibold text-slate-900">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white">
-                      1
-                    </span>
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white">1</span>
                     Dados pessoais
                   </h2>
                   <div className="grid gap-4 md:grid-cols-2">
@@ -108,20 +111,13 @@ const PropertySubmit = () => {
 
                 <div>
                   <h2 className="mb-6 flex items-center gap-2 text-2xl font-semibold text-slate-900">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white">
-                      2
-                    </span>
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white">2</span>
                     Dados do imóvel
                   </h2>
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="md:col-span-2">
                       <Label htmlFor="title">Título do anúncio</Label>
-                      <Input
-                        id="title"
-                        required
-                        placeholder="Ex: Apartamento 3 quartos no centro"
-                        className="mt-1 border-slate-200 bg-white"
-                      />
+                      <Input id="title" required placeholder="Ex: Apartamento 3 quartos no centro" className="mt-1 border-slate-200 bg-white" />
                     </div>
                     <div>
                       <Label htmlFor="type">Tipo</Label>
@@ -195,7 +191,7 @@ const PropertySubmit = () => {
                   </p>
                   <p className="flex items-start gap-2">
                     <CheckCircle2 className="mt-0.5 h-4 w-4 text-amber-600" />
-                    Publicação simulada com visual profissional da plataforma.
+                    Publicação com visual profissional da plataforma.
                   </p>
                 </div>
               </div>
@@ -224,10 +220,10 @@ const PropertySubmit = () => {
               <div className="surface-card border-slate-900 bg-slate-900 p-5 text-white">
                 <p className="text-xs uppercase tracking-[0.16em] text-white/65">Atendimento direto</p>
                 <p className="mt-2 text-sm text-white/85">
-                  Precisa de ajuda para preencher? Fale com um corretor e montamos o anúncio com você.
+                  Precisa de ajuda para preencher? Fale com a equipe da {brandName} e montamos o anúncio com você.
                 </p>
                 <a
-                  href={buildWhatsAppLink("Olá! Preciso de ajuda para anunciar um imóvel na Imobiflow.")}
+                  href={buildWhatsAppLink(`Olá! Preciso de ajuda para anunciar um imóvel com a ${brandName}.`, whatsapp)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-4 inline-flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600"
