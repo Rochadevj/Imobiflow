@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import PropertyCard from "@/components/PropertyCard";
 import Footer from "@/components/Footer";
+import TenantLink from "@/components/TenantLink";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -11,25 +12,27 @@ import { Label } from "@/components/ui/label";
 import { Clock, MapPin, Search, ShieldCheck, SlidersHorizontal, X } from "lucide-react";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
 import HeroCarousel from "@/components/HeroCarousel";
+import { useTenant } from "@/context/TenantContext";
+import { getTenantPhone } from "@/lib/tenantBrand";
 
 interface Property {
   id: string;
-  codigo?: string;
+  codigo: string;
   title: string;
   property_type: string;
-  transaction_type?: string;
+  transaction_type: string;
   price: number;
   location: string;
   city: string;
-  area?: number;
-  bedrooms?: number;
-  bathrooms?: number;
-  parking_spaces?: number;
+  area: number;
+  bedrooms: number;
+  bathrooms: number;
+  parking_spaces: number;
   featured: boolean | null;
-  featured_imperdiveis?: boolean;
-  featured_venda?: boolean;
-  featured_locacao?: boolean;
-  is_launch?: boolean;
+  featured_imperdiveis: boolean;
+  featured_venda: boolean;
+  featured_locacao: boolean;
+  is_launch: boolean;
   property_images: { image_url: string; is_primary: boolean }[];
 }
 
@@ -52,9 +55,25 @@ const isPropertyHighlighted = (property: Property) =>
       property.featured_locacao
   );
 
+const getPropertyImageUrl = (
+  images: Array<{ image_url?: string | null; is_primary?: boolean | null }> | null | undefined,
+) => {
+  if (!Array.isArray(images) || images.length === 0) {
+    return "";
+  }
+
+  return (
+    images.find((image) => image?.is_primary && image?.image_url)?.image_url ||
+    images.find((image) => image?.image_url)?.image_url ||
+    ""
+  );
+};
+
 const Index = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { tenant, loading: tenantLoading, tenantPath } = useTenant();
+  const tenantId = tenant?.id ?? null;
   const [properties, setProperties] = useState<Property[]>([]);
   const [featuredProperties, setFeaturedProperties] = useState<HeroProperty[]>([]);
   const [loading, setLoading] = useState(true);
@@ -79,7 +98,8 @@ const Index = () => {
   const [bedrooms, setBedrooms] = useState("");
   const [bathrooms, setBathrooms] = useState("");
   const [parkingSpaces, setParkingSpaces] = useState("");
-  const [heroTab, setHeroTab] = useState<'comprar' | 'alugar' | 'todos'>('todos');
+  const [heroTab, setHeroTab] = useState<'comprar' | 'alugar' | 'todos'>("todos");
+  const tenantPhone = getTenantPhone(tenant);
 
   // Ler parâmetros da URL quando a página carrega
   useEffect(() => {
@@ -99,22 +119,31 @@ const Index = () => {
   }, [searchParams]);
 
   useEffect(() => {
+    if (tenantLoading) return;
     if (showList) {
       setShowQuickHint(true);
       setLoading(true);
-      fetchProperties();
+      void fetchProperties();
     } else {
       setLoading(false);
     }
-  }, [showList]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showList, tenantLoading, tenantId]);
 
   useEffect(() => {
-    fetchFeaturedProperties();
-    fetchSectionProperties();
-  }, []);
+    if (tenantLoading) return;
+    void fetchFeaturedProperties();
+    void fetchSectionProperties();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tenantLoading, tenantId]);
 
   const fetchProperties = async () => {
     try {
+      if (!tenantId) {
+        setProperties([]);
+        return;
+      }
+
       const { data, error } = await supabase
         .from("properties")
         .select(`
@@ -137,6 +166,7 @@ const Index = () => {
           is_launch,
           property_images(image_url, is_primary)
         `)
+        .eq("tenant_id", tenantId)
         .eq("status", "available")
         .neq("is_launch", true)
         .order("featured", { ascending: false })
@@ -153,6 +183,11 @@ const Index = () => {
 
   const fetchFeaturedProperties = async () => {
     try {
+      if (!tenantId) {
+        setFeaturedProperties([]);
+        return;
+      }
+
       const { data, error } = await supabase
         .from("properties")
         .select(`
@@ -165,6 +200,7 @@ const Index = () => {
           city,
           property_images!inner(image_url, is_primary)
         `)
+        .eq("tenant_id", tenantId)
         .eq("status", "available")
         .or("featured.eq.true,featured_imperdiveis.eq.true,featured_venda.eq.true,featured_locacao.eq.true")
         .neq("is_launch", true)
@@ -175,8 +211,7 @@ const Index = () => {
       if (error) throw error;
       
       // Transform data to match HeroCarousel interface
-      const transformedData: HeroProperty[] = data?.map(property => {
-        const primaryImage = property.property_images.find(img => img.is_primary);
+      const transformedData: HeroProperty[] = (data || []).map(property => {
         return {
           id: property.id,
           title: property.title,
@@ -185,9 +220,9 @@ const Index = () => {
           price: property.price,
           property_type: property.property_type,
           transaction_type: property.transaction_type,
-          image_url: primaryImage?.image_url || property.property_images[0]?.image_url || ''
+          image_url: getPropertyImageUrl(property.property_images),
         };
-      }).filter(property => property.image_url) || [];
+      }).filter(property => property.image_url);
       
       // Se não houver imóveis em destaque, buscar imóveis normais com imagens
       if (transformedData.length === 0) {
@@ -203,6 +238,7 @@ const Index = () => {
             city,
             property_images!inner(image_url, is_primary)
           `)
+          .eq("tenant_id", tenantId)
           .eq("status", "available")
           .neq("is_launch", true)
           .not("property_images", "is", null)
@@ -211,7 +247,6 @@ const Index = () => {
 
         if (!regularError && regularData) {
           const regularTransformed: HeroProperty[] = regularData.map(property => {
-            const primaryImage = property.property_images.find(img => img.is_primary);
             return {
               id: property.id,
               title: property.title,
@@ -220,7 +255,7 @@ const Index = () => {
               price: property.price,
               property_type: property.property_type,
               transaction_type: property.transaction_type,
-              image_url: primaryImage?.image_url || property.property_images[0]?.image_url || ''
+              image_url: getPropertyImageUrl(property.property_images),
             };
           }).filter(property => property.image_url);
           
@@ -237,6 +272,13 @@ const Index = () => {
   const fetchSectionProperties = async () => {
     try {
       setLoadingSections(true);
+      if (!tenantId) {
+        setFeaturedImperdiveis([]);
+        setFeaturedVenda([]);
+        setFeaturedLocacao([]);
+        setLaunches([]);
+        return;
+      }
       const baseSelect = `
         id,
         codigo,
@@ -262,6 +304,7 @@ const Index = () => {
         supabase
           .from("properties")
           .select(baseSelect)
+          .eq("tenant_id", tenantId)
           .eq("status", "available")
           .eq("featured_imperdiveis", true)
           .order("created_at", { ascending: false })
@@ -269,6 +312,7 @@ const Index = () => {
         supabase
           .from("properties")
           .select(baseSelect)
+          .eq("tenant_id", tenantId)
           .eq("status", "available")
           .eq("featured_venda", true)
           .order("created_at", { ascending: false })
@@ -276,6 +320,7 @@ const Index = () => {
         supabase
           .from("properties")
           .select(baseSelect)
+          .eq("tenant_id", tenantId)
           .eq("status", "available")
           .eq("featured_locacao", true)
           .order("created_at", { ascending: false })
@@ -283,6 +328,7 @@ const Index = () => {
         supabase
           .from("properties")
           .select(baseSelect)
+          .eq("tenant_id", tenantId)
           .eq("status", "available")
           .eq("is_launch", true)
           .order("created_at", { ascending: false })
@@ -329,6 +375,18 @@ const Index = () => {
            matchesBathrooms && matchesParkingSpaces;
   }) : [];
 
+  if (tenantLoading) {
+    return (
+      <div className="page-shell">
+        <Navbar />
+        <main className="container mx-auto flex-1 px-4 py-16 text-center text-slate-600">
+          Carregando catálogo...
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="page-shell">
       <Navbar />
@@ -360,19 +418,19 @@ const Index = () => {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <Link
+                <TenantLink forceTenant
                   to="/imobiliaria?list=1"
                   className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-primary shadow-[0_10px_24px_rgba(255,255,255,0.2)] transition hover:-translate-y-0.5 hover:bg-white/90"
                 >
                   <Search className="h-4 w-4" />
                   Ver imóveis
-                </Link>
-                <Link
+                </TenantLink>
+                <TenantLink forceTenant
                   to="/anunciar"
                   className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(251,146,60,0.28)] transition hover:-translate-y-0.5 hover:bg-accent/90"
                 >
                   Anunciar imóvel
-                </Link>
+                </TenantLink>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-3">
@@ -434,32 +492,32 @@ const Index = () => {
               <button
                 type="button"
                 onClick={() => {
-                  navigate('/imobiliaria?list=1&type=comprar');
+                  navigate(tenantPath("/imobiliaria?list=1&type=comprar", true));
                 }}
-                className={`pb-3 md:pb-4 text-sm font-medium relative ${heroTab==='comprar'?'text-accent':'text-muted-foreground hover:text-foreground'}`}
+                className={`pb-3 md:pb-4 text-sm font-medium relative ${heroTab === "comprar" ? "text-accent" : "text-muted-foreground hover:text-foreground"}`}
               >
                 Comprar
-                {heroTab==='comprar' && <span className="absolute left-0 right-0 -bottom-[1px] h-[3px] bg-accent rounded-t" />}
+                {heroTab === "comprar" && <span className="absolute left-0 right-0 -bottom-[1px] h-[3px] rounded-t bg-accent" />}
               </button>
               <button
                 type="button"
                 onClick={() => {
-                  navigate('/imobiliaria?list=1&type=alugar');
+                  navigate(tenantPath("/imobiliaria?list=1&type=alugar", true));
                 }}
-                className={`pb-3 md:pb-4 text-sm font-medium relative ${heroTab==='alugar'?'text-accent':'text-muted-foreground hover:text-foreground'}`}
+                className={`pb-3 md:pb-4 text-sm font-medium relative ${heroTab === "alugar" ? "text-accent" : "text-muted-foreground hover:text-foreground"}`}
               >
                 Alugar
-                {heroTab==='alugar' && <span className="absolute left-0 right-0 -bottom-[1px] h-[3px] bg-accent rounded-t" />}
+                {heroTab === "alugar" && <span className="absolute left-0 right-0 -bottom-[1px] h-[3px] rounded-t bg-accent" />}
               </button>
               <button
                 type="button"
                 onClick={() => {
-                  navigate('/imobiliaria?list=1');
+                  navigate(tenantPath("/imobiliaria?list=1", true));
                 }}
-                className={`pb-3 md:pb-4 text-sm font-medium relative ${heroTab==='todos'?'text-accent':'text-muted-foreground hover:text-foreground'}`}
+                className={`pb-3 md:pb-4 text-sm font-medium relative ${heroTab === "todos" ? "text-accent" : "text-muted-foreground hover:text-foreground"}`}
               >
                 Ver Todos
-                {heroTab==='todos' && <span className="absolute left-0 right-0 -bottom-[1px] h-[3px] bg-accent rounded-t" />}
+                {heroTab === "todos" && <span className="absolute left-0 right-0 -bottom-[1px] h-[3px] rounded-t bg-accent" />}
               </button>
             </div>
             <div className="p-4 md:p-6">
@@ -468,7 +526,7 @@ const Index = () => {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                   <Input
                     type="text"
-                    placeholder={`Pesquisar para ${heroTab === 'comprar' ? 'comprar' : 'alugar'}...`}
+                    placeholder={`Pesquisar para ${heroTab === "comprar" ? "comprar" : "alugar"}...`}
                     className="pl-10 h-12 bg-white"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -691,17 +749,17 @@ const Index = () => {
           </p>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
             <a
-              href="tel:+5500000000000"
+              href={`tel:${tenantPhone.replace(/\D/g, "")}`}
               className="inline-flex items-center justify-center rounded-full border border-accent text-accent px-4 py-2 text-sm font-semibold hover:bg-accent hover:text-primary transition"
             >
               Falar com corretor
             </a>
-            <Link
+            <TenantLink forceTenant
               to="/imobiliaria?list=1"
               className="inline-flex items-center justify-center rounded-full bg-primary text-white px-4 py-2 text-sm font-semibold shadow hover:bg-primary/90 transition"
             >
               Ver todos
-            </Link>
+            </TenantLink>
           </div>
         </div>
         {loadingSections ? (
@@ -715,10 +773,9 @@ const Index = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
             {featuredImperdiveis.map((property) => {
-              const primaryImage = property.property_images.find((img) => img.is_primary);
-              const imageUrl = primaryImage?.image_url || property.property_images[0]?.image_url;
+              const imageUrl = getPropertyImageUrl(property.property_images);
               return (
-                <Link key={property.id} to={`/property/${property.codigo || property.id}`} className="no-underline">
+                <TenantLink forceTenant key={property.id} to={`/property/${property.codigo || property.id}`} className="no-underline">
                   <PropertyCard
                     id={property.id}
                     title={property.title}
@@ -735,7 +792,7 @@ const Index = () => {
                     featured={isPropertyHighlighted(property)}
                     isLaunch={property.is_launch}
                   />
-                </Link>
+                </TenantLink>
               );
             })}
           </div>
@@ -755,18 +812,18 @@ const Index = () => {
             As melhores opções para quem quer comprar
           </p>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-            <Link
+            <TenantLink forceTenant
               to="/anunciar"
               className="inline-flex items-center justify-center rounded-full border border-accent text-accent px-4 py-2 text-sm font-semibold hover:bg-accent hover:text-primary transition"
             >
               Anunciar imóvel
-            </Link>
-            <Link
+            </TenantLink>
+            <TenantLink forceTenant
               to="/imobiliaria?list=1&type=comprar"
               className="inline-flex items-center justify-center rounded-full bg-primary text-white px-4 py-2 text-sm font-semibold shadow hover:bg-primary/90 transition"
             >
               Ver todos
-            </Link>
+            </TenantLink>
           </div>
         </div>
         {loadingSections ? (
@@ -780,10 +837,9 @@ const Index = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
             {featuredVenda.map((property) => {
-              const primaryImage = property.property_images.find((img) => img.is_primary);
-              const imageUrl = primaryImage?.image_url || property.property_images[0]?.image_url;
+              const imageUrl = getPropertyImageUrl(property.property_images);
               return (
-                <Link key={property.id} to={`/property/${property.codigo || property.id}`} className="no-underline">
+                <TenantLink forceTenant key={property.id} to={`/property/${property.codigo || property.id}`} className="no-underline">
                   <PropertyCard
                     id={property.id}
                     title={property.title}
@@ -800,7 +856,7 @@ const Index = () => {
                     featured={isPropertyHighlighted(property)}
                     isLaunch={property.is_launch}
                   />
-                </Link>
+                </TenantLink>
               );
             })}
           </div>
@@ -821,18 +877,18 @@ const Index = () => {
             Sua nova casa está aqui
           </p>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-            <Link
+            <TenantLink forceTenant
               to="/anunciar"
               className="inline-flex items-center justify-center rounded-full border border-accent text-accent px-4 py-2 text-sm font-semibold hover:bg-accent hover:text-primary transition"
             >
               Anunciar imóvel
-            </Link>
-            <Link
+            </TenantLink>
+            <TenantLink forceTenant
               to="/imobiliaria?list=1&type=alugar"
               className="inline-flex items-center justify-center rounded-full bg-primary text-white px-4 py-2 text-sm font-semibold shadow hover:bg-primary/90 transition"
             >
               Ver todos
-            </Link>
+            </TenantLink>
           </div>
         </div>
         {loadingSections ? (
@@ -846,10 +902,9 @@ const Index = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
             {featuredLocacao.map((property) => {
-              const primaryImage = property.property_images.find((img) => img.is_primary);
-              const imageUrl = primaryImage?.image_url || property.property_images[0]?.image_url;
+              const imageUrl = getPropertyImageUrl(property.property_images);
               return (
-                <Link key={property.id} to={`/property/${property.codigo || property.id}`} className="no-underline">
+                <TenantLink forceTenant key={property.id} to={`/property/${property.codigo || property.id}`} className="no-underline">
                   <PropertyCard
                     id={property.id}
                     title={property.title}
@@ -866,7 +921,7 @@ const Index = () => {
                     featured={isPropertyHighlighted(property)}
                     isLaunch={property.is_launch}
                   />
-                </Link>
+                </TenantLink>
               );
             })}
           </div>
@@ -1052,18 +1107,18 @@ const Index = () => {
               </div>
               <div className="flex flex-wrap gap-2">
                 <a
-                  href="tel:+5500000000000"
+                  href={`tel:${tenantPhone.replace(/\D/g, "")}`}
                   className="inline-flex items-center justify-center rounded-full border border-accent text-accent px-4 py-2 text-sm font-semibold hover:bg-accent hover:text-primary transition"
                 >
                   Agendar visita
                 </a>
-                <Link
+                <TenantLink forceTenant
                   to="/anunciar"
                   onClick={() => window.scrollTo({ top: 0, behavior: "auto" })}
                   className="inline-flex items-center justify-center rounded-full bg-primary text-white px-4 py-2 text-sm font-semibold shadow hover:bg-primary/90 transition"
                 >
                   Quero vender
-                </Link>
+                </TenantLink>
               </div>
             </div>
 
@@ -1078,10 +1133,9 @@ const Index = () => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                 {filteredProperties.map((property) => {
-                  const primaryImage = property.property_images.find((img) => img.is_primary);
-                  const imageUrl = primaryImage?.image_url || property.property_images[0]?.image_url;
+                  const imageUrl = getPropertyImageUrl(property.property_images);
                   return (
-                    <Link key={property.id} to={`/property/${property.codigo || property.id}`} className="no-underline">
+                    <TenantLink forceTenant key={property.id} to={`/property/${property.codigo || property.id}`} className="no-underline">
                       <PropertyCard
                         id={property.id}
                         title={property.title}
@@ -1098,7 +1152,7 @@ const Index = () => {
                         featured={isPropertyHighlighted(property)}
                         isLaunch={property.is_launch}
                       />
-                    </Link>
+                    </TenantLink>
                   );
                 })}
               </div>
@@ -1115,12 +1169,12 @@ const Index = () => {
               <h2 className="text-2xl md:text-3xl font-bold tracking-wide">
                 LANÇAMENTOS<span className="text-accent">.</span>
               </h2>
-              <Link
+              <TenantLink forceTenant
                 to="/lancamentos"
                 className="inline-flex items-center justify-center rounded-full border border-accent px-4 py-2 text-sm font-semibold text-accent transition hover:bg-accent hover:text-primary"
               >
                 Ver todos os lançamentos
-              </Link>
+              </TenantLink>
             </div>
             {loadingSections ? (
               <div className="text-center py-8 text-white/70">Carregando lançamentos...</div>
@@ -1129,10 +1183,9 @@ const Index = () => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                 {launches.map((property) => {
-                  const primaryImage = property.property_images.find((img) => img.is_primary);
-                  const imageUrl = primaryImage?.image_url || property.property_images[0]?.image_url;
+                  const imageUrl = getPropertyImageUrl(property.property_images);
                   return (
-                    <Link key={property.id} to={`/property/${property.codigo || property.id}`} className="no-underline">
+                    <TenantLink forceTenant key={property.id} to={`/property/${property.codigo || property.id}`} className="no-underline">
                       <div className="flex bg-black/70 rounded-2xl overflow-hidden border border-white/10 hover:border-accent/60 transition">
                         <div className="w-2/5 min-h-[140px]">
                           {imageUrl ? (
@@ -1161,7 +1214,7 @@ const Index = () => {
                           </span>
                         </div>
                       </div>
-                    </Link>
+                    </TenantLink>
                   );
                 })}
               </div>
@@ -1176,3 +1229,5 @@ const Index = () => {
 };
 
 export default Index;
+
+

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Heart, MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -16,8 +16,11 @@ import PropertyMeta from "@/components/PropertyMeta";
 import RealtorCard from "@/components/RealtorCard";
 import SimilarPropertiesCarousel from "@/components/SimilarPropertiesCarousel";
 import { supabase } from "@/integrations/supabase/client";
-import { CONTACT_WHATSAPP_NUMBER } from "@/lib/contact";
+import { buildWhatsAppLink } from "@/lib/contact";
 import { trackPropertyView } from "@/lib/propertyViews";
+import { useTenant } from "@/context/TenantContext";
+import { readFavorites, writeFavorites } from "@/lib/favorites";
+import { getTenantBrandName, getTenantCreci, getTenantWhatsApp } from "@/lib/tenantBrand";
 
 interface Property {
   id: string;
@@ -56,21 +59,32 @@ const formatCurrency = (value: number, withCents = false) =>
 const PropertyDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { tenant, loading: tenantLoading, tenantPath } = useTenant();
   const [property, setProperty] = useState<Property | null>(null);
   const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [isFavorited, setIsFavorited] = useState(false);
+
+  const brandName = getTenantBrandName(tenant);
+  const creci = getTenantCreci(tenant);
+  const whatsapp = getTenantWhatsApp(tenant);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "auto" });
   }, [id]);
 
   useEffect(() => {
-    if (!id) return;
+    if (!id || tenantLoading) return;
 
     const load = async () => {
       setLoading(true);
       try {
+        if (!tenant?.id) {
+          setProperty(null);
+          setSimilarProperties([]);
+          return;
+        }
+
         let query = supabase
           .from("properties")
           .select(
@@ -98,8 +112,10 @@ const PropertyDetail = () => {
               featured,
               features,
               property_images(image_url, is_primary)
-            `
-          );
+            `,
+          )
+          .eq("tenant_id", tenant.id)
+          .eq("status", "available");
 
         query = id.startsWith("IMV-") ? query.eq("codigo", id) : query.eq("id", id);
         const { data, error } = await query.maybeSingle();
@@ -107,11 +123,12 @@ const PropertyDetail = () => {
 
         if (!data) {
           setProperty(null);
+          setSimilarProperties([]);
           return;
         }
 
         setProperty(data as unknown as Property);
-        trackPropertyView(data.id).catch((err) => console.error("Erro ao rastrear visualização:", err));
+        void trackPropertyView(data.id).catch((err) => console.error("Erro ao rastrear visualização:", err));
 
         const { data: similar } = await supabase
           .from("properties")
@@ -130,18 +147,16 @@ const PropertyDetail = () => {
               parking_spaces,
               created_at,
               property_images(image_url, is_primary)
-            `
+            `,
           )
+          .eq("tenant_id", tenant.id)
           .neq("id", data.id)
           .eq("status", "available")
           .order("created_at", { ascending: false })
           .limit(18);
 
         if (similar) {
-          const randomProperties = [...similar]
-            .sort(() => Math.random() - 0.5)
-            .slice(0, 8);
-
+          const randomProperties = [...similar].sort(() => Math.random() - 0.5).slice(0, 8);
           setSimilarProperties(randomProperties as unknown as Property[]);
         }
       } catch (error) {
@@ -152,17 +167,12 @@ const PropertyDetail = () => {
       }
     };
 
-    load();
-  }, [id]);
+    void load();
+  }, [id, tenant?.id, tenantLoading]);
 
   useEffect(() => {
     const updateFavorites = () => {
-      try {
-        const favs = JSON.parse(localStorage.getItem("favorites") || "[]") as string[];
-        setIsFavorited(id ? favs.includes(id) : false);
-      } catch {
-        setIsFavorited(false);
-      }
+      setIsFavorited(id ? readFavorites(tenant?.slug).includes(id) : false);
     };
 
     updateFavorites();
@@ -172,16 +182,15 @@ const PropertyDetail = () => {
       window.removeEventListener("favoritesChanged", updateFavorites);
       window.removeEventListener("storage", updateFavorites);
     };
-  }, [id]);
+  }, [id, tenant?.slug]);
 
   const toggleFavorite = () => {
-    const key = "favorites";
-    const favs = JSON.parse(localStorage.getItem(key) || "[]") as string[];
-    const exists = id ? favs.includes(id) : false;
-    const updated = exists ? favs.filter((item) => item !== id) : [...favs, id as string];
-    localStorage.setItem(key, JSON.stringify(updated));
+    if (!id) return;
+    const favs = readFavorites(tenant?.slug);
+    const exists = favs.includes(id);
+    const updated = exists ? favs.filter((item) => item !== id) : [...favs, id];
+    writeFavorites(updated, tenant?.slug);
     setIsFavorited(!exists);
-    window.dispatchEvent(new Event("favoritesChanged"));
   };
 
   const handleBack = () => {
@@ -190,10 +199,10 @@ const PropertyDetail = () => {
       return;
     }
 
-    navigate("/imobiliaria?list=1");
+    navigate(tenantPath("/imobiliaria?list=1", true));
   };
 
-  if (loading) {
+  if (loading || tenantLoading) {
     return (
       <div className="page-shell">
         <Navbar />
@@ -214,10 +223,9 @@ const PropertyDetail = () => {
   }
 
   const propertyImages = property.property_images || [];
-  const imageUrls =
-    propertyImages.length > 0
-      ? propertyImages.map((image) => image.image_url)
-      : ["/placeholder.jpg", "/placeholder.jpg", "/placeholder.jpg"];
+  const imageUrls = propertyImages.length > 0
+    ? propertyImages.map((image) => image.image_url)
+    : ["/placeholder.jpg", "/placeholder.jpg", "/placeholder.jpg"];
 
   return (
     <div className="page-shell">
@@ -244,9 +252,11 @@ const PropertyDetail = () => {
                   <Badge className="border border-white/25 bg-white/10 text-white">
                     {property.property_type.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}
                   </Badge>
-                  <Badge className="border border-amber-300/50 bg-amber-400 text-slate-900">
-                    {property.transaction_type === "aluguel" ? "Aluguel" : "Venda"}
-                  </Badge>
+                  {!property.is_launch ? (
+                    <Badge className="border border-amber-300/50 bg-amber-400 text-slate-900">
+                      {property.transaction_type === "aluguel" ? "Aluguel" : "Venda"}
+                    </Badge>
+                  ) : null}
                 </div>
                 <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">{property.title}</h1>
                 <p className="mt-2 inline-flex items-center gap-1 text-sm text-white/80">
@@ -369,9 +379,9 @@ const PropertyDetail = () => {
 
             <div className="lg:col-span-1">
               <RealtorCard
-                name="Imobiflow"
-                creci="CRECI - 000000-XX (demo)"
-                phone={CONTACT_WHATSAPP_NUMBER}
+                name={brandName}
+                creci={creci}
+                phone={whatsapp}
                 propertyTitle={property.title}
                 propertyCode={property.codigo || property.id.slice(0, 8)}
                 propertyType={property.property_type}
@@ -380,6 +390,14 @@ const PropertyDetail = () => {
                 location={property.location}
                 city={property.city}
               />
+              <a
+                href={buildWhatsAppLink(`Olá! Tenho interesse no imóvel ${property.title}.`, whatsapp)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="sr-only"
+              >
+                Contato WhatsApp
+              </a>
             </div>
           </div>
         </section>
@@ -391,5 +409,3 @@ const PropertyDetail = () => {
 };
 
 export default PropertyDetail;
-
-

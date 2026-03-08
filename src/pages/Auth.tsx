@@ -64,6 +64,9 @@ const Auth = () => {
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [signupConfirmPassword, setSignupConfirmPassword] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [companySlug, setCompanySlug] = useState("");
+  const [companyWhatsApp, setCompanyWhatsApp] = useState("");
   const [signupOtp, setSignupOtp] = useState("");
   const [signupStep, setSignupStep] = useState<SignupStep>("form");
   const [signupStartedAt, setSignupStartedAt] = useState(Date.now());
@@ -195,6 +198,22 @@ const Auth = () => {
       return false;
     }
 
+    if (companyName.trim().length < 2) {
+      toast.error("Informe o nome da imobiliária.");
+      return false;
+    }
+
+    const normalizedSlug = companySlug
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-+|-+$)/g, "");
+
+    if (companySlug.trim() && normalizedSlug.length < 3) {
+      toast.error("Use um identificador de site com pelo menos 3 caracteres.");
+      return false;
+    }
+
     if (Date.now() - signupStartedAt < MIN_SIGNUP_FILL_MS) {
       toast.error("Preencha o cadastro com calma e tente novamente em alguns segundos.");
       return false;
@@ -263,6 +282,11 @@ const Auth = () => {
     registerSignupAttempt();
 
     const normalizedEmail = signupEmail.trim();
+    const normalizedSlug = companySlug
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-+|-+$)/g, "");
     const currentCaptchaToken = captchaToken || undefined;
     const { data, error } = await supabase.auth.signUp({
       email: normalizedEmail,
@@ -270,6 +294,11 @@ const Auth = () => {
       options: {
         emailRedirectTo: signupRedirectUrl,
         captchaToken: currentCaptchaToken,
+        data: {
+          company_name: companyName.trim(),
+          company_slug: normalizedSlug,
+          company_whatsapp: companyWhatsApp.trim(),
+        },
       },
     });
 
@@ -510,6 +539,51 @@ const Auth = () => {
                       />
                     </div>
                     <div className="space-y-2">
+                      <Label htmlFor="signup-company-name" className="text-white/85">
+                        Nome da imobiliária
+                      </Label>
+                      <Input
+                        id="signup-company-name"
+                        type="text"
+                        placeholder="Ex: Rocha Imóveis"
+                        value={companyName}
+                        onChange={(event) => setCompanyName(event.target.value)}
+                        autoComplete="organization"
+                        required
+                        className="h-12 rounded-xl border-white/15 bg-slate-950/55 text-white placeholder:text-white/50 focus-visible:ring-amber-300"
+                      />
+                    </div>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="signup-company-slug" className="text-white/85">
+                          Identificador do site
+                        </Label>
+                        <Input
+                          id="signup-company-slug"
+                          type="text"
+                          placeholder="Ex: rocha-imoveis"
+                          value={companySlug}
+                          onChange={(event) => setCompanySlug(event.target.value)}
+                          autoComplete="off"
+                          className="h-12 rounded-xl border-white/15 bg-slate-950/55 text-white placeholder:text-white/50 focus-visible:ring-amber-300"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="signup-company-whatsapp" className="text-white/85">
+                          WhatsApp comercial
+                        </Label>
+                        <Input
+                          id="signup-company-whatsapp"
+                          type="text"
+                          placeholder="(51) 99999-9999"
+                          value={companyWhatsApp}
+                          onChange={(event) => setCompanyWhatsApp(event.target.value)}
+                          autoComplete="tel"
+                          className="h-12 rounded-xl border-white/15 bg-slate-950/55 text-white placeholder:text-white/50 focus-visible:ring-amber-300"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
                       <Label htmlFor="signup-password" className="text-white/85">
                         Senha forte
                       </Label>
@@ -558,7 +632,7 @@ const Auth = () => {
                     </div>
 
                     <div className="absolute left-[-5000px] top-auto h-px w-px overflow-hidden opacity-0">
-                      <Label htmlFor="signup-company">Empresa</Label>
+                      <Label htmlFor="signup-company">Website</Label>
                       <Input
                         id="signup-company"
                         tabIndex={-1}

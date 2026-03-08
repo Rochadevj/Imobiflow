@@ -1,8 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useTenant } from "@/context/TenantContext";
+import {
+  getTenantBrandName,
+  getTenantCreci,
+  getTenantLocationLabel,
+  getTenantSupportEmail,
+  getTenantWhatsApp,
+} from "@/lib/tenantBrand";
 import Footer from "@/components/Footer";
 import MostViewedProperties from "@/components/MostViewedProperties";
 import Navbar from "@/components/Navbar";
@@ -208,6 +216,17 @@ const formatCurrency = (value: number) =>
     maximumFractionDigits: 0,
   });
 
+const normalizeDomainInput = (value: string) =>
+  value
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//i, "")
+    .replace(/^www\./i, "")
+    .replace(/\/.*$/, "")
+    .replace(/:\d+$/, "");
+
+const isValidCustomDomain = (value: string) => /^[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(value);
+
 const isConfirmedUser = (user: User | null) => Boolean(user?.email_confirmed_at);
 const configuredDeleteAccountFunctionName = import.meta.env.VITE_DELETE_ACCOUNT_FUNCTION_NAME?.trim();
 const deleteAccountFunctionNames = Array.from(
@@ -217,8 +236,12 @@ const getNegotiationStorageKey = (userId: string) => `imobiflow:negotiation:${us
 
 const Admin = () => {
   const navigate = useNavigate();
+  const { tenant, refreshTenant, tenantPath } = useTenant();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [tenantSyncing, setTenantSyncing] = useState(false);
+  const [tenantProvisionIssue, setTenantProvisionIssue] = useState<string | null>(null);
+  const autoProvisionAttemptRef = useRef(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [editingPropertyId, setEditingPropertyId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -230,6 +253,18 @@ const Admin = () => {
   const [selectedPropertyId, setSelectedPropertyId] = useState("");
   const [negotiationStore, setNegotiationStore] = useState<Record<string, NegotiationRecord>>({});
   const [historyInput, setHistoryInput] = useState("");
+  const [tenantForm, setTenantForm] = useState({
+    name: "",
+    slug: "",
+    customDomain: "",
+    supportEmail: "",
+    phone: "",
+    whatsapp: "",
+    creci: "",
+    city: "",
+    state: "",
+  });
+  const [savingTenant, setSavingTenant] = useState(false);
   const [stats, setStats] = useState<DashboardStats>({
     total: 0,
     available: 0,
@@ -247,8 +282,6 @@ const Admin = () => {
         navigate("/auth");
       } else {
         setUser(session.user);
-        setLoading(false);
-        fetchStats(session.user.id);
       }
     });
 
@@ -262,13 +295,98 @@ const Admin = () => {
         navigate("/auth");
       } else {
         setUser(session.user);
-        setLoading(false);
-        fetchStats(session.user.id);
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  useEffect(() => {
+    if (!tenant) {
+      setTenantForm((current) => ({
+        ...current,
+        supportEmail: user?.email || current.supportEmail,
+      }));
+      return;
+    }
+
+    setTenantForm({
+      name: tenant.name || "",
+      slug: tenant.slug || "",
+      customDomain: tenant.custom_domain || "",
+      supportEmail: tenant.support_email || user?.email || "",
+      phone: tenant.phone || "",
+      whatsapp: tenant.whatsapp || "",
+      creci: tenant.creci || "",
+      city: tenant.city || "",
+      state: tenant.state || "",
+    });
+  }, [tenant, user?.email]);
+
+  useEffect(() => {
+    if (!user?.id) {
+      autoProvisionAttemptRef.current = false;
+      return;
+    }
+
+    if (tenant?.id) {
+      autoProvisionAttemptRef.current = true;
+      setTenantProvisionIssue(null);
+      return;
+    }
+
+    const ensureTenant = async () => {
+      if (!user || tenant || tenantSyncing || autoProvisionAttemptRef.current) {
+        if (user && tenant) {
+          setLoading(false);
+        }
+        return;
+      }
+
+      const metadata = (user.user_metadata ?? {}) as Record<string, unknown>;
+      const companyName = typeof metadata.company_name === "string" ? metadata.company_name.trim() : "";
+      const companySlug = typeof metadata.company_slug === "string" ? metadata.company_slug.trim() : "";
+      const companyWhatsApp =
+        typeof metadata.company_whatsapp === "string" ? metadata.company_whatsapp.trim() : "";
+
+      if (!companyName) {
+        setLoading(false);
+        return;
+      }
+
+      autoProvisionAttemptRef.current = true;
+
+      try {
+        setTenantSyncing(true);
+        const { error } = await supabase.rpc("create_tenant_for_current_user", {
+          p_name: companyName,
+          p_slug: companySlug || undefined,
+          p_support_email: user?.email || undefined,
+          p_phone: companyWhatsApp || undefined,
+          p_whatsapp: companyWhatsApp || undefined,
+        });
+
+        if (error) throw error;
+
+        setTenantProvisionIssue(null);
+        await refreshTenant();
+      } catch (error) {
+        const rpcError = error as { code: string; message: string };
+
+        if (rpcError.code === "PGRST202") {
+          setTenantProvisionIssue("A base multiempresa ainda não foi aplicada no Supabase. Execute a migration 20260307102000_add_multitenant_foundation.sql.");
+        } else {
+          setTenantProvisionIssue("Não foi possível concluir a configuração automática da imobiliária.");
+          console.error("Erro ao provisionar a imobiliária:", error);
+        }
+      } finally {
+        setTenantSyncing(false);
+        setLoading(false);
+      }
+    };
+
+    void ensureTenant();
+  }, [refreshTenant, tenant, tenantSyncing, user]);
 
   useEffect(() => {
     if (!user?.id) {
@@ -301,12 +419,12 @@ const Admin = () => {
     }
   }, [properties, selectedPropertyId]);
 
-  const fetchStats = async (userId: string) => {
+  const fetchStats = async (tenantId: string) => {
     try {
       const { data, error } = await supabase
         .from("properties")
         .select("id, title, city, location, status, price, created_at, updated_at")
-        .eq("user_id", userId);
+        .eq("tenant_id", tenantId);
 
       if (error) throw error;
 
@@ -317,9 +435,9 @@ const Admin = () => {
       const totalValue = data?.reduce((sum, property) => sum + (property.price || 0), 0) || 0;
 
       setProperties(
-        ([...(data ?? [])] as AdminProperty[]).sort((left, right) => {
-          const leftDate = new Date(left.updated_at ?? left.created_at ?? 0).getTime();
-          const rightDate = new Date(right.updated_at ?? right.created_at ?? 0).getTime();
+        ([...(data || [])] as AdminProperty[]).sort((left, right) => {
+          const leftDate = new Date(left.updated_at || left.created_at || 0).getTime();
+          const rightDate = new Date(right.updated_at || right.created_at || 0).getTime();
           return rightDate - leftDate;
         }),
       );
@@ -328,6 +446,15 @@ const Admin = () => {
       console.error("Erro ao buscar estatísticas:", error);
     }
   };
+
+  useEffect(() => {
+    if (!tenant?.id) {
+      return;
+    }
+
+    void fetchStats(tenant.id);
+    setLoading(false);
+  }, [refreshKey, tenant?.id]);
 
   const selectedProperty = useMemo(
     () => properties.find((property) => property.id === selectedPropertyId) ?? null,
@@ -357,7 +484,7 @@ const Admin = () => {
         completed:
           existingRecord.checklist.find((item) => item.id === templateItem.id)?.completed ?? false,
       })),
-      history: existingRecord.history ?? [],
+      history: existingRecord.history || [],
     };
   }, [negotiationStore, selectedPropertyId]);
 
@@ -611,13 +738,17 @@ const Admin = () => {
 
   const handlePropertyAdded = () => {
     setRefreshKey((previous) => previous + 1);
-    if (user) fetchStats(user.id);
+    if (tenant?.id) {
+      void fetchStats(tenant.id);
+    }
     setActiveTab("list");
   };
 
   const handlePropertyUpdated = () => {
     setRefreshKey((previous) => previous + 1);
-    if (user) fetchStats(user.id);
+    if (tenant?.id) {
+      void fetchStats(tenant.id);
+    }
     setEditingPropertyId(null);
     setActiveTab("list");
   };
@@ -627,10 +758,313 @@ const Admin = () => {
     setActiveTab("edit");
   };
 
-  const normalizedUserEmail = user?.email?.trim().toLowerCase() ?? "";
+  const normalizedUserEmail = user?.email?.trim().toLowerCase() || "";
   const canDeleteAccount =
     normalizedUserEmail.length > 0 &&
     deleteAccountConfirmation.trim().toLowerCase() === normalizedUserEmail;
+  const brandName = getTenantBrandName(tenant);
+  const creciLabel = getTenantCreci(tenant);
+  const supportEmail = getTenantSupportEmail(tenant);
+  const whatsappNumber = getTenantWhatsApp(tenant);
+  const locationLabel = getTenantLocationLabel(tenant);
+  const normalizedCustomDomain = normalizeDomainInput(tenantForm.customDomain);
+  const draftTenantSlug = tenantForm.slug
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-+|-+$)/g, "");
+  const localPreviewPath = tenant?.slug
+    ? tenantPath("/imobiliaria", true)
+    : draftTenantSlug
+      ? `/imobiliaria?tenant=${draftTenantSlug}`
+      : "/imobiliaria";
+  const localPreviewUrl =
+    typeof window !== "undefined" ? `${window.location.origin}${localPreviewPath}` : localPreviewPath;
+  const productionDomain = tenant?.custom_domain || normalizedCustomDomain;
+  const productionSiteUrl = productionDomain ? `https://${productionDomain}` : "Domínio próprio não configurado";
+  const summaryBrandName = tenant ? brandName : tenantForm.name.trim() || "Pendente de configuração";
+  const summaryCreci = tenant ? creciLabel : tenantForm.creci.trim() || "Não informado";
+  const summaryContact = tenant
+    ? whatsappNumber || "Não informado"
+    : tenantForm.whatsapp.trim() || tenantForm.phone.trim() || "Não informado";
+  const summaryBase = tenant
+    ? locationLabel
+    : [tenantForm.city.trim(), tenantForm.state.trim()].filter(Boolean).join(", ") || "Base não informada";
+  const summaryDomain = productionDomain || "Não configurado";
+
+  const handleProvisionTenant = async () => {
+    if (!user) {
+      toast.error("Sua sessão expirou. Entre novamente.");
+      return;
+    }
+
+    if (tenantForm.name.trim().length < 2) {
+      toast.error("Informe o nome da imobiliária.");
+      return;
+    }
+
+    if (normalizedCustomDomain && !isValidCustomDomain(normalizedCustomDomain)) {
+      toast.error("Informe um domínio válido, como empresa.com.br.");
+      return;
+    }
+
+    setSavingTenant(true);
+
+    try {
+      let currentTenantId = tenant?.id ?? null;
+
+      const { data: createdTenantId, error } = tenant
+        ? await supabase
+            .from("tenants")
+            .update({
+              name: tenantForm.name.trim(),
+              slug: tenantForm.slug.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-+|-+$)/g, ""),
+              site_title: tenantForm.name.trim(),
+              custom_domain: normalizedCustomDomain || null,
+              support_email: tenantForm.supportEmail.trim() || null,
+              phone: tenantForm.phone.trim() || null,
+              whatsapp: tenantForm.whatsapp.trim() || null,
+              creci: tenantForm.creci.trim() || null,
+              city: tenantForm.city.trim() || null,
+              state: tenantForm.state.trim() || null,
+            })
+            .eq("id", tenant.id)
+        : await supabase.rpc("create_tenant_for_current_user", {
+            p_name: tenantForm.name.trim(),
+            p_slug: tenantForm.slug.trim() || undefined,
+            p_support_email: tenantForm.supportEmail.trim() || user?.email || undefined,
+            p_phone: tenantForm.phone.trim() || undefined,
+            p_whatsapp: tenantForm.whatsapp.trim() || undefined,
+          });
+
+      if (error) throw error;
+
+      if (!tenant && createdTenantId) {
+        currentTenantId = createdTenantId as string;
+      }
+
+      if (currentTenantId && !tenant) {
+        const { error: domainError } = await supabase
+          .from("tenants")
+          .update({
+            custom_domain: normalizedCustomDomain || null,
+          })
+          .eq("id", currentTenantId);
+
+        if (domainError) throw domainError;
+      }
+
+      await refreshTenant();
+
+      if (!tenant && user?.user_metadata) {
+        await supabase.auth.updateUser({
+          data: {
+            ...user.user_metadata,
+            company_name: tenantForm.name.trim(),
+            company_slug: tenantForm.slug.trim(),
+            company_whatsapp: tenantForm.whatsapp.trim(),
+          },
+        });
+      }
+
+      toast.success(
+        tenant ? "Dados da imobiliária atualizados com sucesso." : "Imobiliária configurada com sucesso.",
+      );
+    } catch (error) {
+      const rpcError = error as { code?: string; message?: string };
+
+      if (rpcError.code === "PGRST202") {
+        setTenantProvisionIssue("A base multiempresa ainda não foi aplicada no Supabase. Execute a migration 20260307102000_add_multitenant_foundation.sql.");
+        toast.error("A migration multiempresa ainda não foi aplicada no Supabase.");
+      } else {
+        console.error("Erro ao salvar imobiliária:", error);
+        toast.error(
+          rpcError.message
+            ? `Não foi possível salvar os dados da imobiliária: ${rpcError.message}`
+            : "Não foi possível salvar os dados da imobiliária.",
+        );
+      }
+    } finally {
+      setSavingTenant(false);
+    }
+  };
+
+  const tenantWorkspace = (
+    <Card className="section-shell p-1">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-xl text-slate-900">
+          <Building2 className="h-5 w-5 text-amber-600" />
+          Identidade da imobiliária
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        {tenantProvisionIssue ? (
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+            {tenantProvisionIssue}
+          </div>
+        ) : null}
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="space-y-2 md:col-span-2">
+            <label className="text-sm font-medium text-slate-900" htmlFor="tenant-name">
+              Nome da imobiliária
+            </label>
+            <Input
+              id="tenant-name"
+              value={tenantForm.name}
+              onChange={(event) => setTenantForm((current) => ({ ...current, name: event.target.value }))}
+              placeholder="Ex: Horizonte Imóveis"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-900" htmlFor="tenant-slug">
+              Identificador interno do site
+            </label>
+            <Input
+              id="tenant-slug"
+              value={tenantForm.slug}
+              onChange={(event) => setTenantForm((current) => ({ ...current, slug: event.target.value }))}
+              placeholder="Ex: horizonte-imoveis"
+            />
+            <p className="text-xs text-slate-500">
+              Usado para prévia local e roteamento técnico. O endereço público final deve usar um domínio próprio.
+            </p>
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-900" htmlFor="tenant-custom-domain">
+              Domínio próprio
+            </label>
+            <Input
+              id="tenant-custom-domain"
+              value={tenantForm.customDomain}
+              onChange={(event) => setTenantForm((current) => ({ ...current, customDomain: event.target.value }))}
+              placeholder="Ex: imobiliaria-exemplo.com.br"
+            />
+            <p className="text-xs text-slate-500">
+              Informe apenas o domínio. Sem `https://`, sem barra final e sem subdomínio da Imobiflow.
+            </p>
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-900" htmlFor="tenant-support-email">
+              E-mail comercial
+            </label>
+            <Input
+              id="tenant-support-email"
+              type="email"
+              value={tenantForm.supportEmail}
+              onChange={(event) => setTenantForm((current) => ({ ...current, supportEmail: event.target.value }))}
+              placeholder="contato@empresa.com"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-900" htmlFor="tenant-phone">
+              Telefone
+            </label>
+            <Input
+              id="tenant-phone"
+              value={tenantForm.phone}
+              onChange={(event) => setTenantForm((current) => ({ ...current, phone: event.target.value }))}
+              placeholder="(51) 99999-9999"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-900" htmlFor="tenant-whatsapp">
+              WhatsApp
+            </label>
+            <Input
+              id="tenant-whatsapp"
+              value={tenantForm.whatsapp}
+              onChange={(event) => setTenantForm((current) => ({ ...current, whatsapp: event.target.value }))}
+              placeholder="(51) 99999-9999"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-900" htmlFor="tenant-creci">
+              CRECI
+            </label>
+            <Input
+              id="tenant-creci"
+              value={tenantForm.creci}
+              onChange={(event) => setTenantForm((current) => ({ ...current, creci: event.target.value }))}
+              placeholder="CRECI 12345-XX"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-900" htmlFor="tenant-city">
+              Cidade
+            </label>
+            <Input
+              id="tenant-city"
+              value={tenantForm.city}
+              onChange={(event) => setTenantForm((current) => ({ ...current, city: event.target.value }))}
+              placeholder="Canoas"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-900" htmlFor="tenant-state">
+              UF
+            </label>
+            <Input
+              id="tenant-state"
+              value={tenantForm.state}
+              onChange={(event) => setTenantForm((current) => ({ ...current, state: event.target.value }))}
+              placeholder="RS"
+              maxLength={2}
+            />
+          </div>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="surface-card-muted p-4">
+            <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Domínio de produção</p>
+            <p className="mt-2 break-all text-sm font-medium text-slate-900">{productionSiteUrl}</p>
+            <p className="mt-2 text-sm text-slate-600">
+              Cada imobiliária deve usar um domínio próprio exclusivo. A URL abaixo serve apenas como prévia local enquanto o DNS ainda não aponta para produção.
+            </p>
+            <div className="mt-4 rounded-xl border border-slate-200 bg-white p-3">
+              <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Prévia local da vitrine</p>
+              <p className="mt-2 break-all text-sm font-medium text-slate-900">{localPreviewUrl}</p>
+            </div>
+          </div>
+          <div className="surface-card-muted p-4">
+            <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Resumo atual</p>
+            <div className="mt-3 space-y-2 text-sm text-slate-700">
+              <p>
+                <span className="font-semibold text-slate-900">Marca:</span> {summaryBrandName}
+              </p>
+              <p>
+                <span className="font-semibold text-slate-900">CRECI:</span> {summaryCreci}
+              </p>
+              <p>
+                <span className="font-semibold text-slate-900">Contato:</span> {summaryContact}
+              </p>
+              <p>
+                <span className="font-semibold text-slate-900">Base:</span> {summaryBase}
+              </p>
+              <p>
+                <span className="font-semibold text-slate-900">Domínio:</span> {summaryDomain}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Button
+            type="button"
+            onClick={() => void handleProvisionTenant()}
+            disabled={savingTenant}
+            className="rounded-xl bg-slate-900 text-white hover:bg-slate-800"
+          >
+            {savingTenant ? "Salvando..." : tenant ? "Salvar identidade" : "Configurar imobiliária"}
+          </Button>
+          <Button type="button" variant="outline" className="rounded-xl border-slate-300 bg-white text-slate-700" asChild>
+            <a href={localPreviewUrl} target="_blank" rel="noreferrer">
+              Abrir prévia local
+            </a>
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
 
   const handleDeleteAccount = async () => {
     if (!user?.email) {
@@ -649,7 +1083,7 @@ const Admin = () => {
       data: { session },
     } = await supabase.auth.getSession();
 
-    if (!session?.access_token) {
+    if (!session.access_token) {
       toast.error("Sua sessão expirou. Entre novamente antes de excluir a conta.");
       setDeletingAccount(false);
       return;
@@ -671,7 +1105,8 @@ const Admin = () => {
         break;
       }
 
-      functionErrorMessage = error.message?.trim() || functionErrorMessage;
+      functionErrorMessage =
+        (typeof error.message === "string" ? error.message.trim() : "") || functionErrorMessage;
     }
 
     if (!deleted) {
@@ -700,6 +1135,35 @@ const Admin = () => {
     );
   }
 
+  if (!tenant) {
+    return (
+      <div className="page-shell">
+        <Navbar />
+
+        <main className="container mx-auto flex-1 px-4 py-8 md:py-10">
+          <div className="hero-surface p-6 md:p-8">
+            <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-[0.22em] text-white/70">Configuração inicial</p>
+                <h1 className="mt-2 text-3xl font-semibold text-white md:text-4xl">Ative a sua imobiliária</h1>
+                <p className="mt-2 max-w-2xl text-sm text-white/80 md:text-base">
+                  Antes de usar o painel, defina a marca, o identificador do site e os canais de contato da operação.
+                </p>
+              </div>
+              <Badge className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-white">
+                Usuário: {user?.email || "sem e-mail"}
+              </Badge>
+            </div>
+          </div>
+
+          <div className="mt-8">{tenantWorkspace}</div>
+        </main>
+
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="page-shell">
       <Navbar />
@@ -709,17 +1173,17 @@ const Admin = () => {
           <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-xs uppercase tracking-[0.22em] text-white/70">Painel administrativo</p>
-              <h1 className="mt-2 text-3xl font-semibold text-white md:text-4xl">Dashboard Imobiflow</h1>
+              <h1 className="mt-2 text-3xl font-semibold text-white md:text-4xl">Dashboard {brandName}</h1>
               <p className="mt-2 max-w-2xl text-sm text-white/80 md:text-base">
-                Gestão comercial em tempo real com foco na execução do time.
+                Gestão comercial em tempo real com foco na execução do time e no catálogo público da sua imobiliária.
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
               <Badge className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-white">
-                Usuário: {user?.email || "demo@imobiflow.com"}
+                Usuário: {user?.email || supportEmail}
               </Badge>
               <Badge className="rounded-full border border-amber-300/40 bg-amber-400 text-slate-900">
-                Demo ativa
+                {tenant.is_demo ? "Demo" : tenant.slug}
               </Badge>
             </div>
           </div>
@@ -1047,115 +1511,118 @@ const Admin = () => {
 
           <TabsContent value="list" className="mt-6">
             <div className="section-shell p-6">
-              <PropertyList key={refreshKey} userId={user?.id} onEdit={handleEdit} />
+              <PropertyList key={refreshKey} tenantId={tenant.id} onEdit={handleEdit} />
             </div>
           </TabsContent>
 
           <TabsContent value="add" className="mt-6">
-            <PropertyForm onSuccess={handlePropertyAdded} />
+            <PropertyForm tenantId={tenant.id} onSuccess={handlePropertyAdded} />
           </TabsContent>
 
           <TabsContent value="settings" className="mt-6">
-            <section className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
-              <Card className="section-shell p-1">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-xl text-slate-900">
-                    <Settings className="h-5 w-5 text-amber-600" />
-                    Configurações da conta
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="surface-card-muted p-4">
-                    <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Conta atual</p>
-                    <p className="mt-2 text-base font-semibold text-slate-900">{user?.email || "Sem e-mail"}</p>
-                    <p className="mt-2 text-sm text-slate-600">
-                      Se você excluir a conta, o acesso e os dados vinculados a ela serão removidos do sistema.
-                    </p>
-                  </div>
+            <section className="space-y-4">
+              {tenantWorkspace}
 
-                </CardContent>
-              </Card>
+              <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+                <Card className="section-shell p-1">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-xl text-slate-900">
+                      <Settings className="h-5 w-5 text-amber-600" />
+                      Configurações da conta
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="surface-card-muted p-4">
+                      <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Conta atual</p>
+                      <p className="mt-2 text-base font-semibold text-slate-900">{user?.email || "Sem e-mail"}</p>
+                      <p className="mt-2 text-sm text-slate-600">
+                        Se você excluir a conta, o acesso e os dados vinculados a ela serão removidos do sistema.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
 
-              <Card className="section-shell border-rose-200 p-1">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-xl text-rose-700">
-                    <ShieldAlert className="h-5 w-5" />
-                    Zona de risco
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="rounded-xl border border-rose-200 bg-rose-50 p-4">
-                    <p className="text-sm font-semibold text-rose-800">Excluir conta permanentemente</p>
-                    <p className="mt-2 text-sm text-rose-700">
-                      Isso remove sua conta permanentemente, encerra o acesso ao painel e apaga os dados associados.
-                    </p>
-                  </div>
+                <Card className="section-shell border-rose-200 p-1">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-xl text-rose-700">
+                      <ShieldAlert className="h-5 w-5" />
+                      Zona de risco
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="rounded-xl border border-rose-200 bg-rose-50 p-4">
+                      <p className="text-sm font-semibold text-rose-800">Excluir conta permanentemente</p>
+                      <p className="mt-2 text-sm text-rose-700">
+                        Isso remove sua conta permanentemente, encerra o acesso ao painel e apaga os dados associados.
+                      </p>
+                    </div>
 
-                  <AlertDialog
-                    open={deleteAccountOpen}
-                    onOpenChange={(open) => {
-                      setDeleteAccountOpen(open);
-                      if (!open) {
-                        setDeleteAccountConfirmation("");
-                      }
-                    }}
-                  >
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        className="h-11 rounded-xl bg-rose-600 text-white hover:bg-rose-700"
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Excluir minha conta
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Excluir conta permanentemente?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Essa ação não pode ser desfeita. Para confirmar, digite seu e-mail abaixo exatamente como ele aparece na conta.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium text-slate-900">E-mail da conta</p>
-                        <p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
-                          {user?.email}
-                        </p>
-                      </div>
-
-                      <div className="space-y-2">
-                        <label htmlFor="delete-account-confirmation" className="text-sm font-medium text-slate-900">
-                          Confirmação
-                        </label>
-                        <Input
-                          id="delete-account-confirmation"
-                          type="email"
-                          placeholder="Digite seu e-mail para confirmar"
-                          value={deleteAccountConfirmation}
-                          onChange={(event) => setDeleteAccountConfirmation(event.target.value)}
-                          autoComplete="email"
-                        />
-                      </div>
-
-                      <AlertDialogFooter>
-                        <AlertDialogCancel disabled={deletingAccount}>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction
-                          className="bg-rose-600 text-white hover:bg-rose-700 focus-visible:ring-rose-500"
-                          onClick={(event) => {
-                            event.preventDefault();
-                            void handleDeleteAccount();
-                          }}
-                          disabled={!canDeleteAccount || deletingAccount}
+                    <AlertDialog
+                      open={deleteAccountOpen}
+                      onOpenChange={(open) => {
+                        setDeleteAccountOpen(open);
+                        if (!open) {
+                          setDeleteAccountConfirmation("");
+                        }
+                      }}
+                    >
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          className="h-11 rounded-xl bg-rose-600 text-white hover:bg-rose-700"
                         >
-                          {deletingAccount ? "Excluindo..." : "Excluir definitivamente"}
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </CardContent>
-              </Card>
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Excluir minha conta
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Excluir conta permanentemente</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Essa ação não pode ser desfeita. Para confirmar, digite seu e-mail abaixo exatamente como ele aparece na conta.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+
+                        <div className="space-y-2">
+                          <p className="text-sm font-medium text-slate-900">E-mail da conta</p>
+                          <p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                            {user?.email || "Sem e-mail"}
+                          </p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label htmlFor="delete-account-confirmation" className="text-sm font-medium text-slate-900">
+                            Confirmação
+                          </label>
+                          <Input
+                            id="delete-account-confirmation"
+                            type="email"
+                            placeholder="Digite seu e-mail para confirmar"
+                            value={deleteAccountConfirmation}
+                            onChange={(event) => setDeleteAccountConfirmation(event.target.value)}
+                            autoComplete="email"
+                          />
+                        </div>
+
+                        <AlertDialogFooter>
+                          <AlertDialogCancel disabled={deletingAccount}>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction
+                            className="bg-rose-600 text-white hover:bg-rose-700 focus-visible:ring-rose-500"
+                            onClick={(event) => {
+                              event.preventDefault();
+                              void handleDeleteAccount();
+                            }}
+                            disabled={!canDeleteAccount || deletingAccount}
+                          >
+                            {deletingAccount ? "Excluindo..." : "Excluir definitivamente"}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </CardContent>
+                </Card>
+              </div>
             </section>
           </TabsContent>
 
@@ -1180,3 +1647,20 @@ const Admin = () => {
 };
 
 export default Admin;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

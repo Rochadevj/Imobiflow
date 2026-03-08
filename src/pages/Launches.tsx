@@ -1,12 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+﻿import { useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
+import TenantLink from "@/components/TenantLink";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useTenant } from "@/context/TenantContext";
+import { getTenantPhone } from "@/lib/tenantBrand";
 
 interface LaunchProperty {
   id: string;
@@ -26,13 +28,22 @@ interface LaunchProperty {
 }
 
 const Launches = () => {
+  const { tenant, loading: tenantLoading } = useTenant();
   const [launches, setLaunches] = useState<LaunchProperty[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
+  const tenantPhone = getTenantPhone(tenant);
 
   useEffect(() => {
+    if (tenantLoading) return;
+
     const fetchLaunches = async () => {
       try {
+        if (!tenant?.id) {
+          setLaunches([]);
+          return;
+        }
+
         const { data, error } = await supabase
           .from("properties")
           .select(`
@@ -51,6 +62,7 @@ const Launches = () => {
             is_launch,
             property_images(image_url, is_primary)
           `)
+          .eq("tenant_id", tenant.id)
           .eq("status", "available")
           .eq("is_launch", true)
           .order("created_at", { ascending: false });
@@ -64,8 +76,8 @@ const Launches = () => {
       }
     };
 
-    fetchLaunches();
-  }, []);
+    void fetchLaunches();
+  }, [tenant?.id, tenantLoading]);
 
   const filteredLaunches = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
@@ -80,21 +92,29 @@ const Launches = () => {
     });
   }, [launches, searchTerm]);
 
+  if (tenantLoading) {
+    return (
+      <div className="page-shell">
+        <Navbar />
+        <main className="container mx-auto flex-1 px-4 py-16 text-center text-slate-600">Carregando lançamentos...</main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="page-shell">
       <Navbar />
 
       <section className="relative mx-4 mt-8 overflow-hidden rounded-[34px] border border-white/15 bg-[linear-gradient(135deg,hsl(var(--hero-gradient-start))_0%,hsl(var(--hero-gradient-end))_62%,hsl(214_35%_20%)_100%)] py-12 text-white shadow-[0_26px_60px_rgba(15,23,42,0.3)] md:mx-6 lg:mx-10">
-        <div className="absolute inset-0 pointer-events-none">
+        <div className="pointer-events-none absolute inset-0">
           <div className="absolute right-0 top-0 h-[260px] w-[260px] rounded-bl-[120px] bg-accent/12 md:h-[360px] md:w-[360px]" />
-          <div className="absolute left-0 bottom-0 h-[220px] w-[220px] rounded-tr-[120px] bg-white/5" />
+          <div className="absolute bottom-0 left-0 h-[220px] w-[220px] rounded-tr-[120px] bg-white/5" />
         </div>
         <div className="container relative mx-auto px-4">
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/75">
-                Vitrine de lançamentos
-              </p>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/75">Vitrine de lançamentos</p>
               <h1 className="mt-3 text-3xl font-bold sm:text-4xl md:text-5xl">
                 Lançamentos
                 <span className="text-accent">.</span>
@@ -110,10 +130,10 @@ const Launches = () => {
                 className="rounded-full border-white/30 bg-white/10 text-white hover:bg-white/20"
                 asChild
               >
-                <Link to="/imobiliaria">Voltar para início</Link>
+                <TenantLink to="/imobiliaria" forceTenant>Voltar para início</TenantLink>
               </Button>
               <Button className="rounded-full bg-accent text-white hover:bg-accent/90" asChild>
-                <a href="tel:+5500000000000">Falar com corretor</a>
+                <a href={`tel:${tenantPhone.replace(/\D/g, "")}`}>Falar com corretor</a>
               </Button>
             </div>
           </div>
@@ -127,9 +147,7 @@ const Launches = () => {
             <p className="mt-2 text-sm text-muted-foreground md:text-base">
               {loading
                 ? "Carregando imóveis..."
-                : `${filteredLaunches.length} ${
-                    filteredLaunches.length === 1 ? "lançamento encontrado" : "lançamentos encontrados"
-                  }`}
+                : `${filteredLaunches.length} ${filteredLaunches.length === 1 ? "lançamento encontrado" : "lançamentos encontrados"}`}
             </p>
           </div>
 
@@ -160,7 +178,7 @@ const Launches = () => {
               const imageUrl = primaryImage?.image_url || property.property_images[0]?.image_url;
 
               return (
-                <Link key={property.id} to={`/property/${property.codigo || property.id}`} className="no-underline">
+                <TenantLink key={property.id} to={`/property/${property.codigo || property.id}`} forceTenant className="no-underline">
                   <PropertyCard
                     id={property.id}
                     title={property.title}
@@ -176,7 +194,7 @@ const Launches = () => {
                     imageUrl={imageUrl}
                     isLaunch={property.is_launch}
                   />
-                </Link>
+                </TenantLink>
               );
             })}
           </div>

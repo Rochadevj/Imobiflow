@@ -1,11 +1,18 @@
-import Footer from "@/components/Footer";
+﻿import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
-import { CONTACT_WHATSAPP_DISPLAY } from "@/lib/contact";
+import { formatPhoneDisplay } from "@/lib/contact";
+import { useTenant } from "@/context/TenantContext";
+import {
+  getTenantBrandName,
+  getTenantCreci,
+  getTenantSupportEmail,
+  getTenantWhatsApp,
+} from "@/lib/tenantBrand";
 
 const sections = [
   {
     title: "1. Informações coletadas",
-    body: "Coletamos dados fornecidos por você em formulários (nome, email, telefone) e dados técnicos de navegação para funcionamento da plataforma.",
+    body: "Coletamos dados fornecidos por você em formulários (nome, e-mail, telefone) e dados técnicos de navegação para funcionamento da plataforma.",
   },
   {
     title: "2. Finalidade de uso",
@@ -17,7 +24,7 @@ const sections = [
   },
   {
     title: "4. Cookies",
-    body: "Utilizamos cookies para lembrar preferências, medir desempenho e melhorar navegação. O usuário pode ajustar cookies no navegador.",
+    body: "Utilizamos cookies para lembrar preferências, medir desempenho e melhorar a navegação. O usuário pode ajustar cookies no navegador.",
   },
   {
     title: "5. Segurança",
@@ -34,6 +41,12 @@ const sections = [
 ];
 
 const PrivacyPolicy = () => {
+  const { tenant } = useTenant();
+  const brandName = getTenantBrandName(tenant);
+  const creci = getTenantCreci(tenant);
+  const supportEmail = getTenantSupportEmail(tenant);
+  const whatsapp = getTenantWhatsApp(tenant);
+
   return (
     <div className="page-shell">
       <Navbar />
@@ -46,8 +59,7 @@ const PrivacyPolicy = () => {
               Última atualização: {new Date().toLocaleDateString("pt-BR")}
             </p>
             <p className="mt-4 max-w-3xl text-sm text-white/85">
-              Este documento explica como a Imobiflow (demo) trata dados pessoais no contexto da plataforma
-              imobiliária apresentada neste projeto.
+              Este documento explica como {brandName} trata dados pessoais no contexto do site imobiliário e dos formulários públicos desta operação.
             </p>
           </div>
         </section>
@@ -66,10 +78,10 @@ const PrivacyPolicy = () => {
             <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-900 p-6 text-white">
               <h3 className="text-lg font-semibold">Contato para privacidade</h3>
               <div className="mt-3 space-y-1 text-sm text-white/80">
-                <p>Imobiflow (demo)</p>
-                <p>CRECI: 000000-XX (demo)</p>
-                <p>E-mail: contato@imobiflow.com</p>
-                <p>Telefone/WhatsApp: {CONTACT_WHATSAPP_DISPLAY}</p>
+                <p>{brandName}</p>
+                <p>{creci}</p>
+                <p>E-mail: {supportEmail}</p>
+                <p>Telefone/WhatsApp: {formatPhoneDisplay(whatsapp)}</p>
               </div>
             </div>
           </div>
