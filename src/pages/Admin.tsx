@@ -1444,25 +1444,29 @@ const Admin = () => {
                 </section>
 
                 {isReadOnlyDemo ? (
-                  <Card className="section-shell p-1">
-                    <CardHeader>
-                      <CardTitle className="text-xl text-slate-900">Exploração da demo</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3 text-sm text-slate-600">
-                      <p>
-                        Nesta demonstração você pode navegar pelo dashboard e abrir os imóveis cadastrados para entender
-                        como a plataforma funciona na prática.
-                      </p>
-                      <div className="flex flex-wrap gap-3">
-                        <Button asChild className="rounded-xl bg-slate-900 text-white hover:bg-slate-800">
-                          <a href={buildPublicPreviewPath("/imobiliaria")}>Ver site público</a>
-                        </Button>
-                        <Button asChild variant="outline" className="rounded-xl border-slate-300 bg-white text-slate-700">
-                          <a href={buildPublicPreviewPath("/sobre")}>Ver página institucional</a>
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <>
+                    <Card className="section-shell p-1">
+                      <CardHeader>
+                        <CardTitle className="text-xl text-slate-900">Exploração da demo</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3 text-sm text-slate-600">
+                        <p>
+                          Nesta demonstração você pode navegar pelo dashboard e abrir os imóveis cadastrados para entender
+                          como a plataforma funciona na prática.
+                        </p>
+                        <div className="flex flex-wrap gap-3">
+                          <Button asChild className="rounded-xl bg-slate-900 text-white hover:bg-slate-800">
+                            <a href={buildPublicPreviewPath("/imobiliaria")}>Ver site público</a>
+                          </Button>
+                          <Button asChild variant="outline" className="rounded-xl border-slate-300 bg-white text-slate-700">
+                            <a href={buildPublicPreviewPath("/sobre")}>Ver página institucional</a>
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <MostViewedProperties />
+                  </>
                 ) : (
                   <MostViewedProperties />
                 )}
@@ -1794,7 +1798,6 @@ const Admin = () => {
 };
 
 export default Admin;
-
 
 
 
