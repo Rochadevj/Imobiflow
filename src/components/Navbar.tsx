@@ -85,7 +85,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/88 backdrop-blur-xl shadow-[0_10px_28px_rgba(15,23,42,0.06)]">
+    <nav className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/94 shadow-[0_8px_20px_rgba(15,23,42,0.05)] backdrop-blur-md md:bg-white/88 md:shadow-[0_10px_28px_rgba(15,23,42,0.06)] md:backdrop-blur-xl">
       <div className="container mx-auto px-4">
         <div className="flex h-20 items-center justify-between gap-4">
           <TenantLink to="/imobiliaria" forceTenant className="group inline-flex items-center gap-3">

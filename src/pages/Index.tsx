@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import PropertyCard from "@/components/PropertyCard";
-import Footer from "@/components/Footer";
 import TenantLink from "@/components/TenantLink";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, Drawer
 import HeroCarousel from "@/components/HeroCarousel";
 import { useTenant } from "@/context/TenantContext";
 import { getTenantPhone } from "@/lib/tenantBrand";
+import { getOptimizedImageUrl } from "@/lib/imageOptimization";
 
 interface Property {
   id: string;
@@ -84,6 +84,9 @@ const heroSignatureItems = [
   },
 ] as const;
 
+const Footer = lazy(() => import("@/components/Footer"));
+const getIsMobileViewport = () => typeof window !== "undefined" && window.innerWidth < 768;
+
 const Index = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -95,6 +98,7 @@ const Index = () => {
   const [loadingSections, setLoadingSections] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState(getIsMobileViewport);
   const [showList, setShowList] = useState(false);
   const [showQuickHint, setShowQuickHint] = useState(true);
   const [featuredImperdiveis, setFeaturedImperdiveis] = useState<Property[]>([]);
@@ -115,7 +119,18 @@ const Index = () => {
   const [parkingSpaces, setParkingSpaces] = useState("");
   const [heroTab, setHeroTab] = useState<'comprar' | 'alugar' | 'todos'>("todos");
   const tenantPhone = getTenantPhone(tenant);
+  const heroPropertyLimit = isMobileViewport ? 4 : 8;
+  const sectionPropertyLimit = isMobileViewport ? 3 : 6;
   // Ler parâmetros da URL quando a página carrega
+  useEffect(() => {
+    const syncViewport = () => setIsMobileViewport(getIsMobileViewport());
+
+    syncViewport();
+    window.addEventListener("resize", syncViewport);
+
+    return () => window.removeEventListener("resize", syncViewport);
+  }, []);
+
   useEffect(() => {
     const type = searchParams.get('type');
     const list = searchParams.get('list');
@@ -149,7 +164,7 @@ const Index = () => {
     void fetchFeaturedProperties();
     void fetchSectionProperties();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tenantLoading, tenantId]);
+  }, [tenantLoading, tenantId, heroPropertyLimit, sectionPropertyLimit]);
 
   const fetchProperties = async () => {
     try {
@@ -219,7 +234,7 @@ const Index = () => {
         .or("featured.eq.true,featured_imperdiveis.eq.true,featured_venda.eq.true,featured_locacao.eq.true")
         .neq("is_launch", true)
         .not("property_images", "is", null)
-        .limit(8)
+        .limit(heroPropertyLimit)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -256,7 +271,7 @@ const Index = () => {
           .eq("status", "available")
           .neq("is_launch", true)
           .not("property_images", "is", null)
-          .limit(6)
+          .limit(heroPropertyLimit)
           .order("created_at", { ascending: false });
 
         if (!regularError && regularData) {
@@ -322,7 +337,7 @@ const Index = () => {
           .eq("status", "available")
           .eq("featured_imperdiveis", true)
           .order("created_at", { ascending: false })
-          .limit(6),
+          .limit(sectionPropertyLimit),
         supabase
           .from("properties")
           .select(baseSelect)
@@ -330,7 +345,7 @@ const Index = () => {
           .eq("status", "available")
           .eq("featured_venda", true)
           .order("created_at", { ascending: false })
-          .limit(6),
+          .limit(sectionPropertyLimit),
         supabase
           .from("properties")
           .select(baseSelect)
@@ -338,7 +353,7 @@ const Index = () => {
           .eq("status", "available")
           .eq("featured_locacao", true)
           .order("created_at", { ascending: false })
-          .limit(6),
+          .limit(sectionPropertyLimit),
         supabase
           .from("properties")
           .select(baseSelect)
@@ -346,7 +361,7 @@ const Index = () => {
           .eq("status", "available")
           .eq("is_launch", true)
           .order("created_at", { ascending: false })
-          .limit(6),
+          .limit(sectionPropertyLimit),
       ]);
 
       if (imperdiveisResult.error) throw imperdiveisResult.error;
@@ -396,7 +411,9 @@ const Index = () => {
         <main className="container mx-auto flex-1 px-4 py-16 text-center text-slate-600">
           Carregando catálogo...
         </main>
-        <Footer />
+        <Suspense fallback={null}>
+          <Footer />
+        </Suspense>
       </div>
     );
   }
@@ -758,7 +775,7 @@ const Index = () => {
       {/* Destaques e novidades */}
       {!showList && (
       <>
-      <section className="container mx-auto section-shell px-4 py-8 md:py-10">
+      <section className="container mx-auto section-shell defer-section px-4 py-8 md:py-10">
         <div className="mb-6 md:mb-8">
           <div className="flex flex-col items-center gap-4 text-center">
             <div>
@@ -818,7 +835,7 @@ const Index = () => {
         )}
       </section>
 
-      <section className="container mx-auto mt-6 section-shell px-4 py-8 md:py-10">
+      <section className="container mx-auto mt-6 section-shell defer-section px-4 py-8 md:py-10">
         <div className="mb-6 md:mb-8">
           <div className="flex flex-col items-center gap-4 text-center">
             <div>
@@ -879,7 +896,7 @@ const Index = () => {
       </section>
 
 
-      <section className="container mx-auto mt-6 section-shell px-4 py-8 md:py-10">
+	      <section className="container mx-auto mt-6 section-shell defer-section px-4 py-8 md:py-10">
         <div className="mb-6 md:mb-8">
           <div className="flex flex-col items-center gap-4 text-center">
             <div>
@@ -1174,7 +1191,7 @@ const Index = () => {
       )}
 
       {!showList && (
-        <section className="container mx-auto px-4 py-8 md:py-10">
+	        <section className="container mx-auto defer-section px-4 py-8 md:py-10">
           <div className="hero-surface p-6 md:p-10">
             <div className="flex items-center justify-between gap-4 mb-6">
               <h2 className="text-2xl md:text-3xl font-bold tracking-wide">
@@ -1194,17 +1211,23 @@ const Index = () => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                 {launches.map((property) => {
-                  const imageUrl = getPropertyImageUrl(property.property_images);
+	                  const imageUrl = getOptimizedImageUrl(getPropertyImageUrl(property.property_images), {
+	                    width: 720,
+	                    quality: 72,
+	                  });
                   return (
                     <TenantLink forceTenant key={property.id} to={`/property/${property.codigo || property.id}`} className="no-underline">
                       <div className="flex bg-black/70 rounded-2xl overflow-hidden border border-white/10 hover:border-accent/60 transition">
                         <div className="w-2/5 min-h-[140px]">
                           {imageUrl ? (
-                            <img
-                              src={imageUrl}
-                              alt={property.title}
-                              className="h-full w-full object-cover"
-                            />
+	                            <img
+	                              src={imageUrl}
+	                              alt={property.title}
+	                              className="h-full w-full object-cover"
+	                              loading="lazy"
+	                              decoding="async"
+	                              sizes="(max-width: 768px) 100vw, 33vw"
+	                            />
                           ) : (
                             <div className="h-full w-full bg-white/10 flex items-center justify-center text-white/60 text-sm">
                               Sem imagem
@@ -1234,7 +1257,9 @@ const Index = () => {
         </section>
       )}
 
-      <Footer />
+      <Suspense fallback={null}>
+        <Footer />
+      </Suspense>
     </div>
   );
 };

@@ -4,6 +4,7 @@ import { ArrowUpRight, Bath, Bed, Car, Heart, MapPin, Ruler } from "lucide-react
 import { useEffect, useState, type MouseEvent } from "react";
 import { useTenant } from "@/context/TenantContext";
 import { readFavorites, writeFavorites } from "@/lib/favorites";
+import { getOptimizedImageUrl } from "@/lib/imageOptimization";
 
 interface PropertyCardProps {
   id?: string;
@@ -60,6 +61,7 @@ const PropertyCard = ({
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   })}`;
+  const optimizedImageUrl = getOptimizedImageUrl(imageUrl, { width: 720, quality: 72 });
 
   useEffect(() => {
     if (!id) return;
@@ -85,10 +87,12 @@ const PropertyCard = ({
       <div className="relative h-60 overflow-hidden">
         {imageUrl ? (
           <img
-            src={imageUrl}
+            src={optimizedImageUrl}
             alt={title}
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
             loading="lazy"
+            decoding="async"
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-slate-100 text-sm text-slate-500">

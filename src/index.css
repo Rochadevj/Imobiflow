@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -84,7 +84,7 @@
     overflow-x: hidden;
     max-width: 100vw;
     scroll-behavior: smooth;
-    font-family: "Manrope", sans-serif;
+    font-family: "Manrope", "Segoe UI", "Helvetica Neue", sans-serif;
     background-image:
       radial-gradient(circle at 5% 0%, rgba(251, 191, 36, 0.24), transparent 34%),
       radial-gradient(circle at 95% 0%, rgba(56, 189, 248, 0.18), transparent 35%),
@@ -98,7 +98,7 @@
   h4,
   h5,
   h6 {
-    font-family: "Space Grotesk", sans-serif;
+    font-family: "Space Grotesk", "Segoe UI", sans-serif;
     letter-spacing: -0.01em;
   }
 
@@ -130,6 +130,11 @@
 
   .section-shell {
     @apply rounded-3xl border border-white/70 bg-white/80 shadow-[0_20px_50px_rgba(15,23,42,0.08)] backdrop-blur;
+  }
+
+  .defer-section {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 960px;
   }
 
   .surface-card {
@@ -223,6 +228,50 @@
     border-radius: 20px;
   }
 }
+
+@media (max-width: 767px) {
+  html,
+  body {
+    scroll-behavior: auto;
+    background-image: linear-gradient(180deg, #f4f7fc 0%, #edf2f9 52%, #f6f8fb 100%);
+  }
+
+  .page-shell::before {
+    display: none;
+  }
+
+  .section-shell,
+  .surface-card,
+  .hero-surface {
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.07);
+    backdrop-filter: none;
+  }
+
+  .hero-carousel-image,
+  .hero-carousel-image:hover {
+    filter: brightness(1.03) contrast(1.02) saturate(1.04);
+    transform: none;
+  }
+
+  .carousel-overlay {
+    background: linear-gradient(
+      to top,
+      rgba(2, 6, 23, 0.48) 0%,
+      rgba(2, 6, 23, 0.18) 42%,
+      rgba(2, 6, 23, 0.05) 70%,
+      transparent 100%
+    );
+  }
+
+  .animate-fade-up,
+  .animate-fade-up-delay-1,
+  .animate-fade-up-delay-2,
+  .float-slow,
+  .pulse-soft {
+    animation: none !important;
+  }
+}
+
 @layer utilities {
   @keyframes fade-up {
     0% {

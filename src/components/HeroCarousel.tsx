@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from "react";
 import { ArrowUpRight, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import TenantLink from "@/components/TenantLink";
+import { getOptimizedImageUrl } from "@/lib/imageOptimization";
 
 interface HeroProperty {
   id: string;
@@ -89,16 +90,18 @@ export default function HeroCarousel({ properties }: HeroCarouselProps) {
   }
 
   const currentProperty = properties[currentIndex];
+  const optimizedHeroImageUrl = getOptimizedImageUrl(currentProperty.image_url, { width: 1400, quality: 76 });
 
   return (
     <div className="group relative overflow-hidden rounded-[32px] border border-white/20 shadow-[0_24px_44px_rgba(15,23,42,0.35)]">
       <img
-        src={currentProperty.image_url}
+        src={optimizedHeroImageUrl}
         alt={currentProperty.title}
         className="hero-carousel-image h-[340px] w-full object-cover object-center md:h-[430px]"
         loading="eager"
         fetchPriority="high"
         decoding="async"
+        sizes="(max-width: 768px) 100vw, 58vw"
       />
 
       <div className="carousel-overlay absolute inset-0" />
