@@ -223,15 +223,9 @@ const trustSignals = [
   "Estrutura pronta para escalar com segurança",
 ];
 
-const publicDemoParams = new URLSearchParams();
-
-if (resolvedDemoTenantSlug) {
-  publicDemoParams.set("tenant", resolvedDemoTenantSlug);
-}
-
-publicDemoParams.set("list", "1");
-
-const publicDemoPath = `/imobiliaria?${publicDemoParams.toString()}`;
+const publicDemoPath = resolvedDemoTenantSlug
+  ? `/imobiliaria?tenant=${resolvedDemoTenantSlug}`
+  : "/imobiliaria";
 
 const renderSentenceTitle = (text: string) => {
   const parts = text.split(/(?<=\.)\s+/).filter(Boolean);
