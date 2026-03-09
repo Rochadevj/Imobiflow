@@ -8,6 +8,7 @@ interface ImportMetaEnv {
   readonly VITE_GOOGLE_MAPS_EMBED_KEY?: string;
   readonly VITE_TURNSTILE_SITE_KEY?: string;
   readonly VITE_DELETE_ACCOUNT_FUNCTION_NAME?: string;
+  readonly VITE_DEMO_TENANT_SLUG?: string;
 }
 
 interface ImportMeta {

@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useTenant } from "@/context/TenantContext";
+import { useTenant, type Tenant } from "@/context/TenantContext";
 import {
   getTenantBrandName,
   getTenantCreci,
@@ -236,8 +236,12 @@ const getNegotiationStorageKey = (userId: string) => `imobiflow:negotiation:${us
 
 const Admin = () => {
   const navigate = useNavigate();
-  const { tenant, refreshTenant, tenantPath } = useTenant();
+  const [searchParams] = useSearchParams();
+  const { tenant, refreshTenant } = useTenant();
+  const demoMode = searchParams.get("demo") === "1";
+  const demoTenantSlug = searchParams.get("tenant")?.trim().toLowerCase() || null;
   const [user, setUser] = useState<User | null>(null);
+  const [demoTenant, setDemoTenant] = useState<Tenant | null>(null);
   const [loading, setLoading] = useState(true);
   const [tenantSyncing, setTenantSyncing] = useState(false);
   const [tenantProvisionIssue, setTenantProvisionIssue] = useState<string | null>(null);
@@ -272,8 +276,47 @@ const Admin = () => {
     rented: 0,
     totalValue: 0,
   });
+  const activeTenant = demoMode ? demoTenant : tenant;
+  const isReadOnlyDemo = demoMode;
 
   useEffect(() => {
+    if (demoMode) {
+      setUser(null);
+      setLoading(true);
+
+      const loadDemoTenant = async () => {
+        try {
+          let query = supabase
+            .from("tenants")
+            .select("*")
+            .eq("is_active", true)
+            .limit(1);
+
+          query = demoTenantSlug ? query.eq("slug", demoTenantSlug) : query.eq("is_demo", true);
+
+          const { data, error } = await query.maybeSingle();
+
+          if (error) throw error;
+
+          setDemoTenant(data ?? null);
+          if (!data) {
+            toast.error("Nenhuma operação demo foi encontrada para o painel.");
+          }
+        } catch (error) {
+          console.error("Erro ao carregar tenant demo:", error);
+          toast.error("Não foi possível carregar o painel demo.");
+          setDemoTenant(null);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      void loadDemoTenant();
+      return;
+    }
+
+    setDemoTenant(null);
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session || !isConfirmedUser(session.user)) {
         if (session && !isConfirmedUser(session.user)) {
@@ -299,10 +342,10 @@ const Admin = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [demoMode, demoTenantSlug, navigate]);
 
   useEffect(() => {
-    if (!tenant) {
+    if (!activeTenant) {
       setTenantForm((current) => ({
         ...current,
         supportEmail: user?.email || current.supportEmail,
@@ -311,19 +354,23 @@ const Admin = () => {
     }
 
     setTenantForm({
-      name: tenant.name || "",
-      slug: tenant.slug || "",
-      customDomain: tenant.custom_domain || "",
-      supportEmail: tenant.support_email || user?.email || "",
-      phone: tenant.phone || "",
-      whatsapp: tenant.whatsapp || "",
-      creci: tenant.creci || "",
-      city: tenant.city || "",
-      state: tenant.state || "",
+      name: activeTenant.name || "",
+      slug: activeTenant.slug || "",
+      customDomain: activeTenant.custom_domain || "",
+      supportEmail: activeTenant.support_email || user?.email || "",
+      phone: activeTenant.phone || "",
+      whatsapp: activeTenant.whatsapp || "",
+      creci: activeTenant.creci || "",
+      city: activeTenant.city || "",
+      state: activeTenant.state || "",
     });
-  }, [tenant, user?.email]);
+  }, [activeTenant, user?.email]);
 
   useEffect(() => {
+    if (demoMode) {
+      return;
+    }
+
     if (!user?.id) {
       autoProvisionAttemptRef.current = false;
       return;
@@ -386,9 +433,14 @@ const Admin = () => {
     };
 
     void ensureTenant();
-  }, [refreshTenant, tenant, tenantSyncing, user]);
+  }, [demoMode, refreshTenant, tenant, tenantSyncing, user]);
 
   useEffect(() => {
+    if (demoMode) {
+      setNegotiationStore({});
+      return;
+    }
+
     if (!user?.id) {
       setNegotiationStore({});
       return;
@@ -406,7 +458,7 @@ const Admin = () => {
       console.error("Erro ao carregar documentos e contratos:", error);
       setNegotiationStore({});
     }
-  }, [user?.id]);
+  }, [demoMode, user?.id]);
 
   useEffect(() => {
     if (!properties.length) {
@@ -448,13 +500,23 @@ const Admin = () => {
   };
 
   useEffect(() => {
-    if (!tenant?.id) {
+    if (!activeTenant?.id) {
       return;
     }
 
-    void fetchStats(tenant.id);
+    void fetchStats(activeTenant.id);
     setLoading(false);
-  }, [refreshKey, tenant?.id]);
+  }, [activeTenant?.id, refreshKey]);
+
+  useEffect(() => {
+    if (!isReadOnlyDemo) {
+      return;
+    }
+
+    if (!["dashboard", "list"].includes(activeTab)) {
+      setActiveTab("dashboard");
+    }
+  }, [activeTab, isReadOnlyDemo]);
 
   const selectedProperty = useMemo(
     () => properties.find((property) => property.id === selectedPropertyId) ?? null,
@@ -738,16 +800,16 @@ const Admin = () => {
 
   const handlePropertyAdded = () => {
     setRefreshKey((previous) => previous + 1);
-    if (tenant?.id) {
-      void fetchStats(tenant.id);
+    if (activeTenant?.id) {
+      void fetchStats(activeTenant.id);
     }
     setActiveTab("list");
   };
 
   const handlePropertyUpdated = () => {
     setRefreshKey((previous) => previous + 1);
-    if (tenant?.id) {
-      void fetchStats(tenant.id);
+    if (activeTenant?.id) {
+      void fetchStats(activeTenant.id);
     }
     setEditingPropertyId(null);
     setActiveTab("list");
@@ -762,37 +824,50 @@ const Admin = () => {
   const canDeleteAccount =
     normalizedUserEmail.length > 0 &&
     deleteAccountConfirmation.trim().toLowerCase() === normalizedUserEmail;
-  const brandName = getTenantBrandName(tenant);
-  const creciLabel = getTenantCreci(tenant);
-  const supportEmail = getTenantSupportEmail(tenant);
-  const whatsappNumber = getTenantWhatsApp(tenant);
-  const locationLabel = getTenantLocationLabel(tenant);
+  const brandName = getTenantBrandName(activeTenant);
+  const creciLabel = getTenantCreci(activeTenant);
+  const supportEmail = getTenantSupportEmail(activeTenant);
+  const whatsappNumber = getTenantWhatsApp(activeTenant);
+  const locationLabel = getTenantLocationLabel(activeTenant);
   const normalizedCustomDomain = normalizeDomainInput(tenantForm.customDomain);
   const draftTenantSlug = tenantForm.slug
     .trim()
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-+|-+$)/g, "");
-  const localPreviewPath = tenant?.slug
-    ? tenantPath("/imobiliaria", true)
-    : draftTenantSlug
-      ? `/imobiliaria?tenant=${draftTenantSlug}`
-      : "/imobiliaria";
+  const publicTenantSlug = activeTenant?.slug || draftTenantSlug || "";
+  const buildPublicPreviewPath = (path: string) => {
+    if (!publicTenantSlug) {
+      return path;
+    }
+
+    const [pathname, search = ""] = path.split("?");
+    const params = new URLSearchParams(search);
+    params.set("tenant", publicTenantSlug);
+    const query = params.toString();
+    return query ? `${pathname}?${query}` : pathname;
+  };
+  const localPreviewPath = buildPublicPreviewPath("/imobiliaria");
   const localPreviewUrl =
     typeof window !== "undefined" ? `${window.location.origin}${localPreviewPath}` : localPreviewPath;
-  const productionDomain = tenant?.custom_domain || normalizedCustomDomain;
+  const productionDomain = activeTenant?.custom_domain || normalizedCustomDomain;
   const productionSiteUrl = productionDomain ? `https://${productionDomain}` : "Domínio próprio não configurado";
-  const summaryBrandName = tenant ? brandName : tenantForm.name.trim() || "Pendente de configuração";
-  const summaryCreci = tenant ? creciLabel : tenantForm.creci.trim() || "Não informado";
-  const summaryContact = tenant
+  const summaryBrandName = activeTenant ? brandName : tenantForm.name.trim() || "Pendente de configuração";
+  const summaryCreci = activeTenant ? creciLabel : tenantForm.creci.trim() || "Não informado";
+  const summaryContact = activeTenant
     ? whatsappNumber || "Não informado"
     : tenantForm.whatsapp.trim() || tenantForm.phone.trim() || "Não informado";
-  const summaryBase = tenant
+  const summaryBase = activeTenant
     ? locationLabel
     : [tenantForm.city.trim(), tenantForm.state.trim()].filter(Boolean).join(", ") || "Base não informada";
   const summaryDomain = productionDomain || "Não configurado";
 
   const handleProvisionTenant = async () => {
+    if (isReadOnlyDemo) {
+      toast.error("O painel demo é somente leitura.");
+      return;
+    }
+
     if (!user) {
       toast.error("Sua sessão expirou. Entre novamente.");
       return;
@@ -811,9 +886,9 @@ const Admin = () => {
     setSavingTenant(true);
 
     try {
-      let currentTenantId = tenant?.id ?? null;
+      let currentTenantId = activeTenant?.id ?? null;
 
-      const { data: createdTenantId, error } = tenant
+      const { data: createdTenantId, error } = activeTenant
         ? await supabase
             .from("tenants")
             .update({
@@ -828,7 +903,7 @@ const Admin = () => {
               city: tenantForm.city.trim() || null,
               state: tenantForm.state.trim() || null,
             })
-            .eq("id", tenant.id)
+            .eq("id", activeTenant.id)
         : await supabase.rpc("create_tenant_for_current_user", {
             p_name: tenantForm.name.trim(),
             p_slug: tenantForm.slug.trim() || undefined,
@@ -839,11 +914,11 @@ const Admin = () => {
 
       if (error) throw error;
 
-      if (!tenant && createdTenantId) {
+      if (!activeTenant && createdTenantId) {
         currentTenantId = createdTenantId as string;
       }
 
-      if (currentTenantId && !tenant) {
+      if (currentTenantId && !activeTenant) {
         const { error: domainError } = await supabase
           .from("tenants")
           .update({
@@ -856,7 +931,7 @@ const Admin = () => {
 
       await refreshTenant();
 
-      if (!tenant && user?.user_metadata) {
+      if (!activeTenant && user?.user_metadata) {
         await supabase.auth.updateUser({
           data: {
             ...user.user_metadata,
@@ -868,7 +943,7 @@ const Admin = () => {
       }
 
       toast.success(
-        tenant ? "Dados da imobiliária atualizados com sucesso." : "Imobiliária configurada com sucesso.",
+        activeTenant ? "Dados da imobiliária atualizados com sucesso." : "Imobiliária configurada com sucesso.",
       );
     } catch (error) {
       const rpcError = error as { code?: string; message?: string };
@@ -1054,7 +1129,7 @@ const Admin = () => {
             disabled={savingTenant}
             className="rounded-xl bg-slate-900 text-white hover:bg-slate-800"
           >
-            {savingTenant ? "Salvando..." : tenant ? "Salvar identidade" : "Configurar imobiliária"}
+            {savingTenant ? "Salvando..." : activeTenant ? "Salvar identidade" : "Configurar imobiliária"}
           </Button>
           <Button type="button" variant="outline" className="rounded-xl border-slate-300 bg-white text-slate-700" asChild>
             <a href={localPreviewUrl} target="_blank" rel="noreferrer">
@@ -1067,6 +1142,11 @@ const Admin = () => {
   );
 
   const handleDeleteAccount = async () => {
+    if (isReadOnlyDemo) {
+      toast.error("A conta demo não pode ser alterada.");
+      return;
+    }
+
     if (!user?.email) {
       toast.error("Não foi possível validar a conta atual.");
       return;
@@ -1135,7 +1215,7 @@ const Admin = () => {
     );
   }
 
-  if (!tenant) {
+  if (!activeTenant) {
     return (
       <div className="page-shell">
         <Navbar />
@@ -1144,19 +1224,25 @@ const Admin = () => {
           <div className="hero-surface p-6 md:p-8">
             <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
               <div>
-                <p className="text-xs uppercase tracking-[0.22em] text-white/70">Configuração inicial</p>
-                <h1 className="mt-2 text-3xl font-semibold text-white md:text-4xl">Ative a sua imobiliária</h1>
+                <p className="text-xs uppercase tracking-[0.22em] text-white/70">
+                  {isReadOnlyDemo ? "Painel demo" : "Configuração inicial"}
+                </p>
+                <h1 className="mt-2 text-3xl font-semibold text-white md:text-4xl">
+                  {isReadOnlyDemo ? "Demo indisponível no momento" : "Ative a sua imobiliária"}
+                </h1>
                 <p className="mt-2 max-w-2xl text-sm text-white/80 md:text-base">
-                  Antes de usar o painel, defina a marca, o identificador do site e os canais de contato da operação.
+                  {isReadOnlyDemo
+                    ? "A operação de demonstração ainda não foi configurada no banco. Ajuste o tenant demo para liberar o acesso público."
+                    : "Antes de usar o painel, defina a marca, o identificador do site e os canais de contato da operação."}
                 </p>
               </div>
               <Badge className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-white">
-                Usuário: {user?.email || "sem e-mail"}
+                Usuário: {isReadOnlyDemo ? "demo público" : user?.email || "sem e-mail"}
               </Badge>
             </div>
           </div>
 
-          <div className="mt-8">{tenantWorkspace}</div>
+          {!isReadOnlyDemo ? <div className="mt-8">{tenantWorkspace}</div> : null}
         </main>
 
         <Footer />
@@ -1180,14 +1266,21 @@ const Admin = () => {
             </div>
             <div className="flex flex-wrap gap-2">
               <Badge className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-white">
-                Usuário: {user?.email || supportEmail}
+                Usuário: {isReadOnlyDemo ? "demo público" : user?.email || supportEmail}
               </Badge>
               <Badge className="rounded-full border border-amber-300/40 bg-amber-400 text-slate-900">
-                {tenant.is_demo ? "Demo" : tenant.slug}
+                {activeTenant.is_demo ? "Demo" : activeTenant.slug}
               </Badge>
             </div>
           </div>
         </div>
+
+        {isReadOnlyDemo ? (
+          <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            Você está no painel de demonstração em modo somente leitura. É possível navegar e visualizar a estrutura,
+            mas sem cadastrar, editar, excluir ou alterar a conta.
+          </div>
+        ) : null}
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8 w-full">
           <TabsList className="h-auto w-full max-w-5xl flex-wrap justify-start gap-2 rounded-2xl border border-slate-200 bg-white/80 p-2">
@@ -1197,21 +1290,27 @@ const Admin = () => {
             </TabsTrigger>
             <TabsTrigger value="list" className="rounded-xl px-4 py-2">
               <List className="mr-2 h-4 w-4" />
-              Meus imóveis
+              {isReadOnlyDemo ? "Imóveis da demo" : "Meus imóveis"}
             </TabsTrigger>
-            <TabsTrigger value="add" className="rounded-xl px-4 py-2">
-              <Plus className="mr-2 h-4 w-4" />
-              Adicionar
-            </TabsTrigger>
-            <TabsTrigger value="legal" className="rounded-xl px-4 py-2">
-              <FileText className="mr-2 h-4 w-4" />
-              Jurídico
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="rounded-xl px-4 py-2">
-              <Settings className="mr-2 h-4 w-4" />
-              Configurações
-            </TabsTrigger>
-            {editingPropertyId ? (
+            {!isReadOnlyDemo ? (
+              <TabsTrigger value="add" className="rounded-xl px-4 py-2">
+                <Plus className="mr-2 h-4 w-4" />
+                Adicionar
+              </TabsTrigger>
+            ) : null}
+            {!isReadOnlyDemo ? (
+              <TabsTrigger value="legal" className="rounded-xl px-4 py-2">
+                <FileText className="mr-2 h-4 w-4" />
+                Jurídico
+              </TabsTrigger>
+            ) : null}
+            {!isReadOnlyDemo ? (
+              <TabsTrigger value="settings" className="rounded-xl px-4 py-2">
+                <Settings className="mr-2 h-4 w-4" />
+                Configurações
+              </TabsTrigger>
+            ) : null}
+            {!isReadOnlyDemo && editingPropertyId ? (
               <TabsTrigger value="edit" className="rounded-xl px-4 py-2">
                 <Plus className="mr-2 h-4 w-4" />
                 Editar
@@ -1337,7 +1436,29 @@ const Admin = () => {
                   </Card>
                 </section>
 
-                <MostViewedProperties />
+                {isReadOnlyDemo ? (
+                  <Card className="section-shell p-1">
+                    <CardHeader>
+                      <CardTitle className="text-xl text-slate-900">Exploração da demo</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3 text-sm text-slate-600">
+                      <p>
+                        Nesta demonstração você pode navegar pelo dashboard e abrir os imóveis cadastrados para entender
+                        como a plataforma funciona na prática.
+                      </p>
+                      <div className="flex flex-wrap gap-3">
+                        <Button asChild className="rounded-xl bg-slate-900 text-white hover:bg-slate-800">
+                          <a href={buildPublicPreviewPath("/imobiliaria")}>Ver site público</a>
+                        </Button>
+                        <Button asChild variant="outline" className="rounded-xl border-slate-300 bg-white text-slate-700">
+                          <a href={buildPublicPreviewPath("/sobre")}>Ver página institucional</a>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <MostViewedProperties />
+                )}
               </TabsContent>
 
               <TabsContent value="operacao" className="mt-5 space-y-4">
@@ -1490,38 +1611,48 @@ const Admin = () => {
             </Tabs>
           </TabsContent>
 
-          <TabsContent value="legal" className="mt-6">
-            <div className="space-y-4">
-              <div className="surface-card-muted flex flex-col gap-2 rounded-3xl border border-slate-200 p-5 md:flex-row md:items-end md:justify-between">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Aba jurídica</p>
-                  <h2 className="mt-2 text-2xl font-semibold text-slate-900">Documentos, checklist e histórico</h2>
-                  <p className="mt-2 max-w-2xl text-sm text-slate-600">
-                    Centralize a conferência documental e acompanhe cada etapa da negociação com mais clareza.
-                  </p>
+          {!isReadOnlyDemo ? (
+            <TabsContent value="legal" className="mt-6">
+              <div className="space-y-4">
+                <div className="surface-card-muted flex flex-col gap-2 rounded-3xl border border-slate-200 p-5 md:flex-row md:items-end md:justify-between">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Aba jurídica</p>
+                    <h2 className="mt-2 text-2xl font-semibold text-slate-900">Documentos, checklist e histórico</h2>
+                    <p className="mt-2 max-w-2xl text-sm text-slate-600">
+                      Centralize a conferência documental e acompanhe cada etapa da negociação com mais clareza.
+                    </p>
+                  </div>
+                  <Badge className="rounded-full border border-amber-200 bg-amber-50 text-amber-700">
+                    {properties.length} imóveis disponíveis para acompanhamento
+                  </Badge>
                 </div>
-                <Badge className="rounded-full border border-amber-200 bg-amber-50 text-amber-700">
-                  {properties.length} imóveis disponíveis para acompanhamento
-                </Badge>
-              </div>
 
-              {legalWorkspace}
-            </div>
-          </TabsContent>
+                {legalWorkspace}
+              </div>
+            </TabsContent>
+          ) : null}
 
           <TabsContent value="list" className="mt-6">
             <div className="section-shell p-6">
-              <PropertyList key={refreshKey} tenantId={tenant.id} onEdit={handleEdit} />
+              <PropertyList
+                key={refreshKey}
+                tenantId={activeTenant.id}
+                onEdit={isReadOnlyDemo ? undefined : handleEdit}
+                readOnly={isReadOnlyDemo}
+              />
             </div>
           </TabsContent>
 
-          <TabsContent value="add" className="mt-6">
-            <PropertyForm tenantId={tenant.id} onSuccess={handlePropertyAdded} />
-          </TabsContent>
+          {!isReadOnlyDemo ? (
+            <TabsContent value="add" className="mt-6">
+              <PropertyForm tenantId={activeTenant.id} onSuccess={handlePropertyAdded} />
+            </TabsContent>
+          ) : null}
 
-          <TabsContent value="settings" className="mt-6">
-            <section className="space-y-4">
-              {tenantWorkspace}
+          {!isReadOnlyDemo ? (
+            <TabsContent value="settings" className="mt-6">
+              <section className="space-y-4">
+                {tenantWorkspace}
 
               <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
                 <Card className="section-shell p-1">
@@ -1623,10 +1754,11 @@ const Admin = () => {
                   </CardContent>
                 </Card>
               </div>
-            </section>
-          </TabsContent>
+              </section>
+            </TabsContent>
+          ) : null}
 
-          {editingPropertyId ? (
+          {!isReadOnlyDemo && editingPropertyId ? (
             <TabsContent value="edit" className="mt-6">
               <PropertyEditForm
                 propertyId={editingPropertyId}

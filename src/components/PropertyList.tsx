@@ -31,9 +31,10 @@ interface Property {
 interface PropertyListProps {
   tenantId?: string;
   onEdit?: (propertyId: string) => void;
+  readOnly?: boolean;
 }
 
-const PropertyList = ({ tenantId, onEdit }: PropertyListProps) => {
+const PropertyList = ({ tenantId, onEdit, readOnly = false }: PropertyListProps) => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -166,32 +167,39 @@ const PropertyList = ({ tenantId, onEdit }: PropertyListProps) => {
               </div>
 
               <div className="flex flex-col gap-2 sm:flex-row">
-                {onEdit && (
+                {readOnly ? (
+                  <div className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-center text-sm text-slate-600">
+                    Modo demonstração: visualização somente leitura
+                  </div>
+                ) : null}
+                {!readOnly && onEdit && (
                   <Button variant="outline" className="flex-1" onClick={() => onEdit(property.id)}>
                     <Edit className="mr-2 h-4 w-4" />
                     Editar
                   </Button>
                 )}
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="destructive" className="flex-1">
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Excluir
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Tem certeza que deseja excluir este imóvel? Esta ação não pode ser desfeita.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => handleDelete(property.id)}>Excluir</AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                {!readOnly ? (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" className="flex-1">
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Excluir
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Tem certeza que deseja excluir este imóvel? Esta ação não pode ser desfeita.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleDelete(property.id)}>Excluir</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                ) : null}
               </div>
             </CardContent>
           </Card>

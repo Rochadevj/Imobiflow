@@ -18,6 +18,10 @@ const navItems = [
   { key: "sobre", label: "Sobre", href: "/sobre" },
 ];
 
+const DEFAULT_PUBLIC_DEMO_TENANT_SLUG = "henriquerocha1357-b8d30883";
+const configuredDemoTenantSlug = import.meta.env.VITE_DEMO_TENANT_SLUG?.trim().toLowerCase();
+const resolvedDemoTenantSlug = configuredDemoTenantSlug || DEFAULT_PUBLIC_DEMO_TENANT_SLUG;
+
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -27,6 +31,10 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const brandName = useMemo(() => getTenantBrandName(tenant), [tenant]);
+  const isPublicDemoTenant = useMemo(
+    () => Boolean(tenant && (tenant.is_demo || tenant.slug === resolvedDemoTenantSlug)),
+    [tenant],
+  );
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -158,13 +166,27 @@ const Navbar = () => {
                 </Button>
               </>
             ) : (
-              <Button
-                variant="outline"
-                className="rounded-full border-slate-300 bg-white text-slate-700 hover:bg-slate-100"
-                asChild
-              >
-                <TenantLink to="/auth">Entrar</TenantLink>
-              </Button>
+              <>
+                {isPublicDemoTenant ? (
+                  <Button
+                    variant="outline"
+                    className="rounded-full border-amber-300 bg-amber-50 text-amber-900 hover:bg-amber-100"
+                    asChild
+                  >
+                    <TenantLink to="/admin?demo=1" forceTenant>
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      Gerenciar demo
+                    </TenantLink>
+                  </Button>
+                ) : null}
+                <Button
+                  variant="outline"
+                  className="rounded-full border-slate-300 bg-white text-slate-700 hover:bg-slate-100"
+                  asChild
+                >
+                  <TenantLink to="/auth">Entrar</TenantLink>
+                </Button>
+              </>
             )}
           </div>
 
@@ -244,15 +266,31 @@ const Navbar = () => {
                     </Button>
                   </>
                 ) : (
-                  <SheetClose asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start rounded-xl border-slate-300 bg-white text-slate-700 hover:bg-slate-100"
-                      asChild
-                    >
-                      <TenantLink to="/auth">Entrar</TenantLink>
-                    </Button>
-                  </SheetClose>
+                  <>
+                    {isPublicDemoTenant ? (
+                      <SheetClose asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start rounded-xl border-amber-300 bg-amber-50 text-amber-900 hover:bg-amber-100"
+                          asChild
+                        >
+                          <TenantLink to="/admin?demo=1" forceTenant>
+                            <LayoutDashboard className="mr-2 h-4 w-4" />
+                            Gerenciar demo
+                          </TenantLink>
+                        </Button>
+                      </SheetClose>
+                    ) : null}
+                    <SheetClose asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start rounded-xl border-slate-300 bg-white text-slate-700 hover:bg-slate-100"
+                        asChild
+                      >
+                        <TenantLink to="/auth">Entrar</TenantLink>
+                      </Button>
+                    </SheetClose>
+                  </>
                 )}
 
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-500">

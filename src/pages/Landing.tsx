@@ -222,6 +222,13 @@ const trustSignals = [
   "Estrutura pronta para escalar com segurança",
 ];
 
+const DEFAULT_PUBLIC_DEMO_TENANT_SLUG = "henriquerocha1357-b8d30883";
+const configuredDemoTenantSlug = import.meta.env.VITE_DEMO_TENANT_SLUG?.trim().toLowerCase();
+const resolvedDemoTenantSlug = configuredDemoTenantSlug || DEFAULT_PUBLIC_DEMO_TENANT_SLUG;
+const publicDemoPath = resolvedDemoTenantSlug
+  ? `/imobiliaria?tenant=${resolvedDemoTenantSlug}`
+  : "/imobiliaria";
+
 const renderSentenceTitle = (text: string) => {
   const parts = text.split(/(?<=\.)\s+/).filter(Boolean);
 
@@ -296,7 +303,7 @@ const Landing = () => {
                 className="h-10 rounded-full bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 px-3 text-sm text-slate-900 shadow-[0_12px_28px_rgba(251,146,60,0.3)] transition-transform hover:-translate-y-0.5 hover:from-amber-300 hover:via-orange-400 hover:to-amber-400 sm:px-5"
                 asChild
               >
-                <Link to="/imobiliaria">
+                <Link to={publicDemoPath}>
                   <span className="sm:hidden">Demo</span>
                   <span className="hidden sm:inline">Ver demo</span>
                   <ArrowRight className="hidden h-4 w-4 sm:inline-flex" />
@@ -346,7 +353,7 @@ const Landing = () => {
                   className="rounded-full border-white/30 bg-white/10 text-white transition-transform hover:-translate-y-0.5 hover:border-amber-300 hover:bg-white/20"
                   asChild
                 >
-                  <Link to="/imobiliaria">Explorar site demo</Link>
+                  <Link to={publicDemoPath}>Explorar site demo</Link>
                 </Button>
               </div>
 
@@ -982,7 +989,7 @@ const Landing = () => {
                 className="rounded-full border-white/35 bg-white/10 text-white transition-transform hover:-translate-y-0.5 hover:border-amber-300 hover:bg-white/20"
                 asChild
               >
-                <Link to="/imobiliaria">Explorar demo</Link>
+                <Link to={publicDemoPath}>Explorar demo</Link>
               </Button>
             </div>
           </div>
@@ -1061,7 +1068,7 @@ const Landing = () => {
                   className="rounded-full border-white/25 bg-white/8 text-white hover:bg-white/15"
                   asChild
                 >
-                  <Link to="/imobiliaria">Ver ambiente demo</Link>
+                  <Link to={publicDemoPath}>Ver ambiente demo</Link>
                 </Button>
               </div>
             </div>
