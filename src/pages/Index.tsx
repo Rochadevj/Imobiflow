@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Clock, MapPin, Search, ShieldCheck, SlidersHorizontal, X } from "lucide-react";
+import { BadgeCheck, MapPin, Search, ShieldCheck, Sparkles, SlidersHorizontal, X } from "lucide-react";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
 import HeroCarousel from "@/components/HeroCarousel";
 import { useTenant } from "@/context/TenantContext";
@@ -69,6 +69,21 @@ const getPropertyImageUrl = (
   );
 };
 
+const heroSignatureItems = [
+  {
+    label: "Imóveis bem apresentados",
+    icon: Sparkles,
+  },
+  {
+    label: "Contato mais rápido",
+    icon: BadgeCheck,
+  },
+  {
+    label: "Acompanhamento até fechar",
+    icon: ShieldCheck,
+  },
+] as const;
+
 const Index = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -100,7 +115,6 @@ const Index = () => {
   const [parkingSpaces, setParkingSpaces] = useState("");
   const [heroTab, setHeroTab] = useState<'comprar' | 'alugar' | 'todos'>("todos");
   const tenantPhone = getTenantPhone(tenant);
-
   // Ler parâmetros da URL quando a página carrega
   useEffect(() => {
     const type = searchParams.get('type');
@@ -398,7 +412,7 @@ const Index = () => {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(251,191,36,0.18),_transparent_40%)]" />
         </div>
         <div className="container relative mx-auto px-4">
-          <div className="grid grid-cols-1 items-start gap-10 md:grid-cols-2 md:gap-12">
+          <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-10 xl:grid-cols-[0.88fr_1.12fr]">
             <div className="space-y-7">
               <span className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-white/85">
                 Plataforma imobiliária completa
@@ -406,13 +420,13 @@ const Index = () => {
 
               <div>
                 <h1 className="max-w-xl text-3xl font-bold leading-tight sm:text-4xl md:text-5xl">
-                  Compre e alugue
+                  Seu próximo imóvel
                   <br />
                   <span className="bg-gradient-to-r from-amber-300 via-amber-400 to-orange-300 bg-clip-text text-transparent">
-                    com quem entende
+                    começa aqui
                   </span>
                 </h1>
-                <p className="mt-4 max-w-lg text-base text-white/80 sm:text-lg md:text-xl">
+                <p className="mt-4 max-w-lg text-base text-white/80 sm:text-lg">
                   Experiência, transparência e tecnologia para você encontrar ou anunciar seu imóvel com segurança.
                 </p>
               </div>
@@ -433,34 +447,38 @@ const Index = () => {
                 </TenantLink>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-xl border border-white/15 bg-white/10 px-4 py-3">
-                  <p className="inline-flex items-center gap-2 text-xs text-white/75">
-                    <MapPin className="h-3.5 w-3.5 text-accent" />
-                    Atendimento
-                  </p>
-                  <p className="mt-1 text-sm font-semibold">Nacional</p>
-                </div>
-                <div className="rounded-xl border border-white/15 bg-white/10 px-4 py-3">
-                  <p className="inline-flex items-center gap-2 text-xs text-white/75">
-                    <ShieldCheck className="h-3.5 w-3.5 text-accent" />
-                    Segurança
-                  </p>
-                  <p className="mt-1 text-sm font-semibold">Negociação guiada</p>
-                </div>
-                <div className="rounded-xl border border-white/15 bg-white/10 px-4 py-3">
-                  <p className="inline-flex items-center gap-2 text-xs text-white/75">
-                    <Clock className="h-3.5 w-3.5 text-accent" />
-                    Retorno
-                  </p>
-                  <p className="mt-1 text-sm font-semibold">Atendimento rápido</p>
+              <div className="overflow-hidden rounded-[26px] border border-white/12 bg-white/[0.07] shadow-[0_14px_30px_rgba(15,23,42,0.14)] backdrop-blur-sm">
+                <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-amber-300/60 to-transparent" />
+                <div className="flex flex-col gap-4 px-4 py-4 md:flex-row md:items-center md:justify-between md:px-5">
+                  <div className="max-w-sm">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/58">Escolha com mais clareza</p>
+                    <p className="mt-1 text-lg font-semibold tracking-tight text-white">Uma vitrine pensada para encontrar, comparar e avançar com mais segurança.</p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2.5">
+                    {heroSignatureItems.map((item) => {
+                      const Icon = item.icon;
+
+                      return (
+                        <div
+                          key={item.label}
+                          className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-slate-950/18 px-3.5 py-2 text-sm text-white/88"
+                        >
+                          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-amber-300">
+                            <Icon className="h-4 w-4" />
+                          </span>
+                          <span className="font-medium">{item.label}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
 
             <div className="relative">
               <div className="absolute -inset-3 rounded-[28px] bg-gradient-to-tr from-amber-300/20 via-transparent to-sky-300/20 blur-2xl" />
-              <div className="relative rounded-[28px] border border-white/20 bg-white/5 p-3 backdrop-blur">
+              <div className="relative rounded-[28px] border border-white/20 bg-white/5 p-2 md:p-3 backdrop-blur">
                 <HeroCarousel properties={featuredProperties} />
               </div>
               {showList && showQuickHint && (
@@ -526,7 +544,13 @@ const Index = () => {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                   <Input
                     type="text"
-                    placeholder={`Pesquisar para ${heroTab === "comprar" ? "comprar" : "alugar"}...`}
+                    placeholder={
+                      heroTab === "comprar"
+                        ? "Pesquisar para comprar..."
+                        : heroTab === "alugar"
+                          ? "Pesquisar para alugar..."
+                          : "Pesquisar imóvel..."
+                    }
                     className="pl-10 h-12 bg-white"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -731,35 +755,30 @@ const Index = () => {
         </div>
       </div>
 
-
       {/* Destaques e novidades */}
       {!showList && (
       <>
       <section className="container mx-auto section-shell px-4 py-8 md:py-10">
         <div className="mb-6 md:mb-8">
-          <div className="flex items-center justify-center gap-4 mb-3">
-            <span className="h-px w-16 sm:w-24 md:w-32 bg-muted-foreground/40" />
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-wide text-center uppercase">
-              Imóveis imperdíveis
-            </h2>
-            <span className="h-px w-16 sm:w-24 md:w-32 bg-muted-foreground/40" />
-          </div>
-          <p className="text-muted-foreground text-sm md:text-base text-center">
-            Seleção especial com as melhores oportunidades da semana
-          </p>
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-            <a
-              href={`tel:${tenantPhone.replace(/\D/g, "")}`}
-              className="inline-flex items-center justify-center rounded-full border border-accent text-accent px-4 py-2 text-sm font-semibold hover:bg-accent hover:text-primary transition"
-            >
-              Falar com corretor
-            </a>
-            <TenantLink forceTenant
-              to="/imobiliaria?list=1"
-              className="inline-flex items-center justify-center rounded-full bg-primary text-white px-4 py-2 text-sm font-semibold shadow hover:bg-primary/90 transition"
-            >
-              Ver todos
-            </TenantLink>
+          <div className="flex flex-col items-center gap-4 text-center">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Curadoria especial</p>
+              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-slate-950 md:text-3xl">Imóveis imperdíveis</h2>
+            </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              <a
+                href={`tel:${tenantPhone.replace(/\D/g, "")}`}
+                className="inline-flex items-center justify-center rounded-full border border-accent/30 bg-white px-4 py-2 text-sm font-semibold text-accent transition hover:bg-accent hover:text-primary"
+              >
+                Falar com corretor
+              </a>
+              <TenantLink forceTenant
+                to="/imobiliaria?list=1"
+                className="inline-flex items-center justify-center rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white shadow-[0_10px_20px_rgba(15,23,42,0.18)] transition hover:bg-slate-800"
+              >
+                Ver catálogo completo
+              </TenantLink>
+            </div>
           </div>
         </div>
         {loadingSections ? (
@@ -801,29 +820,25 @@ const Index = () => {
 
       <section className="container mx-auto mt-6 section-shell px-4 py-8 md:py-10">
         <div className="mb-6 md:mb-8">
-          <div className="flex items-center justify-center gap-4 mb-3">
-            <span className="h-px w-16 sm:w-24 md:w-32 bg-muted-foreground/40" />
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-wide text-center uppercase">
-              Destaques de venda
-            </h2>
-            <span className="h-px w-16 sm:w-24 md:w-32 bg-muted-foreground/40" />
-          </div>
-          <p className="text-muted-foreground text-sm md:text-base text-center">
-            As melhores opções para quem quer comprar
-          </p>
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-            <TenantLink forceTenant
-              to="/anunciar"
-              className="inline-flex items-center justify-center rounded-full border border-accent text-accent px-4 py-2 text-sm font-semibold hover:bg-accent hover:text-primary transition"
-            >
-              Anunciar imóvel
-            </TenantLink>
-            <TenantLink forceTenant
-              to="/imobiliaria?list=1&type=comprar"
-              className="inline-flex items-center justify-center rounded-full bg-primary text-white px-4 py-2 text-sm font-semibold shadow hover:bg-primary/90 transition"
-            >
-              Ver todos
-            </TenantLink>
+          <div className="flex flex-col items-center gap-4 text-center">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Compra orientada</p>
+              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-slate-950 md:text-3xl">Destaques de venda</h2>
+            </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              <TenantLink forceTenant
+                to="/anunciar"
+                className="inline-flex items-center justify-center rounded-full border border-accent/30 bg-white px-4 py-2 text-sm font-semibold text-accent transition hover:bg-accent hover:text-primary"
+              >
+                Anunciar imóvel
+              </TenantLink>
+              <TenantLink forceTenant
+                to="/imobiliaria?list=1&type=comprar"
+                className="inline-flex items-center justify-center rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white shadow-[0_10px_20px_rgba(15,23,42,0.18)] transition hover:bg-slate-800"
+              >
+                Ver opções de compra
+              </TenantLink>
+            </div>
           </div>
         </div>
         {loadingSections ? (
@@ -866,29 +881,25 @@ const Index = () => {
 
       <section className="container mx-auto mt-6 section-shell px-4 py-8 md:py-10">
         <div className="mb-6 md:mb-8">
-          <div className="flex items-center justify-center gap-4 mb-3">
-            <span className="h-px w-16 sm:w-24 md:w-32 bg-muted-foreground/40" />
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-wide text-center uppercase">
-              Destaques de locação
-            </h2>
-            <span className="h-px w-16 sm:w-24 md:w-32 bg-muted-foreground/40" />
-          </div>
-          <p className="text-muted-foreground text-sm md:text-base text-center">
-            Sua nova casa está aqui
-          </p>
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-            <TenantLink forceTenant
-              to="/anunciar"
-              className="inline-flex items-center justify-center rounded-full border border-accent text-accent px-4 py-2 text-sm font-semibold hover:bg-accent hover:text-primary transition"
-            >
-              Anunciar imóvel
-            </TenantLink>
-            <TenantLink forceTenant
-              to="/imobiliaria?list=1&type=alugar"
-              className="inline-flex items-center justify-center rounded-full bg-primary text-white px-4 py-2 text-sm font-semibold shadow hover:bg-primary/90 transition"
-            >
-              Ver todos
-            </TenantLink>
+          <div className="flex flex-col items-center gap-4 text-center">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Locação dinâmica</p>
+              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-slate-950 md:text-3xl">Destaques de locação</h2>
+            </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              <TenantLink forceTenant
+                to="/anunciar"
+                className="inline-flex items-center justify-center rounded-full border border-accent/30 bg-white px-4 py-2 text-sm font-semibold text-accent transition hover:bg-accent hover:text-primary"
+              >
+                Anunciar imóvel
+              </TenantLink>
+              <TenantLink forceTenant
+                to="/imobiliaria?list=1&type=alugar"
+                className="inline-flex items-center justify-center rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white shadow-[0_10px_20px_rgba(15,23,42,0.18)] transition hover:bg-slate-800"
+              >
+                Ver opções para alugar
+              </TenantLink>
+            </div>
           </div>
         </div>
         {loadingSections ? (
@@ -1229,5 +1240,3 @@ const Index = () => {
 };
 
 export default Index;
-
-
