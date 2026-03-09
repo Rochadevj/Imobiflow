@@ -363,16 +363,18 @@ const PropertyDetail = () => {
                 </div>
               ) : null}
 
-              <Accordion type="single" collapsible className="section-shell px-6">
-                <AccordionItem value="plantas" className="border-none">
-                  <AccordionTrigger className="py-4 text-left text-lg font-semibold text-slate-900 hover:no-underline">
-                    Plantas
-                  </AccordionTrigger>
-                  <AccordionContent className="pb-5 text-sm text-slate-600">
-                    As plantas deste imóvel estarão disponíveis em breve.
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
+              {property.is_launch ? (
+                <Accordion type="single" collapsible className="section-shell px-6">
+                  <AccordionItem value="plantas" className="border-none">
+                    <AccordionTrigger className="py-4 text-left text-lg font-semibold text-slate-900 hover:no-underline">
+                      Plantas
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-5 text-sm text-slate-600">
+                      As plantas deste imóvel estarão disponíveis em breve.
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              ) : null}
 
               {similarProperties.length > 0 ? <SimilarPropertiesCarousel properties={similarProperties} /> : null}
             </div>

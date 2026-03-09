@@ -1216,9 +1216,14 @@ const Index = () => {
 	                    quality: 72,
 	                  });
                   return (
-                    <TenantLink forceTenant key={property.id} to={`/property/${property.codigo || property.id}`} className="no-underline">
-                      <div className="flex bg-black/70 rounded-2xl overflow-hidden border border-white/10 hover:border-accent/60 transition">
-                        <div className="w-2/5 min-h-[140px]">
+                    <TenantLink
+                      forceTenant
+                      key={property.id}
+                      to={`/property/${property.codigo || property.id}`}
+                      className="block h-full no-underline"
+                    >
+                      <div className="flex h-[140px] rounded-2xl border border-white/10 bg-black/70 overflow-hidden transition hover:border-accent/60">
+                        <div className="h-full w-2/5">
                           {imageUrl ? (
 	                            <img
 	                              src={imageUrl}
@@ -1234,9 +1239,9 @@ const Index = () => {
                             </div>
                           )}
                         </div>
-                        <div className="flex-1 p-4 flex flex-col justify-between">
+                        <div className="flex flex-1 flex-col justify-between p-4">
                           <div>
-                            <p className="text-xs text-white/70 mb-2">
+                            <p className="mb-2 line-clamp-1 text-xs text-white/70">
                               {property.location}, {property.city}
                             </p>
                             <h3 className="text-base md:text-lg font-semibold text-white line-clamp-2">
