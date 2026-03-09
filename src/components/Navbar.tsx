@@ -10,17 +10,13 @@ import { useTenant } from "@/context/TenantContext";
 import TenantLink from "@/components/TenantLink";
 import { getTenantBrandName } from "@/lib/tenantBrand";
 import { readFavorites } from "@/lib/favorites";
-
+import { resolvedDemoTenantSlug } from "@/lib/demoTenant";
 const navItems = [
   { key: "comprar", label: "Comprar", href: "/imobiliaria?list=1&type=comprar" },
   { key: "alugar", label: "Alugar", href: "/imobiliaria?list=1&type=alugar" },
   { key: "lancamentos", label: "Lançamentos", href: "/lancamentos" },
   { key: "sobre", label: "Sobre", href: "/sobre" },
 ];
-
-const DEFAULT_PUBLIC_DEMO_TENANT_SLUG = "henriquerocha1357-b8d30883";
-const configuredDemoTenantSlug = import.meta.env.VITE_DEMO_TENANT_SLUG?.trim().toLowerCase();
-const resolvedDemoTenantSlug = configuredDemoTenantSlug || DEFAULT_PUBLIC_DEMO_TENANT_SLUG;
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -89,7 +85,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/88 backdrop-blur-xl shadow-[0_10px_28px_rgba(15,23,42,0.06)]">
+    <nav className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/94 shadow-[0_8px_20px_rgba(15,23,42,0.05)] backdrop-blur-md md:bg-white/88 md:shadow-[0_10px_28px_rgba(15,23,42,0.06)] md:backdrop-blur-xl">
       <div className="container mx-auto px-4">
         <div className="flex h-20 items-center justify-between gap-4">
           <TenantLink to="/imobiliaria" forceTenant className="group inline-flex items-center gap-3">
