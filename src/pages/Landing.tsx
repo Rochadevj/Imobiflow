@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CONTACT_WHATSAPP_DISPLAY, buildWhatsAppLink } from "@/lib/contact";
+import { resolvedDemoTenantSlug } from "@/lib/demoTenant";
 
 const stats = [
   { label: "Imobiliárias onboard", value: "120+" },
@@ -222,12 +223,15 @@ const trustSignals = [
   "Estrutura pronta para escalar com segurança",
 ];
 
-const DEFAULT_PUBLIC_DEMO_TENANT_SLUG = "henriquerocha1357-b8d30883";
-const configuredDemoTenantSlug = import.meta.env.VITE_DEMO_TENANT_SLUG?.trim().toLowerCase();
-const resolvedDemoTenantSlug = configuredDemoTenantSlug || DEFAULT_PUBLIC_DEMO_TENANT_SLUG;
-const publicDemoPath = resolvedDemoTenantSlug
-  ? `/imobiliaria?tenant=${resolvedDemoTenantSlug}`
-  : "/imobiliaria";
+const publicDemoParams = new URLSearchParams();
+
+if (resolvedDemoTenantSlug) {
+  publicDemoParams.set("tenant", resolvedDemoTenantSlug);
+}
+
+publicDemoParams.set("list", "1");
+
+const publicDemoPath = `/imobiliaria?${publicDemoParams.toString()}`;
 
 const renderSentenceTitle = (text: string) => {
   const parts = text.split(/(?<=\.)\s+/).filter(Boolean);
@@ -1092,4 +1096,3 @@ const Landing = () => {
 };
 
 export default Landing;
-

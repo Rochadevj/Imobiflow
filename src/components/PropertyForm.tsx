@@ -24,9 +24,10 @@ const propertySchema = z.object({
 interface PropertyFormProps {
   tenantId: string;
   onSuccess: () => void;
+  readOnly?: boolean;
 }
 
-const PropertyForm = ({ tenantId, onSuccess }: PropertyFormProps) => {
+const PropertyForm = ({ tenantId, onSuccess, readOnly = false }: PropertyFormProps) => {
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<File[]>([]);
   const [videos, setVideos] = useState<File[]>([]);
@@ -55,6 +56,7 @@ const PropertyForm = ({ tenantId, onSuccess }: PropertyFormProps) => {
   });
   const [features, setFeatures] = useState<string[]>([]);
   const [newFeature, setNewFeature] = useState("");
+  const isFormDisabled = readOnly || loading;
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -80,6 +82,11 @@ const PropertyForm = ({ tenantId, onSuccess }: PropertyFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (readOnly) {
+      toast.error("A demonstração é somente leitura.");
+      return;
+    }
     
     try {
       // Convert Brazilian format (123.456,78) to number
@@ -255,6 +262,13 @@ const PropertyForm = ({ tenantId, onSuccess }: PropertyFormProps) => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
+          {readOnly ? (
+            <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+              Esta etapa está visível na demonstração, mas o cadastro permanece bloqueado em modo somente leitura.
+            </div>
+          ) : null}
+
+          <fieldset disabled={isFormDisabled} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="title">Título *</Label>
@@ -272,6 +286,7 @@ const PropertyForm = ({ tenantId, onSuccess }: PropertyFormProps) => {
               <Select
                 value={formData.propertyType}
                 onValueChange={(value) => setFormData({ ...formData, propertyType: value })}
+                disabled={isFormDisabled}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione" />
@@ -304,6 +319,7 @@ const PropertyForm = ({ tenantId, onSuccess }: PropertyFormProps) => {
                     iptu: value === "lancamento" ? "" : prev.iptu,
                   }))
                 }
+                disabled={isFormDisabled}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione" />
@@ -700,10 +716,11 @@ const PropertyForm = ({ tenantId, onSuccess }: PropertyFormProps) => {
           <Button
             type="submit"
             className="w-full bg-accent text-primary hover:bg-accent/90"
-            disabled={loading}
+            disabled={isFormDisabled}
           >
-            {loading ? "Cadastrando..." : "Cadastrar Imóvel"}
+            {readOnly ? "Cadastro bloqueado na demonstração" : loading ? "Cadastrando..." : "Cadastrar Imóvel"}
           </Button>
+          </fieldset>
         </form>
       </CardContent>
     </Card>
@@ -711,4 +728,3 @@ const PropertyForm = ({ tenantId, onSuccess }: PropertyFormProps) => {
 };
 
 export default PropertyForm;
-

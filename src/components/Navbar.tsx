@@ -10,17 +10,13 @@ import { useTenant } from "@/context/TenantContext";
 import TenantLink from "@/components/TenantLink";
 import { getTenantBrandName } from "@/lib/tenantBrand";
 import { readFavorites } from "@/lib/favorites";
-
+import { resolvedDemoTenantSlug } from "@/lib/demoTenant";
 const navItems = [
   { key: "comprar", label: "Comprar", href: "/imobiliaria?list=1&type=comprar" },
   { key: "alugar", label: "Alugar", href: "/imobiliaria?list=1&type=alugar" },
   { key: "lancamentos", label: "Lançamentos", href: "/lancamentos" },
   { key: "sobre", label: "Sobre", href: "/sobre" },
 ];
-
-const DEFAULT_PUBLIC_DEMO_TENANT_SLUG = "henriquerocha1357-b8d30883";
-const configuredDemoTenantSlug = import.meta.env.VITE_DEMO_TENANT_SLUG?.trim().toLowerCase();
-const resolvedDemoTenantSlug = configuredDemoTenantSlug || DEFAULT_PUBLIC_DEMO_TENANT_SLUG;
 
 const Navbar = () => {
   const navigate = useNavigate();

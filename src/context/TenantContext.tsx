@@ -3,6 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+import { resolvedDemoTenantSlug } from "@/lib/demoTenant";
 
 export type Tenant = Tables<"tenants">;
 
@@ -86,13 +87,6 @@ export const TenantProvider = ({ children }: { children: React.ReactNode }) => {
     const params = new URLSearchParams(location.search);
     const tenantSlugFromQuery = params.get("tenant")?.trim().toLowerCase() || null;
     const tenantRequest = Boolean(tenantSlugFromQuery) || !isBaseHost(hostname);
-    const defaultFallbackDemoQuery = supabase
-      .from("tenants")
-      .select("*")
-      .eq("is_demo", true)
-      .eq("is_active", true)
-      .limit(1)
-      .maybeSingle();
 
     setIsTenantRequest(tenantRequest);
 
@@ -136,8 +130,31 @@ export const TenantProvider = ({ children }: { children: React.ReactNode }) => {
       }
     }
 
-    const { data: fallbackDemo, error: fallbackDemoError } = await defaultFallbackDemoQuery;
+    if (resolvedDemoTenantSlug) {
+      const { data: configuredDemo, error: configuredDemoError } = await supabase
+        .from("tenants")
+        .select("*")
+        .eq("slug", resolvedDemoTenantSlug)
+        .eq("is_active", true)
+        .maybeSingle();
 
+      if (configuredDemoError) {
+        console.error("Erro ao carregar tenant demo configurado:", configuredDemoError);
+      }
+
+      if (configuredDemo) {
+        setTenant(configuredDemo);
+        return;
+      }
+    }
+
+    const { data: fallbackDemo, error: fallbackDemoError } = await supabase
+      .from("tenants")
+      .select("*")
+      .eq("is_demo", true)
+      .eq("is_active", true)
+      .limit(1)
+      .maybeSingle();
     if (fallbackDemoError) {
       console.error("Erro ao carregar tenant demo:", fallbackDemoError);
     }

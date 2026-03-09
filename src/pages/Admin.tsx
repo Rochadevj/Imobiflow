@@ -11,6 +11,7 @@ import {
   getTenantSupportEmail,
   getTenantWhatsApp,
 } from "@/lib/tenantBrand";
+import { resolvedDemoTenantSlug } from "@/lib/demoTenant";
 import Footer from "@/components/Footer";
 import MostViewedProperties from "@/components/MostViewedProperties";
 import Navbar from "@/components/Navbar";
@@ -239,7 +240,7 @@ const Admin = () => {
   const [searchParams] = useSearchParams();
   const { tenant, refreshTenant } = useTenant();
   const demoMode = searchParams.get("demo") === "1";
-  const demoTenantSlug = searchParams.get("tenant")?.trim().toLowerCase() || null;
+  const demoTenantSlug = searchParams.get("tenant")?.trim().toLowerCase() || resolvedDemoTenantSlug;
   const [user, setUser] = useState<User | null>(null);
   const [demoTenant, setDemoTenant] = useState<Tenant | null>(null);
   const [loading, setLoading] = useState(true);
@@ -513,7 +514,7 @@ const Admin = () => {
       return;
     }
 
-    if (!["dashboard", "list"].includes(activeTab)) {
+    if (!["dashboard", "list", "add", "legal", "settings"].includes(activeTab)) {
       setActiveTab("dashboard");
     }
   }, [activeTab, isReadOnlyDemo]);
@@ -559,6 +560,7 @@ const Admin = () => {
   };
 
   const toggleChecklistItem = (itemId: string) => {
+    if (isReadOnlyDemo) return;
     if (!selectedPropertyId) return;
 
     const updatedChecklist = selectedNegotiation.checklist.map((item) =>
@@ -580,6 +582,7 @@ const Admin = () => {
   };
 
   const addNegotiationHistory = (label: string) => {
+    if (isReadOnlyDemo) return;
     if (!selectedPropertyId) return;
 
     const sanitizedLabel = label.trim();
@@ -667,12 +670,17 @@ const Admin = () => {
                     <label
                       key={item.id}
                       htmlFor={`negotiation-${item.id}`}
-                      className="surface-card-muted flex cursor-pointer items-center gap-3 p-3"
+                      className={`surface-card-muted flex items-center gap-3 p-3 ${isReadOnlyDemo ? "cursor-default" : "cursor-pointer"}`}
                     >
                       <Checkbox
                         id={`negotiation-${item.id}`}
                         checked={item.completed}
-                        onCheckedChange={() => toggleChecklistItem(item.id)}
+                        onCheckedChange={() => {
+                          if (!isReadOnlyDemo) {
+                            toggleChecklistItem(item.id);
+                          }
+                        }}
+                        disabled={isReadOnlyDemo}
                       />
                       <span className={`text-sm ${item.completed ? "text-slate-900" : "text-slate-600"}`}>
                         {item.label}
@@ -700,7 +708,7 @@ const Admin = () => {
                 size="sm"
                 className="rounded-full border-slate-200 bg-white text-slate-700"
                 onClick={() => addNegotiationHistory(action)}
-                disabled={!selectedPropertyId}
+                disabled={!selectedPropertyId || isReadOnlyDemo}
               >
                 {action}
               </Button>
@@ -713,7 +721,7 @@ const Admin = () => {
               onChange={(event) => setHistoryInput(event.target.value)}
               placeholder="Registrar observação manual"
               className="h-11 rounded-xl border-slate-200 bg-white"
-              disabled={!selectedPropertyId}
+              disabled={!selectedPropertyId || isReadOnlyDemo}
               onKeyDown={(event) => {
                 if (event.key === "Enter") {
                   event.preventDefault();
@@ -725,7 +733,7 @@ const Admin = () => {
               type="button"
               className="h-11 rounded-xl bg-slate-900 text-white hover:bg-slate-800"
               onClick={() => addNegotiationHistory(historyInput)}
-              disabled={!selectedPropertyId}
+              disabled={!selectedPropertyId || isReadOnlyDemo}
             >
               Salvar
             </Button>
@@ -978,7 +986,12 @@ const Admin = () => {
             {tenantProvisionIssue}
           </div>
         ) : null}
-        <div className="grid gap-4 md:grid-cols-2">
+        {isReadOnlyDemo ? (
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            A identidade da imobiliária fica disponível para consulta na demonstração, mas não pode ser alterada.
+          </div>
+        ) : null}
+        <fieldset disabled={isReadOnlyDemo || savingTenant} className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2 md:col-span-2">
             <label className="text-sm font-medium text-slate-900" htmlFor="tenant-name">
               Nome da imobiliária
@@ -1086,7 +1099,7 @@ const Admin = () => {
               maxLength={2}
             />
           </div>
-        </div>
+        </fieldset>
 
         <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="surface-card-muted p-4">
@@ -1126,7 +1139,7 @@ const Admin = () => {
           <Button
             type="button"
             onClick={() => void handleProvisionTenant()}
-            disabled={savingTenant}
+            disabled={savingTenant || isReadOnlyDemo}
             className="rounded-xl bg-slate-900 text-white hover:bg-slate-800"
           >
             {savingTenant ? "Salvando..." : activeTenant ? "Salvar identidade" : "Configurar imobiliária"}
@@ -1292,24 +1305,18 @@ const Admin = () => {
               <List className="mr-2 h-4 w-4" />
               {isReadOnlyDemo ? "Imóveis da demo" : "Meus imóveis"}
             </TabsTrigger>
-            {!isReadOnlyDemo ? (
-              <TabsTrigger value="add" className="rounded-xl px-4 py-2">
-                <Plus className="mr-2 h-4 w-4" />
-                Adicionar
-              </TabsTrigger>
-            ) : null}
-            {!isReadOnlyDemo ? (
-              <TabsTrigger value="legal" className="rounded-xl px-4 py-2">
-                <FileText className="mr-2 h-4 w-4" />
-                Jurídico
-              </TabsTrigger>
-            ) : null}
-            {!isReadOnlyDemo ? (
-              <TabsTrigger value="settings" className="rounded-xl px-4 py-2">
-                <Settings className="mr-2 h-4 w-4" />
-                Configurações
-              </TabsTrigger>
-            ) : null}
+            <TabsTrigger value="add" className="rounded-xl px-4 py-2">
+              <Plus className="mr-2 h-4 w-4" />
+              Adicionar
+            </TabsTrigger>
+            <TabsTrigger value="legal" className="rounded-xl px-4 py-2">
+              <FileText className="mr-2 h-4 w-4" />
+              Jurídico
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="rounded-xl px-4 py-2">
+              <Settings className="mr-2 h-4 w-4" />
+              Configurações
+            </TabsTrigger>
             {!isReadOnlyDemo && editingPropertyId ? (
               <TabsTrigger value="edit" className="rounded-xl px-4 py-2">
                 <Plus className="mr-2 h-4 w-4" />
@@ -1611,26 +1618,30 @@ const Admin = () => {
             </Tabs>
           </TabsContent>
 
-          {!isReadOnlyDemo ? (
-            <TabsContent value="legal" className="mt-6">
-              <div className="space-y-4">
-                <div className="surface-card-muted flex flex-col gap-2 rounded-3xl border border-slate-200 p-5 md:flex-row md:items-end md:justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Aba jurídica</p>
-                    <h2 className="mt-2 text-2xl font-semibold text-slate-900">Documentos, checklist e histórico</h2>
-                    <p className="mt-2 max-w-2xl text-sm text-slate-600">
-                      Centralize a conferência documental e acompanhe cada etapa da negociação com mais clareza.
-                    </p>
-                  </div>
-                  <Badge className="rounded-full border border-amber-200 bg-amber-50 text-amber-700">
-                    {properties.length} imóveis disponíveis para acompanhamento
-                  </Badge>
+          <TabsContent value="legal" className="mt-6">
+            <div className="space-y-4">
+              <div className="surface-card-muted flex flex-col gap-2 rounded-3xl border border-slate-200 p-5 md:flex-row md:items-end md:justify-between">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Aba jurídica</p>
+                  <h2 className="mt-2 text-2xl font-semibold text-slate-900">Documentos, checklist e histórico</h2>
+                  <p className="mt-2 max-w-2xl text-sm text-slate-600">
+                    Centralize a conferência documental e acompanhe cada etapa da negociação com mais clareza.
+                  </p>
                 </div>
-
-                {legalWorkspace}
+                <Badge className="rounded-full border border-amber-200 bg-amber-50 text-amber-700">
+                  {properties.length} imóveis disponíveis para acompanhamento
+                </Badge>
               </div>
-            </TabsContent>
-          ) : null}
+
+              {isReadOnlyDemo ? (
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                  Na demonstração, esta área fica visível para navegação e consulta, mas o checklist e o histórico não podem ser alterados.
+                </div>
+              ) : null}
+
+              {legalWorkspace}
+            </div>
+          </TabsContent>
 
           <TabsContent value="list" className="mt-6">
             <div className="section-shell p-6">
@@ -1643,16 +1654,19 @@ const Admin = () => {
             </div>
           </TabsContent>
 
-          {!isReadOnlyDemo ? (
-            <TabsContent value="add" className="mt-6">
-              <PropertyForm tenantId={activeTenant.id} onSuccess={handlePropertyAdded} />
-            </TabsContent>
-          ) : null}
+          <TabsContent value="add" className="mt-6">
+            <PropertyForm tenantId={activeTenant.id} onSuccess={handlePropertyAdded} readOnly={isReadOnlyDemo} />
+          </TabsContent>
 
-          {!isReadOnlyDemo ? (
-            <TabsContent value="settings" className="mt-6">
-              <section className="space-y-4">
-                {tenantWorkspace}
+          <TabsContent value="settings" className="mt-6">
+            <section className="space-y-4">
+              {isReadOnlyDemo ? (
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                  Nesta demonstração, as configurações ficam visíveis para consulta, mas a conta demo não pode ser alterada.
+                </div>
+              ) : null}
+
+              {tenantWorkspace}
 
               <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
                 <Card className="section-shell p-1">
@@ -1702,6 +1716,7 @@ const Admin = () => {
                           type="button"
                           variant="destructive"
                           className="h-11 rounded-xl bg-rose-600 text-white hover:bg-rose-700"
+                          disabled={isReadOnlyDemo}
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
                           Excluir minha conta
@@ -1733,6 +1748,7 @@ const Admin = () => {
                             value={deleteAccountConfirmation}
                             onChange={(event) => setDeleteAccountConfirmation(event.target.value)}
                             autoComplete="email"
+                            disabled={isReadOnlyDemo}
                           />
                         </div>
 
@@ -1744,7 +1760,7 @@ const Admin = () => {
                               event.preventDefault();
                               void handleDeleteAccount();
                             }}
-                            disabled={!canDeleteAccount || deletingAccount}
+                            disabled={isReadOnlyDemo || !canDeleteAccount || deletingAccount}
                           >
                             {deletingAccount ? "Excluindo..." : "Excluir definitivamente"}
                           </AlertDialogAction>
@@ -1754,9 +1770,8 @@ const Admin = () => {
                   </CardContent>
                 </Card>
               </div>
-              </section>
-            </TabsContent>
-          ) : null}
+            </section>
+          </TabsContent>
 
           {!isReadOnlyDemo && editingPropertyId ? (
             <TabsContent value="edit" className="mt-6">
@@ -1779,19 +1794,6 @@ const Admin = () => {
 };
 
 export default Admin;
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
