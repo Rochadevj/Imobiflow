@@ -1,13 +1,13 @@
 import { Suspense, lazy } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { TenantProvider, useTenant } from "./context/TenantContext";
 import { CONTACT_WHATSAPP_NUMBER } from "./lib/contact";
 import Landing from "./pages/Landing";
 
+const Toaster = lazy(() => import("@/components/ui/toaster").then((m) => ({ default: m.Toaster })));
+const Sonner = lazy(() => import("@/components/ui/sonner").then((m) => ({ default: m.Toaster })));
 const WhatsAppButton = lazy(() => import("./components/WhatsAppButton"));
 
 const Index = lazy(() => import("./pages/Index"));
@@ -90,8 +90,10 @@ const AppRoutes = () => (
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
+      <Suspense fallback={null}>
+        <Toaster />
+        <Sonner />
+      </Suspense>
       <BrowserRouter>
         <TenantProvider>
           <AppRoutes />
