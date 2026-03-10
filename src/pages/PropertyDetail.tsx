@@ -1,6 +1,6 @@
-﻿import { useEffect, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Heart, MapPin } from "lucide-react";
+import { ArrowLeft, Heart, Images, MapPin, MessageCircle, UserRound } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -64,6 +64,7 @@ const PropertyDetail = () => {
   const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [isFavorited, setIsFavorited] = useState(false);
+  const gallerySectionRef = useRef<HTMLDivElement | null>(null);
 
   const brandName = getTenantBrandName(tenant);
   const creci = getTenantCreci(tenant);
@@ -226,12 +227,16 @@ const PropertyDetail = () => {
   const imageUrls = propertyImages.length > 0
     ? propertyImages.map((image) => image.image_url)
     : ["/placeholder.jpg", "/placeholder.jpg", "/placeholder.jpg"];
+  const quickContactLink = buildWhatsAppLink(
+    `Olá! Tenho interesse no imóvel ${property.title} (${property.codigo || property.id.slice(0, 8)}).`,
+    whatsapp,
+  );
 
   return (
     <div className="page-shell">
       <Navbar />
 
-      <main className="flex-1">
+      <main className="flex-1 pb-24 lg:pb-0">
         <section className="container mx-auto px-4 pt-8 md:pt-10">
           <div className="mb-4 flex justify-end">
             <Button
@@ -279,14 +284,16 @@ const PropertyDetail = () => {
         <section className="container mx-auto px-4 py-8 md:py-10">
           <div className="grid grid-cols-1 gap-7 lg:grid-cols-3">
             <div className="space-y-6 lg:col-span-2">
-              <GalleryCarousel
-                images={imageUrls}
-                location={property.location}
-                streetNumber={property.street_number}
-                city={property.city}
-                state={property.state}
-                zipcode={property.zipcode}
-              />
+              <div ref={gallerySectionRef}>
+                <GalleryCarousel
+                  images={imageUrls}
+                  location={property.location}
+                  streetNumber={property.street_number}
+                  city={property.city}
+                  state={property.state}
+                  zipcode={property.zipcode}
+                />
+              </div>
 
               {!property.is_launch ? (
                 <div className="surface-card p-5">
@@ -376,7 +383,6 @@ const PropertyDetail = () => {
                 </Accordion>
               ) : null}
 
-              {similarProperties.length > 0 ? <SimilarPropertiesCarousel properties={similarProperties} /> : null}
             </div>
 
             <div className="lg:col-span-1">
@@ -401,9 +407,48 @@ const PropertyDetail = () => {
                 Contato WhatsApp
               </a>
             </div>
+
+            {similarProperties.length > 0 ? (
+              <div className="lg:col-span-3">
+                <SimilarPropertiesCarousel properties={similarProperties} />
+              </div>
+            ) : null}
           </div>
         </section>
       </main>
+
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/96 px-4 py-3 shadow-[0_-12px_28px_rgba(15,23,42,0.12)] backdrop-blur lg:hidden">
+        <div className="mx-auto flex max-w-5xl items-center gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-amber-200 bg-gradient-to-br from-amber-100 to-orange-100 text-amber-700 shadow-sm">
+            <UserRound className="h-6 w-6" />
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold text-slate-900">{brandName}</p>
+            <p className="truncate text-xs text-slate-500">Contato rápido sobre este imóvel</p>
+          </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-full border-slate-300 bg-white px-3 text-slate-700 hover:bg-slate-100"
+            onClick={() => gallerySectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
+          >
+            <Images className="mr-2 h-4 w-4" />
+            Galeria
+          </Button>
+
+          <Button
+            className="rounded-full bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 px-3 text-slate-900 shadow-[0_10px_22px_rgba(251,146,60,0.28)] hover:from-amber-300 hover:via-orange-400 hover:to-amber-400"
+            asChild
+          >
+            <a href={quickContactLink} target="_blank" rel="noopener noreferrer">
+              <MessageCircle className="mr-2 h-4 w-4" />
+              Contatar
+            </a>
+          </Button>
+        </div>
+      </div>
 
       <Footer />
     </div>
