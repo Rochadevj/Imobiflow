@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -270,6 +268,11 @@
   .pulse-soft {
     animation: none !important;
   }
+
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 
 @layer utilities {
@@ -324,5 +327,42 @@
 
   .pulse-soft {
     animation: pulse-soft 3.5s ease-in-out infinite;
+  }
+
+  /* Scroll-reveal system */
+  [data-reveal] {
+    opacity: 0;
+    will-change: transform, opacity;
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  [data-reveal="up"] {
+    transform: translate3d(0, 32px, 0);
+  }
+
+  [data-reveal="down"] {
+    transform: translate3d(0, -32px, 0);
+  }
+
+  [data-reveal="left"] {
+    transform: translate3d(-40px, 0, 0);
+  }
+
+  [data-reveal="right"] {
+    transform: translate3d(40px, 0, 0);
+  }
+
+  [data-reveal="scale"] {
+    transform: scale3d(0.92, 0.92, 1);
+  }
+
+  [data-reveal="fade"] {
+    transform: none;
+  }
+
+  [data-reveal].revealed {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
   }
 }

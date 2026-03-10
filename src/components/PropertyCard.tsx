@@ -61,7 +61,8 @@ const PropertyCard = ({
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   })}`;
-  const optimizedImageUrl = getOptimizedImageUrl(imageUrl, { width: 720, quality: 72 });
+  const isMobileCard = typeof window !== "undefined" && window.innerWidth < 768;
+  const optimizedImageUrl = getOptimizedImageUrl(imageUrl, { width: isMobileCard ? 480 : 720, quality: isMobileCard ? 65 : 72 });
 
   useEffect(() => {
     if (!id) return;

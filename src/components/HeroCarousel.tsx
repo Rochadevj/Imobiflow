@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { ArrowUpRight, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import TenantLink from "@/components/TenantLink";
 import { getOptimizedImageUrl } from "@/lib/imageOptimization";
@@ -37,6 +37,7 @@ const getPropertyTypeLabel = (type: string) => {
 export default function HeroCarousel({ properties }: HeroCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const isMobile = useMemo(() => typeof window !== "undefined" && window.innerWidth < 768, []);
 
   useEffect(() => {
     if (!isAutoPlaying || properties.length <= 1) return;
@@ -90,7 +91,7 @@ export default function HeroCarousel({ properties }: HeroCarouselProps) {
   }
 
   const currentProperty = properties[currentIndex];
-  const optimizedHeroImageUrl = getOptimizedImageUrl(currentProperty.image_url, { width: 1400, quality: 76 });
+  const optimizedHeroImageUrl = getOptimizedImageUrl(currentProperty.image_url, { width: isMobile ? 800 : 1400, quality: isMobile ? 68 : 76 });
 
   return (
     <div className="group relative overflow-hidden rounded-[32px] border border-white/20 shadow-[0_24px_44px_rgba(15,23,42,0.35)]">
@@ -98,6 +99,8 @@ export default function HeroCarousel({ properties }: HeroCarouselProps) {
         src={optimizedHeroImageUrl}
         alt={currentProperty.title}
         className="hero-carousel-image h-[340px] w-full object-cover object-center md:h-[430px]"
+        width={isMobile ? 800 : 1400}
+        height={isMobile ? 340 : 430}
         loading="eager"
         fetchPriority="high"
         decoding="async"

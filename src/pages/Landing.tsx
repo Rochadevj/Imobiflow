@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 import {
   ArrowRight,
   BarChart3,
@@ -243,6 +244,8 @@ const renderSentenceTitle = (text: string) => {
 
 const Landing = () => {
   const [headerOffset, setHeaderOffset] = useState(0);
+  const pageRef = useRef<HTMLDivElement>(null);
+  useScrollReveal(pageRef);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -256,7 +259,7 @@ const Landing = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#15263d_0%,#1c3250_34%,#223d5f_68%,#162b46_100%)] text-white font-['Manrope']">
+    <div ref={pageRef} className="min-h-screen bg-[linear-gradient(180deg,#15263d_0%,#1c3250_34%,#223d5f_68%,#162b46_100%)] text-white font-['Manrope']">
       <header
         className="fixed inset-x-0 top-0 z-50 pointer-events-none transition-transform duration-300 ease-out"
         style={{ transform: `translateY(${headerOffset}px)` }}
@@ -322,7 +325,7 @@ const Landing = () => {
         </div>
         <section className="container mx-auto px-4 pb-20 pt-16">
           <div className="grid gap-14 xl:grid-cols-[1.02fr_0.98fr] xl:items-center">
-            <div className="space-y-8 animate-fade-up">
+            <div className="space-y-8" data-reveal="up">
               <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/50 bg-white/8 px-4 py-2 text-xs uppercase tracking-[0.26em] text-amber-200 shadow-[0_8px_24px_rgba(251,191,36,0.18)] backdrop-blur">
                 Plataforma para imobiliárias que querem vender com método
               </div>
@@ -390,7 +393,7 @@ const Landing = () => {
               </div>
             </div>
 
-            <div className="relative animate-fade-up-delay-1">
+            <div className="relative" data-reveal="up" data-reveal-delay="200">
               <div className="absolute -inset-6 rounded-[32px] bg-gradient-to-tr from-amber-200/40 via-transparent to-sky-200/40 blur-2xl" />
               <div className="relative overflow-hidden rounded-[32px] border border-white/20 bg-slate-800/58 p-6 shadow-2xl transition hover:-translate-y-1 hover:shadow-[0_30px_60px_rgba(2,6,23,0.5)]">
                 <div className="absolute -right-10 top-12 h-40 w-40 rounded-full bg-amber-300/25 blur-2xl" />
@@ -448,7 +451,7 @@ const Landing = () => {
         </section>
       </div>
 
-      <section className="container mx-auto px-4 py-10 animate-fade-up">
+      <section className="container mx-auto px-4 py-10" data-reveal="up">
         <div className="rounded-[32px] border border-slate-600/70 bg-[linear-gradient(135deg,#132a43_0%,#1b3552_52%,#10243a_100%)] p-6 shadow-[0_25px_60px_rgba(2,6,23,0.42)] sm:p-8">
           <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
             <div>
@@ -512,7 +515,7 @@ const Landing = () => {
         </div>
       </section>
 
-      <section id="diferenciais" className="scroll-mt-32 container mx-auto px-4 py-20 animate-fade-up">
+      <section id="diferenciais" className="scroll-mt-32 container mx-auto px-4 py-20" data-reveal="up">
         <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
           <div className="rounded-[32px] border border-slate-700/75 bg-[linear-gradient(145deg,#142c45_0%,#1b3551_52%,#223b57_100%)] p-6 shadow-[0_24px_58px_rgba(2,6,23,0.42)] sm:p-8">
             <p className="text-xs uppercase tracking-[0.4em] text-amber-300">Diferenciais de produto</p>
@@ -525,9 +528,11 @@ const Landing = () => {
             </p>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
-              {pillars.map((pillar) => (
+              {pillars.map((pillar, index) => (
                 <div
                   key={pillar.title}
+                  data-reveal="up"
+                  data-reveal-delay={String(index * 120)}
                   className="group rounded-3xl border border-white/15 bg-white/6 p-5 transition hover:-translate-y-1 hover:bg-white/9 hover:shadow-lg"
                 >
                   <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-300/18 to-sky-300/18 text-amber-200">
@@ -545,6 +550,8 @@ const Landing = () => {
               {workflowComparison.map((column, index) => (
                 <div
                   key={column.title}
+                  data-reveal={index === 0 ? "left" : "right"}
+                  data-reveal-delay={String(index * 150)}
                   className={`rounded-[30px] border p-6 shadow-[0_18px_40px_rgba(2,6,23,0.22)] ${
                     index === 0
                       ? "border-white/15 bg-slate-900/45"
@@ -596,7 +603,7 @@ const Landing = () => {
         </div>
       </section>
 
-      <section id="recursos" className="scroll-mt-32 container mx-auto px-4 py-20 animate-fade-up">
+      <section id="recursos" className="scroll-mt-32 container mx-auto px-4 py-20" data-reveal="up">
         <div className="grid gap-6 xl:grid-cols-[1.03fr_0.97fr]">
           <div className="rounded-[32px] border border-slate-700/75 bg-[linear-gradient(145deg,#142c45_0%,#1b3551_52%,#233d5a_100%)] p-6 shadow-[0_24px_58px_rgba(2,6,23,0.42)] sm:p-8">
             <p className="text-xs uppercase tracking-[0.4em] text-amber-300">Recursos principais</p>
@@ -666,6 +673,8 @@ const Landing = () => {
               return (
                 <div
                   key={feature.title}
+                  data-reveal="up"
+                  data-reveal-delay={String(index * 100)}
                   className={`group relative overflow-hidden rounded-[28px] border border-white/15 p-6 shadow-[0_18px_42px_rgba(2,6,23,0.22)] transition hover:-translate-y-1 hover:border-amber-300/45 hover:shadow-[0_24px_54px_rgba(2,6,23,0.28)] ${cardTone} ${
                     isFeaturedCard ? "sm:col-span-2" : ""
                   }`}
@@ -690,7 +699,7 @@ const Landing = () => {
         </div>
       </section>
 
-      <section id="como-funciona" className="scroll-mt-32 container mx-auto px-4 py-20 animate-fade-up">
+      <section id="como-funciona" className="scroll-mt-32 container mx-auto px-4 py-20" data-reveal="up">
         <div className="rounded-[32px] border border-slate-700/70 bg-[linear-gradient(140deg,#1b314a_0%,#243d59_55%,#2d4866_100%)] p-6 text-white shadow-[0_24px_58px_rgba(2,6,23,0.46)] backdrop-blur sm:p-8">
           <div className="flex flex-col gap-10">
             <div className="flex flex-col gap-4">
@@ -704,6 +713,8 @@ const Landing = () => {
               {steps.map((step, index) => (
                 <div
                   key={step.step}
+                  data-reveal="up"
+                  data-reveal-delay={String(index * 150)}
                   className={`group relative overflow-hidden rounded-[26px] border p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg ${
                     index === 1
                       ? "border-amber-300/35 bg-[linear-gradient(165deg,rgba(251,191,36,0.14),rgba(15,23,42,0.34))]"
@@ -742,7 +753,7 @@ const Landing = () => {
         </div>
       </section>
 
-      <section className="container mx-auto px-4 py-20 animate-fade-up">
+      <section className="container mx-auto px-4 py-20" data-reveal="scale">
         <div className="relative overflow-hidden rounded-[32px] border border-slate-600/70 bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800 p-10 text-white shadow-2xl">
           <div className="absolute -top-20 right-0 h-60 w-60 rounded-full bg-amber-400/25 blur-3xl" />
           <div className="absolute bottom-0 left-0 h-52 w-52 rounded-full bg-sky-400/20 blur-3xl" />
@@ -768,9 +779,11 @@ const Landing = () => {
             </Button>
           </div>
           <div className="mt-10 grid gap-4 md:grid-cols-2">
-            {modules.map((module) => (
+            {modules.map((module, moduleIndex) => (
               <div
                 key={module.title}
+                data-reveal="up"
+                data-reveal-delay={String(moduleIndex * 100)}
                 className="group relative overflow-hidden rounded-2xl border border-white/15 bg-white/10 p-6 shadow-lg transition hover:-translate-y-1 hover:bg-white/15"
               >
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.18),_transparent_55%)] opacity-0 transition group-hover:opacity-100" />
@@ -785,7 +798,7 @@ const Landing = () => {
         </div>
       </section>
 
-      <section className="container mx-auto px-4 py-20 animate-fade-up">
+      <section className="container mx-auto px-4 py-20" data-reveal="up">
         <div className="rounded-[32px] border border-slate-700/70 bg-[linear-gradient(140deg,#1a3049_0%,#233c58_55%,#2d4967_100%)] p-6 text-white shadow-[0_24px_58px_rgba(2,6,23,0.46)] backdrop-blur sm:p-8">
           <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
             <div className="space-y-6">
@@ -851,7 +864,7 @@ const Landing = () => {
         </div>
       </section>
 
-      <section id="planos" className="scroll-mt-32 container mx-auto px-4 py-20 animate-fade-up">
+      <section id="planos" className="scroll-mt-32 container mx-auto px-4 py-20" data-reveal="up">
         <div className="relative overflow-hidden rounded-[32px] border border-slate-700/70 bg-[linear-gradient(140deg,#1a3049_0%,#233c58_52%,#2c4662_100%)] p-6 text-white shadow-[0_24px_58px_rgba(2,6,23,0.46)] backdrop-blur sm:p-8">
           <div className="absolute -right-24 top-10 h-52 w-52 rounded-full bg-amber-300/30 blur-3xl" />
           <div className="absolute -left-16 bottom-0 h-40 w-40 rounded-full bg-sky-300/25 blur-3xl" />
@@ -872,9 +885,11 @@ const Landing = () => {
             <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-gradient-to-r from-amber-400 to-sky-400" />
           </div>
           <div className="mt-12 grid gap-6 lg:grid-cols-3">
-            {plans.map((plan) => (
+            {plans.map((plan, planIndex) => (
               <div
                 key={plan.name}
+                data-reveal="up"
+                data-reveal-delay={String(planIndex * 150)}
                 className={`relative overflow-hidden rounded-3xl border p-8 transition hover:-translate-y-1 hover:shadow-xl ${
                   plan.highlight
                     ? "border-amber-300/70 bg-gradient-to-br from-amber-400/20 via-slate-800/64 to-amber-300/18 shadow-lg ring-2 ring-amber-300/40"
@@ -918,7 +933,7 @@ const Landing = () => {
         </div>
       </section>
 
-      <section id="faq" className="scroll-mt-32 container mx-auto px-4 py-20 animate-fade-up">
+      <section id="faq" className="scroll-mt-32 container mx-auto px-4 py-20" data-reveal="left">
         <div className="rounded-[32px] border border-slate-700/70 bg-[linear-gradient(140deg,#1a3049_0%,#243d59_54%,#2c4866_100%)] p-6 text-white shadow-[0_24px_58px_rgba(2,6,23,0.46)] backdrop-blur sm:p-8">
           <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
             <div>
@@ -932,9 +947,11 @@ const Landing = () => {
               </p>
             </div>
             <div className="space-y-4">
-              {faqs.map((faq) => (
+              {faqs.map((faq, faqIndex) => (
                 <details
                   key={faq.question}
+                  data-reveal="right"
+                  data-reveal-delay={String(faqIndex * 100)}
                   className="group rounded-2xl border border-white/15 bg-white/5 p-5 shadow-sm transition hover:-translate-y-0.5 hover:bg-white/10 hover:shadow-lg"
                 >
                   <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-semibold text-white">
@@ -949,7 +966,7 @@ const Landing = () => {
         </div>
       </section>
 
-      <section className="container mx-auto px-4 pb-20 animate-fade-up">
+      <section className="container mx-auto px-4 pb-20" data-reveal="up">
         <div className="relative overflow-hidden rounded-[32px] border border-slate-700/80 bg-[linear-gradient(140deg,#1a3049_0%,#243d59_52%,#1a3049_100%)] p-6 text-white shadow-[0_25px_60px_rgba(2,6,23,0.5)] sm:p-10">
           <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-amber-300/30 blur-3xl" />
           <div className="absolute bottom-0 left-10 h-40 w-40 rounded-full bg-sky-300/25 blur-3xl" />
@@ -994,7 +1011,7 @@ const Landing = () => {
         </div>
       </section>
 
-      <footer id="contato" className="border-t border-slate-500/55 bg-[#182f4a]/92">
+      <footer id="contato" className="border-t border-slate-500/55 bg-[#182f4a]/92" data-reveal="fade">
         <div className="container mx-auto px-4 py-12">
           <div className="grid gap-8 border-b border-white/10 pb-10 md:grid-cols-[1.1fr_0.9fr_1fr]">
             <div className="space-y-5">

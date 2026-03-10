@@ -4,10 +4,11 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-route
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import WhatsAppButton from "./components/WhatsAppButton";
 import { TenantProvider, useTenant } from "./context/TenantContext";
 import { CONTACT_WHATSAPP_NUMBER } from "./lib/contact";
 import Landing from "./pages/Landing";
+
+const WhatsAppButton = lazy(() => import("./components/WhatsAppButton"));
 
 const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
