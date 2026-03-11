@@ -309,8 +309,8 @@ const PropertyDetail = () => {
                         ) : null}
                       </p>
                     </div>
-                    {property.condominio || property.iptu ? (
-                      <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
+                    {property.transaction_type === "aluguel" && (property.condominio || property.iptu) ? (
+                      <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
                         {property.condominio ? (
                           <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
                             <p className="text-slate-500">Condomínio</p>
@@ -323,6 +323,13 @@ const PropertyDetail = () => {
                             <p className="font-semibold text-slate-900">{formatCurrency(property.iptu, true)}</p>
                           </div>
                         ) : null}
+                        <div className="rounded-xl border border-green-200 bg-green-50 px-3 py-2">
+                          <p className="text-green-700">Total</p>
+                          <p className="font-semibold text-green-900">
+                            {formatCurrency(property.price + (property.condominio || 0) + (property.iptu || 0), true)}
+                          </p>
+                          <p className="mt-1 text-[10px] leading-tight text-green-600">*Valor do aluguel até o vencimento.</p>
+                        </div>
                       </div>
                     ) : null}
                   </div>
