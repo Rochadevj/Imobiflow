@@ -13,6 +13,7 @@ import {
 } from "@/lib/tenantBrand";
 import { resolvedDemoTenantSlug } from "@/lib/demoTenant";
 import Footer from "@/components/Footer";
+import LeadInbox from "@/components/LeadInbox";
 import MostViewedProperties from "@/components/MostViewedProperties";
 import Navbar from "@/components/Navbar";
 import PropertyEditForm from "@/components/PropertyEditForm";
@@ -514,7 +515,7 @@ const Admin = () => {
       return;
     }
 
-    if (!["dashboard", "list", "add", "legal", "settings"].includes(activeTab)) {
+    if (!["dashboard", "list", "leads", "add", "legal", "settings"].includes(activeTab)) {
       setActiveTab("dashboard");
     }
   }, [activeTab, isReadOnlyDemo]);
@@ -1305,6 +1306,10 @@ const Admin = () => {
               <List className="mr-2 h-4 w-4" />
               {isReadOnlyDemo ? "Imóveis da demo" : "Meus imóveis"}
             </TabsTrigger>
+            <TabsTrigger value="leads" className="rounded-xl px-4 py-2">
+              <MessageCircle className="mr-2 h-4 w-4" />
+              Leads
+            </TabsTrigger>
             <TabsTrigger value="add" className="rounded-xl px-4 py-2">
               <Plus className="mr-2 h-4 w-4" />
               Adicionar
@@ -1658,6 +1663,10 @@ const Admin = () => {
             </div>
           </TabsContent>
 
+          <TabsContent value="leads" className="mt-6">
+            <LeadInbox tenantId={activeTenant.id} readOnly={isReadOnlyDemo} />
+          </TabsContent>
+
           <TabsContent value="add" className="mt-6">
             <PropertyForm tenantId={activeTenant.id} onSuccess={handlePropertyAdded} readOnly={isReadOnlyDemo} />
           </TabsContent>
@@ -1798,6 +1807,5 @@ const Admin = () => {
 };
 
 export default Admin;
-
 
 

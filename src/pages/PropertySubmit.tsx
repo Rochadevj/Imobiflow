@@ -2,7 +2,7 @@
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
-import { buildWhatsAppLink } from "@/lib/contact";
+import TrackedWhatsAppLink from "@/components/TrackedWhatsAppLink";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -222,15 +222,16 @@ const PropertySubmit = () => {
                 <p className="mt-2 text-sm text-white/85">
                   Precisa de ajuda para preencher? Fale com a equipe da {brandName} e montamos o anúncio com você.
                 </p>
-                <a
-                  href={buildWhatsAppLink(`Olá! Preciso de ajuda para anunciar um imóvel com a ${brandName}.`, whatsapp)}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <TrackedWhatsAppLink
+                  phone={whatsapp}
+                  message={`Olá! Preciso de ajuda para anunciar um imóvel com a ${brandName}.`}
+                  source="property_submit_help"
+                  tenantSlug={tenant?.slug}
                   className="mt-4 inline-flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600"
                 >
                   <MessageCircle className="h-4 w-4" />
                   WhatsApp
-                </a>
+                </TrackedWhatsAppLink>
               </div>
             </aside>
           </div>

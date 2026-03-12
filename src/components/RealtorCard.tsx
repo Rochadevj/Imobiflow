@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Building2, Link2, Phone, UserRound } from "lucide-react";
 import { toast } from "sonner";
+import TrackedWhatsAppLink from "./TrackedWhatsAppLink";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
@@ -9,6 +10,8 @@ interface RealtorCardProps {
   name: string;
   creci: string;
   phone: string;
+  tenantSlug?: string | null;
+  propertyId?: string | null;
   propertyTitle: string;
   propertyCode: string;
   propertyType: string;
@@ -22,6 +25,8 @@ export default function RealtorCard({
   name,
   creci,
   phone,
+  tenantSlug,
+  propertyId,
   propertyTitle,
   propertyCode,
   propertyType,
@@ -72,11 +77,6 @@ export default function RealtorCard({
     event.preventDefault();
     toast.success("Solicitação enviada! Em breve entraremos em contato.");
   };
-
-  const whatsappMessage = encodeURIComponent(
-    `Olá ${name}, tenho interesse no imóvel ${propertyTitle} (código ${propertyCode}).`
-  );
-  const whatsappLink = `https://api.whatsapp.com/send?phone=${phone.replace(/\D/g, "")}&text=${whatsappMessage}`;
 
   return (
     <div className="surface-card space-y-5 border-slate-200/80 p-5 lg:sticky lg:top-24">
@@ -167,10 +167,16 @@ export default function RealtorCard({
       </div>
 
       <Button asChild className="w-full rounded-xl bg-emerald-600 text-white hover:bg-emerald-700">
-        <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
+        <TrackedWhatsAppLink
+          phone={phone}
+          message={`Olá ${name}, tenho interesse no imóvel ${propertyTitle} (código ${propertyCode}).`}
+          source="property_realtor_card"
+          tenantSlug={tenantSlug}
+          propertyId={propertyId}
+        >
           <Phone className="mr-2 h-4 w-4" />
           Chamar no WhatsApp
-        </a>
+        </TrackedWhatsAppLink>
       </Button>
 
       <Button
@@ -187,4 +193,3 @@ export default function RealtorCard({
     </div>
   );
 }
-

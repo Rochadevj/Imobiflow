@@ -1,8 +1,9 @@
 ﻿import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import TrackedWhatsAppLink from "@/components/TrackedWhatsAppLink";
 import TenantLink from "@/components/TenantLink";
 import { useTenant } from "@/context/TenantContext";
-import { buildWhatsAppLink, formatPhoneDisplay } from "@/lib/contact";
+import { formatPhoneDisplay } from "@/lib/contact";
 import {
   getTenantBrandName,
   getTenantCreci,
@@ -86,15 +87,16 @@ const About = () => {
                   {brandName} apresenta uma operação imobiliária com catálogo organizado, comunicação clara e experiência profissional para compradores, locatários e proprietários.
                 </p>
                 <div className="flex flex-wrap gap-3">
-                  <a
-                    href={buildWhatsAppLink(`Olá! Quero falar com a equipe da ${brandName}.`, whatsapp)}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <TrackedWhatsAppLink
+                    phone={whatsapp}
+                    message={`Olá! Quero falar com a equipe da ${brandName}.`}
+                    source="about_hero"
+                    tenantSlug={tenant?.slug}
                     className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-white/90"
                   >
                     <Phone className="h-4 w-4" />
                     Falar agora
-                  </a>
+                  </TrackedWhatsAppLink>
                   <TenantLink
                     to="/anunciar"
                     forceTenant

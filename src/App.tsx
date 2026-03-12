@@ -48,6 +48,7 @@ const RouteAwareWhatsApp = () => {
     <WhatsAppButton
       phone={tenant?.whatsapp || CONTACT_WHATSAPP_NUMBER}
       message={message}
+      tenantSlug={tenant?.slug}
     />
   );
 };

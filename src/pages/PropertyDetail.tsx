@@ -15,8 +15,8 @@ import Navbar from "@/components/Navbar";
 import PropertyMeta from "@/components/PropertyMeta";
 import RealtorCard from "@/components/RealtorCard";
 import SimilarPropertiesCarousel from "@/components/SimilarPropertiesCarousel";
+import TrackedWhatsAppLink from "@/components/TrackedWhatsAppLink";
 import { supabase } from "@/integrations/supabase/client";
-import { buildWhatsAppLink } from "@/lib/contact";
 import { trackPropertyView } from "@/lib/propertyViews";
 import { useTenant } from "@/context/TenantContext";
 import { readFavorites, writeFavorites } from "@/lib/favorites";
@@ -227,11 +227,6 @@ const PropertyDetail = () => {
   const imageUrls = propertyImages.length > 0
     ? propertyImages.map((image) => image.image_url)
     : ["/placeholder.jpg", "/placeholder.jpg", "/placeholder.jpg"];
-  const quickContactLink = buildWhatsAppLink(
-    `Olá! Tenho interesse no imóvel ${property.title} (${property.codigo || property.id.slice(0, 8)}).`,
-    whatsapp,
-  );
-
   return (
     <div className="page-shell">
       <Navbar />
@@ -397,6 +392,8 @@ const PropertyDetail = () => {
                 name={brandName}
                 creci={creci}
                 phone={whatsapp}
+                tenantSlug={tenant?.slug}
+                propertyId={property.id}
                 propertyTitle={property.title}
                 propertyCode={property.codigo || property.id.slice(0, 8)}
                 propertyType={property.property_type}
@@ -405,14 +402,16 @@ const PropertyDetail = () => {
                 location={property.location}
                 city={property.city}
               />
-              <a
-                href={buildWhatsAppLink(`Olá! Tenho interesse no imóvel ${property.title}.`, whatsapp)}
-                target="_blank"
-                rel="noopener noreferrer"
+              <TrackedWhatsAppLink
+                phone={whatsapp}
+                message={`Olá! Tenho interesse no imóvel ${property.title}.`}
+                source="property_detail_sidebar"
+                tenantSlug={tenant?.slug}
+                propertyId={property.id}
                 className="sr-only"
               >
                 Contato WhatsApp
-              </a>
+              </TrackedWhatsAppLink>
             </div>
 
             {similarProperties.length > 0 ? (
@@ -449,10 +448,16 @@ const PropertyDetail = () => {
             className="rounded-full bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 px-3 text-slate-900 shadow-[0_10px_22px_rgba(251,146,60,0.28)] hover:from-amber-300 hover:via-orange-400 hover:to-amber-400"
             asChild
           >
-            <a href={quickContactLink} target="_blank" rel="noopener noreferrer">
+            <TrackedWhatsAppLink
+              phone={whatsapp}
+              message={`Olá! Tenho interesse no imóvel ${property.title} (${property.codigo || property.id.slice(0, 8)}).`}
+              source="property_detail_mobile_cta"
+              tenantSlug={tenant?.slug}
+              propertyId={property.id}
+            >
               <MessageCircle className="mr-2 h-4 w-4" />
               Contatar
-            </a>
+            </TrackedWhatsAppLink>
           </Button>
         </div>
       </div>

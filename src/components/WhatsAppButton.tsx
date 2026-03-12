@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { CONTACT_WHATSAPP_NUMBER } from "@/lib/contact";
+import TrackedWhatsAppLink from "./TrackedWhatsAppLink";
 
 interface WhatsAppButtonProps {
   phone?: string;
   message?: string;
+  tenantSlug?: string | null;
 }
 
 const WhatsAppIcon = ({ className = "w-7 h-7" }: { className?: string }) => (
@@ -15,6 +17,7 @@ const WhatsAppIcon = ({ className = "w-7 h-7" }: { className?: string }) => (
 export default function WhatsAppButton({
   phone = CONTACT_WHATSAPP_NUMBER,
   message = "Olá! Gostaria de saber mais sobre a Imobiflow.",
+  tenantSlug,
 }: WhatsAppButtonProps) {
   const [showTip, setShowTip] = useState(true);
 
@@ -29,11 +32,6 @@ export default function WhatsAppButton({
     return `55${digits}`;
   }, [digits]);
 
-  const url = useMemo(() => {
-    const text = encodeURIComponent(message);
-    return `https://wa.me/${phoneWithCountry}?text=${text}`;
-  }, [phoneWithCountry, message]);
-
   return (
     <div className="fixed bottom-5 right-4 z-50 select-none md:bottom-8 md:right-8">
       <div
@@ -41,16 +39,17 @@ export default function WhatsAppButton({
         onMouseEnter={() => setShowTip(true)}
         onMouseLeave={() => setShowTip(false)}
       >
-        <a
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
+        <TrackedWhatsAppLink
+          phone={phoneWithCountry}
+          message={message}
+          source="floating_button"
+          tenantSlug={tenantSlug}
           aria-label="Abrir conversa no WhatsApp"
           className="relative inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl transition-all duration-200 hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#25D366] md:h-14 md:w-14"
         >
           <span className="absolute inset-0 rounded-full bg-[#25D366]/30 opacity-0 group-hover:opacity-100 animate-ping pointer-events-none" />
           <WhatsAppIcon className="w-7 h-7 relative" />
-        </a>
+        </TrackedWhatsAppLink>
 
         <div
           className={`absolute right-14 top-1/2 hidden -translate-y-1/2 transition-opacity md:right-16 md:block ${showTip ? "opacity-100" : "opacity-0"}`}
@@ -64,4 +63,3 @@ export default function WhatsAppButton({
     </div>
   );
 }
-

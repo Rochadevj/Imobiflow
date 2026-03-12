@@ -1,7 +1,8 @@
 ﻿import { Facebook, Instagram, Mail, MapPin, Phone, ShieldCheck } from "lucide-react";
+import TrackedWhatsAppLink from "@/components/TrackedWhatsAppLink";
 import TenantLink from "@/components/TenantLink";
 import { useTenant } from "@/context/TenantContext";
-import { buildWhatsAppLink, formatPhoneDisplay } from "@/lib/contact";
+import { formatPhoneDisplay } from "@/lib/contact";
 import {
   getTenantBrandName,
   getTenantCreci,
@@ -74,15 +75,16 @@ const Footer = () => {
                 <Mail className="h-4 w-4 text-amber-500" />
                 {supportEmail}
               </a>
-              <a
-                href={buildWhatsAppLink(`Olá! Gostaria de saber mais sobre os imóveis da ${brandName}.`, whatsapp)}
-                target="_blank"
-                rel="noopener noreferrer"
+              <TrackedWhatsAppLink
+                phone={whatsapp}
+                message={`Olá! Gostaria de saber mais sobre os imóveis da ${brandName}.`}
+                source="footer_contact"
+                tenantSlug={tenant?.slug}
                 className="flex items-center gap-2 transition hover:text-amber-600"
               >
                 <Phone className="h-4 w-4 text-amber-500" />
                 {formatPhoneDisplay(whatsapp)}
-              </a>
+              </TrackedWhatsAppLink>
               <span className="flex items-center gap-2 text-slate-600">
                 <MapPin className="h-4 w-4 text-amber-500" />
                 {locationLabel}

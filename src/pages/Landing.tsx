@@ -21,8 +21,9 @@ import {
   Users2,
   Zap,
 } from "lucide-react";
+import TrackedWhatsAppLink from "@/components/TrackedWhatsAppLink";
 import { Button } from "@/components/ui/button";
-import { CONTACT_WHATSAPP_DISPLAY, buildWhatsAppLink } from "@/lib/contact";
+import { CONTACT_WHATSAPP_DISPLAY } from "@/lib/contact";
 import { resolvedDemoTenantSlug } from "@/lib/demoTenant";
 
 const stats = [
@@ -1057,15 +1058,14 @@ const Landing = () => {
                   <MessageCircle className="h-4 w-4 text-amber-400" />
                   contato@imobiflow.com
                 </a>
-                <a
-                  href={buildWhatsAppLink("Olá! Quero conhecer melhor a plataforma Imobiflow.")}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <TrackedWhatsAppLink
+                  message="Olá! Quero conhecer melhor a plataforma Imobiflow."
+                  source="landing_contact"
                   className="flex items-center gap-2 transition hover:text-white"
                 >
                   <Link2 className="h-4 w-4 text-amber-400" />
                   WhatsApp: {CONTACT_WHATSAPP_DISPLAY}
-                </a>
+                </TrackedWhatsAppLink>
                 <Link to="/politica-privacidade" className="flex items-center gap-2 transition hover:text-white">
                   <FileText className="h-4 w-4 text-amber-400" />
                   Política de Privacidade

@@ -289,6 +289,198 @@ export type Database = {
           },
         ]
       }
+      whatsapp_follow_up_tasks: {
+        Row: {
+          assigned_user_email: string | null
+          assigned_user_id: string | null
+          completed_at: string | null
+          created_at: string
+          due_at: string
+          id: string
+          lead_id: string
+          status: string
+          task_type: string
+          tenant_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_user_email?: string | null
+          assigned_user_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          due_at: string
+          id?: string
+          lead_id: string
+          status?: string
+          task_type?: string
+          tenant_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_user_email?: string | null
+          assigned_user_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          due_at?: string
+          id?: string
+          lead_id?: string
+          status?: string
+          task_type?: string
+          tenant_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_follow_up_tasks_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_follow_up_tasks_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_lead_events: {
+        Row: {
+          created_at: string
+          description: string | null
+          event_type: string
+          id: string
+          lead_id: string
+          metadata: Json
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          event_type: string
+          id?: string
+          lead_id: string
+          metadata?: Json
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          event_type?: string
+          id?: string
+          lead_id?: string
+          metadata?: Json
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_lead_events_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_lead_events_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_leads: {
+        Row: {
+          assigned_role: string | null
+          assigned_user_email: string | null
+          assigned_user_id: string | null
+          contact_channel: string
+          created_at: string
+          id: string
+          last_clicked_at: string
+          last_follow_up_at: string | null
+          message: string | null
+          next_follow_up_at: string | null
+          page_url: string | null
+          property_code: string | null
+          property_id: string | null
+          property_title: string | null
+          referrer: string | null
+          source: string
+          source_path: string | null
+          status: string
+          tenant_id: string
+          updated_at: string
+          visitor_session_id: string | null
+        }
+        Insert: {
+          assigned_role?: string | null
+          assigned_user_email?: string | null
+          assigned_user_id?: string | null
+          contact_channel?: string
+          created_at?: string
+          id?: string
+          last_clicked_at?: string
+          last_follow_up_at?: string | null
+          message?: string | null
+          next_follow_up_at?: string | null
+          page_url?: string | null
+          property_code?: string | null
+          property_id?: string | null
+          property_title?: string | null
+          referrer?: string | null
+          source: string
+          source_path?: string | null
+          status?: string
+          tenant_id: string
+          updated_at?: string
+          visitor_session_id?: string | null
+        }
+        Update: {
+          assigned_role?: string | null
+          assigned_user_email?: string | null
+          assigned_user_id?: string | null
+          contact_channel?: string
+          created_at?: string
+          id?: string
+          last_clicked_at?: string
+          last_follow_up_at?: string | null
+          message?: string | null
+          next_follow_up_at?: string | null
+          page_url?: string | null
+          property_code?: string | null
+          property_id?: string | null
+          property_title?: string | null
+          referrer?: string | null
+          source?: string
+          source_path?: string | null
+          status?: string
+          tenant_id?: string
+          updated_at?: string
+          visitor_session_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_leads_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_leads_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       property_views: {
         Row: {
           created_at: string | null
@@ -344,6 +536,23 @@ export type Database = {
     Functions: {
       anonymize_ip: { Args: { ip_text: string }; Returns: string }
       cleanup_old_property_views: { Args: never; Returns: number }
+      complete_whatsapp_follow_up_task: {
+        Args: { p_mark_contacted?: boolean; p_task_id: string }
+        Returns: boolean
+      }
+      create_whatsapp_lead: {
+        Args: {
+          p_message?: string
+          p_page_url?: string
+          p_property_id?: string
+          p_referrer?: string
+          p_source: string
+          p_source_path?: string
+          p_tenant_slug?: string
+          p_visitor_session_id?: string
+        }
+        Returns: string
+      }
       create_tenant_for_current_user: {
         Args: {
           p_name: string
@@ -375,6 +584,14 @@ export type Database = {
       get_property_view_count: {
         Args: { p_property_id: string }
         Returns: number
+      }
+      resolve_whatsapp_lead_assignee: {
+        Args: { p_tenant_id: string }
+        Returns: {
+          user_email: string
+          user_id: string
+          user_role: string
+        }[]
       }
       slugify_text: { Args: { input: string }; Returns: string }
     }
